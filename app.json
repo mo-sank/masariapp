@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "Masari",
+    "slug": "masariapp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "masari",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.masari.app"
+    },
+    "android": {
+      "package": "com.masari.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a10cb6b8-5a21-44fb-b39d-402b06a42109"
+      }
+    },
+    "owner": "masaridev"
+  }
+}
