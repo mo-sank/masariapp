@@ -29,31 +29,10 @@ export const PROFILE_QUERY_KEY = ['profile', 'me'] as const;
  * Supabase error is thrown so React Query surfaces it to the caller.
  */
 export async function fetchMyProfile(): Promise<ProfileRow | null> {
-  // TEMP DEBUG: decode the sub from the ID token being sent on this request,
-  // so we can compare it to the stored profiles.user_id in the dashboard.
-  try {
-    const { getIdTokenSafe } = await import('../../lib/auth0');
-    const token = await getIdTokenSafe();
-    if (token) {
-      const payload = JSON.parse(
-        decodeURIComponent(
-          atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))
-            .split('')
-            .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-            .join(''),
-        ),
-      );
-      console.log('[fetchMyProfile] token sub:', payload.sub, 'role:', payload.role, 'aud:', payload.aud);
-    }
-  } catch (e) {
-    console.log('[fetchMyProfile] could not decode token:', e);
-  }
-
   const { data, error } = await supabase
     .from('profiles')
     .select('age_band, avatar_key, birth_year, created_at, timezone, user_id, username')
     .maybeSingle();
-  console.log('[fetchMyProfile] rows returned:', data == null ? 'none' : 'one', error ? `error: ${error.message}` : '');
   if (error) {
     throw error;
   }

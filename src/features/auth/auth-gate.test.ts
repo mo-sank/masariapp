@@ -109,6 +109,16 @@ describe('pathnameToBranch', () => {
     expect(pathnameToBranch('/profile')).toBe('tabs');
   });
 
+  it('maps authenticated screens reachable from the tabs to the tabs branch', () => {
+    // These are signed-in routes outside the (tabs) group; the gate must not
+    // treat navigating to them as a wrong-branch redirect back to the tabs.
+    expect(pathnameToBranch('/lesson/L0')).toBe('tabs');
+    expect(pathnameToBranch('/lesson/L1.1')).toBe('tabs');
+    expect(pathnameToBranch('/lesson/placement')).toBe('tabs');
+    expect(pathnameToBranch('/rewind')).toBe('tabs');
+    expect(pathnameToBranch('/settings')).toBe('tabs');
+  });
+
   it('returns undefined for an unknown route (e.g. the index placeholder)', () => {
     expect(pathnameToBranch('/')).toBeUndefined();
   });

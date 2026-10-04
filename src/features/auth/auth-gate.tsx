@@ -85,17 +85,26 @@ export function decideBranch(input: {
  * branches, so we match the leaf route rather than just the group.
  */
 export function pathnameToBranch(pathname: string): Branch | undefined {
-  if (pathname.includes('age-block')) return 'age-block';
-  if (pathname.includes('onboarding')) return 'onboarding';
-  if (pathname.includes('age-gate') || pathname.includes('welcome')) return 'auth';
+  if (pathname.includes("age-block")) return "age-block";
+  if (pathname.includes("onboarding")) return "onboarding";
+  if (pathname.includes("age-gate") || pathname.includes("welcome")) return "auth";
+  // The signed-in app is more than the four tab screens: the tab routes AND the
+  // authenticated screens reachable from them (lesson/*, rewind, settings/*) all
+  // belong to the tabs branch. Mapping them here means navigating to a lesson is
+  // NOT treated as a wrong-branch move that bounces the user back to
+  // /(tabs)/learn. The bare index ("/") stays undefined so the gate still
+  // performs the initial redirect from the placeholder route into a branch.
   if (
-    pathname.includes('(tabs)') ||
-    pathname.startsWith('/learn') ||
-    pathname.startsWith('/explore') ||
-    pathname.startsWith('/portfolio') ||
-    pathname.startsWith('/profile')
+    pathname.includes("(tabs)") ||
+    pathname.startsWith("/learn") ||
+    pathname.startsWith("/explore") ||
+    pathname.startsWith("/portfolio") ||
+    pathname.startsWith("/profile") ||
+    pathname.startsWith("/lesson") ||
+    pathname.startsWith("/rewind") ||
+    pathname.startsWith("/settings")
   ) {
-    return 'tabs';
+    return "tabs";
   }
   return undefined;
 }
@@ -132,18 +141,6 @@ export function AuthGate() {
     profileLoading,
     hasProfile,
   });
-
-  console.log('[AuthGate]', JSON.stringify({
-    pathname,
-    ageBlockLoading,
-    isBlocked,
-    sessionLoading,
-    isSignedIn,
-    profileLoading,
-    hasProfile,
-    target,
-    willRedirect: target != null && shouldRedirect(target, pathname),
-  }));
 
   useEffect(() => {
     // Still resolving initial state: keep the splash up and do nothing.

@@ -59,6 +59,7 @@ export default function LessonScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const lesson = id ? getLesson(id) : undefined;
 
+
   const resumeIfSameSession = useSessionStore((s) => s.resumeIfSameSession);
   const exitSession = useSessionStore((s) => s.exit);
   const stageOutcome = useCompletionResultStore((s) => s.set);
@@ -134,9 +135,10 @@ export default function LessonScreen() {
       });
       exitSession();
       router.replace('/lesson/placement');
-    } catch {
+    } catch (err) {
       // Best-effort baseline (6.4): if either call fails, don't block the learner.
       // complete_lesson's failure is already queued for retry by its mutation.
+      console.error('[placement] completion failed:', (err as Error)?.message ?? err);
       exitSession();
       toast.show('Saved — we will sync your progress when you are back online.');
       router.replace('/(tabs)/learn');

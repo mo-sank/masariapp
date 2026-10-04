@@ -61,7 +61,10 @@ export default function LearnScreen() {
   }
 
   const openLesson = (lesson: Lesson) => {
-    router.push(`/lesson/${lesson.id}`);
+    // Pass the id as a route param (object form) rather than interpolating it
+    // into the path string. Lesson ids contain dots (e.g. "L1.1"), which an
+    // interpolated path can mishandle; the param form routes them reliably.
+    router.push({ pathname: '/lesson/[id]', params: { id: lesson.id } });
   };
 
   const xp = stats.data?.xp_total ?? 0;
