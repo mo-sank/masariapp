@@ -83,16 +83,17 @@ describe('useSession', () => {
     expect(session.isLoading).toBe(true);
   });
 
-  it('login opens Universal Login with the offline_access scope and the API audience', async () => {
+  it('login opens Universal Login with the offline_access scope and no API audience', async () => {
     authorize.mockResolvedValue({ accessToken: 'tok' });
     const session = await getSession();
 
     await session.login();
 
     expect(authorize).toHaveBeenCalledTimes(1);
+    // No `audience` is passed: Supabase consumes the Auth0 ID token, so the
+    // login does not request an access token minted for an API audience.
     expect(authorize).toHaveBeenCalledWith({
       scope: 'openid profile email offline_access',
-      audience: 'https://api.masari.app',
     });
   });
 

@@ -74,12 +74,6 @@ export interface CreateProfileArgs {
  * failure, and rethrows any other error unchanged.
  */
 export async function createProfile(args: CreateProfileArgs): Promise<ProfileRow> {
-  console.log('[createProfile] Starting with args:', {
-    username: args.username,
-    birthMonth: args.birthMonth,
-    birthYear: args.birthYear,
-  });
-  
   const { data, error } = await supabase.rpc('create_profile', {
     p_username: args.username,
     p_birth_year: args.birthYear,
@@ -90,7 +84,6 @@ export async function createProfile(args: CreateProfileArgs): Promise<ProfileRow
   });
 
   if (error) {
-    console.log('[createProfile] RPC Error - code:', error.code, 'message:', error.message);
     const code = mapErrorMessage(error.message);
     if (code) {
       throw new CreateProfileError(code);
@@ -98,7 +91,6 @@ export async function createProfile(args: CreateProfileArgs): Promise<ProfileRow
     throw error;
   }
 
-  console.log('[createProfile] Success');
   // On success the RPC returns the profile row.
   return data as ProfileRow;
 }

@@ -104,6 +104,25 @@ describe('parseConfig', () => {
     expect(() => parseConfig(env)).toThrow(/EXPO_PUBLIC_SUPABASE_URL/);
   });
 
+  it('rejects the Auth0 Management API as the audience', () => {
+    // The client sends the Auth0 ID token to Supabase; a Management-API
+    // (/api/v2/) access token is unreadable by Supabase and was the original
+    // sign-up failure, so the config must refuse it outright.
+    const env = {
+      ...validEnv,
+      auth0Audience: 'https://dev-waorupmxxm0utwej.us.auth0.com/api/v2/',
+    };
+    expect(() => parseConfig(env)).toThrow(/must not be the Auth0 Management API/);
+  });
+
+  it('accepts a Management-API audience without a trailing slash too', () => {
+    const env = {
+      ...validEnv,
+      auth0Audience: 'https://dev-waorupmxxm0utwej.us.auth0.com/api/v2',
+    };
+    expect(() => parseConfig(env)).toThrow(/must not be the Auth0 Management API/);
+  });
+
   it('never includes a provided secret value in the error message', () => {
     const secret = 'super-secret-anon-key-value';
     // An empty required var alongside a present secret: the thrown error must

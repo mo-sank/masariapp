@@ -8,10 +8,11 @@
  * Auth0 is the identity provider, not Supabase Auth. Supabase's own GoTrue
  * email/password flow is unused, so this client:
  *
- * - supplies an `accessToken` callback that returns the current Auth0 **access
- *   token** on every request. Per the task 7 token-bridge spike (recorded in
- *   tech.md), the access token is the one that carries `role = "authenticated"`
- *   and `sub`, so Supabase assigns the `authenticated` Postgres role and RLS
+ * - supplies an `accessToken` callback that returns the current Auth0 **ID
+ *   token** on every request. Auth0 strips non-namespaced custom claims from
+ *   access tokens, so the ID token is the one that carries `role =
+ *   "authenticated"` (added by an Auth0 Action) and `sub` — the JWT Supabase
+ *   reads. Supabase then assigns the `authenticated` Postgres role and RLS
  *   reads the caller's Auth0 `sub` via `public.current_user_id()`.
  * - disables GoTrue session persistence, auto-refresh, and URL session
  *   detection. Those features manage Supabase's own tokens; we have none, and
@@ -21,7 +22,7 @@
  *   avoids any storage access on React Native.
  *
  * The callback delegates to the Auth0 SDK's credentials manager (via
- * `getAccessTokenSafe` in src/lib/auth0.ts), which refreshes a stale token
+ * `getIdTokenSafe` in src/lib/auth0.ts), which refreshes a stale token
  * silently and restores a saved session on relaunch. When no valid credentials
  * exist it returns `null`; supabase-js then sends the request without an
  * Authorization header, so RLS returns no rows (requirement 4.4). Tokens are
@@ -35,7 +36,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 import type { Database } from '../types/db';
-import { getAccessTokenSafe } from './auth0';
+import { getIdTokenSafe } from './auth0';
 import { config } from './config';
 
 /**
@@ -43,11 +44,11 @@ import { config } from './config';
  * and RPC calls are checked against the schema in src/types/db.ts.
  */
 export const supabase = createClient<Database>(config.supabaseUrl, config.supabaseAnonKey, {
-  // Send the current Auth0 access token on every request. Returning `null`
+  // Send the current Auth0 ID token on every request. Returning `null`
   // (no valid credentials) makes supabase-js omit the Authorization header, so
   // the request is treated as anonymous and RLS returns nothing.
   accessToken: async () => {
-    return getAccessTokenSafe();
+    return getIdTokenSafe();
   },
   auth: {
     // We do not use Supabase Auth; Auth0 owns identity. Disable all GoTrue

@@ -1,9 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Button, Screen, Text } from '../../src/components/ui';
-import { createProfile } from '../../src/features/auth/api/create-profile';
+import { CreateProfileError, createProfile } from '../../src/features/auth/api/create-profile';
 import { PRIVACY_VERSION, TERMS_VERSION } from '../../src/features/auth/consent';
 import { track } from '../../src/lib/analytics';
 import { submitOnboarding } from '../../src/features/auth/onboarding';
@@ -45,16 +45,28 @@ export default function OnboardingScreen() {
   const theme = useTheme();
   const birthMonth = useOnboardingStore((s) => s.birthMonth);
   const birthYear = useOnboardingStore((s) => s.birthYear);
+  const storedUsername = useOnboardingStore((s) => s.username);
+  const setStoredUsername = useOnboardingStore((s) => s.setUsername);
   const resetOnboarding = useOnboardingStore((s) => s.reset);
   const { block } = useAgeBlock();
   const logout = useLogout();
   const queryClient = useQueryClient();
-  const { isSignedIn } = useSession();
+  const { isSignedIn, login } = useSession();
 
-  const [username, setUsername] = useState(() => generateUsername());
+  // Source the username from the in-memory onboarding store so a transient
+  // remount of this screen (e.g. a brief gate re-route mid-submit) reuses the
+  // same name instead of generating a new one under the user. On first mount
+  // with no stored username, generate one and record it.
+  const [username, setUsername] = useState(() => storedUsername ?? generateUsername());
+  useEffect(() => {
+    if (username !== storedUsername) {
+      setStoredUsername(username);
+    }
+  }, [username, storedUsername, setStoredUsername]);
   const [accepted, setAccepted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showLoginAgainButton, setShowLoginAgainButton] = useState(false);
 
   // The device timezone is derived once; it does not change during onboarding.
   const timezone = useMemo(() => getDeviceTimezone(), []);
@@ -66,6 +78,22 @@ export default function OnboardingScreen() {
     setError(null);
     setUsername(generateUsername());
   }, [busy]);
+
+  const handleReauthenticate = useCallback(async () => {
+    setShowLoginAgainButton(false);
+    setError(null);
+    setBusy(true);
+    try {
+      await login();
+      // After successful re-auth, set busy false to re-enable the continue button
+      setBusy(false);
+    } catch {
+      // If re-auth fails, show the error and let the user try again
+      setError('Could not log in again. Please try again.');
+      setBusy(false);
+      setShowLoginAgainButton(true);
+    }
+  }, [login]);
 
   const onContinue = useCallback(async () => {
     if (busy) {
@@ -82,15 +110,17 @@ export default function OnboardingScreen() {
       return;
     }
 
-    // Early check: if the user is not signed in, show a clear message
+    // Early check: if the user is not signed in, show a clear message with re-auth option
     if (!isSignedIn) {
       setError('Please log in again to continue.');
+      setShowLoginAgainButton(true);
       setBusy(false);
       return;
     }
 
     setBusy(true);
     setError(null);
+    setShowLoginAgainButton(false);
 
     const result = await submitOnboarding(
       {
@@ -132,15 +162,24 @@ export default function OnboardingScreen() {
         setBusy(false);
         return;
       }
-      case 'error':
-      default: {
-        // Check if this is a not_authenticated error
-        const errorMessage = result.error instanceof Error ? result.error.message : '';
-        if (errorMessage.includes('not_authenticated')) {
+      case 'error': {
+        // Check if this is a not_authenticated error using the typed error
+        const createProfileError = result.error as CreateProfileError | undefined;
+        if (createProfileError?.code === 'not_authenticated') {
           setError('Your session has expired. Please log in again.');
+          setShowLoginAgainButton(true);
         } else {
+          // For other errors (like a generic CreateProfileError with an unknown code),
+          // show the generic message and hide the re-auth button (user would need to restart)
           setError('Something went wrong creating your profile. Please try again.');
+          setShowLoginAgainButton(false);
         }
+        setBusy(false);
+        return;
+      }
+      default: {
+        setError('Something went wrong creating your profile. Please try again.');
+        setShowLoginAgainButton(false);
         setBusy(false);
         return;
       }
@@ -218,6 +257,16 @@ export default function OnboardingScreen() {
         <Text variant="body" color="danger" accessibilityRole="alert">
           {error}
         </Text>
+      ) : null}
+
+      {showLoginAgainButton ? (
+        <Button
+          title="Log in again"
+          variant="secondary"
+          loading={busy}
+          onPress={handleReauthenticate}
+          accessibilityLabel="Log in again"
+        />
       ) : null}
 
       <Button

@@ -55,7 +55,15 @@ const optionalDsn = z
 export const configSchema = z.object({
   auth0Domain: nonEmpty('EXPO_PUBLIC_AUTH0_DOMAIN'),
   auth0ClientId: nonEmpty('EXPO_PUBLIC_AUTH0_CLIENT_ID'),
-  auth0Audience: nonEmpty('EXPO_PUBLIC_AUTH0_AUDIENCE'),
+  // The client no longer sends an API audience at login (Supabase consumes the
+  // Auth0 ID token). The field is retained because the server-side Edge
+  // Functions (e.g. delete-account) still reference an audience. We reject the
+  // Auth0 Management API (`/api/v2/`) explicitly: an access token minted for it
+  // is unreadable by Supabase and was the original sign-up failure.
+  auth0Audience: nonEmpty('EXPO_PUBLIC_AUTH0_AUDIENCE').refine(
+    (value) => !/\/api\/v2\/?$/.test(value),
+    { error: 'EXPO_PUBLIC_AUTH0_AUDIENCE must not be the Auth0 Management API (/api/v2/)' },
+  ),
   supabaseUrl: nonEmpty('EXPO_PUBLIC_SUPABASE_URL').url({
     error: 'EXPO_PUBLIC_SUPABASE_URL must be a valid URL',
   }),

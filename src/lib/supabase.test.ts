@@ -5,10 +5,12 @@ jest.mock('@supabase/supabase-js', () => ({
   createClient: (...args: unknown[]) => mockCreateClient(...(args as [])),
 }));
 
-// Mock the standalone token getter from auth0.
-const mockGetAccessTokenSafe = jest.fn();
+// Mock the standalone token getter from auth0. The client sends the Auth0 ID
+// token (not the access token) so Supabase can read the `role: authenticated`
+// claim.
+const mockGetIdTokenSafe = jest.fn();
 jest.mock('./auth0', () => ({
-  getAccessTokenSafe: () => mockGetAccessTokenSafe(),
+  getIdTokenSafe: () => mockGetIdTokenSafe(),
 }));
 
 jest.mock('./config', () => ({
@@ -55,14 +57,14 @@ describe('supabase client', () => {
     expect(options.auth.detectSessionInUrl).toBe(false);
   });
 
-  it('accessToken callback returns the current Auth0 token', async () => {
-    mockGetAccessTokenSafe.mockResolvedValue('access-token-xyz');
+  it('accessToken callback returns the current Auth0 ID token', async () => {
+    mockGetIdTokenSafe.mockResolvedValue('id-token-xyz');
     const options = getOptions();
-    await expect(options.accessToken()).resolves.toBe('access-token-xyz');
+    await expect(options.accessToken()).resolves.toBe('id-token-xyz');
   });
 
   it('accessToken callback returns null when signed out', async () => {
-    mockGetAccessTokenSafe.mockResolvedValue(null);
+    mockGetIdTokenSafe.mockResolvedValue(null);
     const options = getOptions();
     await expect(options.accessToken()).resolves.toBeNull();
   });

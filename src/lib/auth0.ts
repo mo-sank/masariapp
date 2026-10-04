@@ -67,6 +67,29 @@ export async function getAccessTokenSafe(): Promise<string | null> {
 }
 
 /**
+ * Return the current Auth0 ID token for use outside React, or `null` when no
+ * valid session exists (signed out, cleared, or refresh failed).
+ *
+ * This is the token the Supabase client sends on every request: because Auth0
+ * strips non-namespaced custom claims from access tokens, the ID token is the
+ * one that carries the `role: authenticated` claim (added by an Auth0 Action)
+ * plus `sub`, which Supabase reads. Like {@link getAccessTokenSafe} it NEVER
+ * throws: a missing token simply produces an anonymous (unauthenticated)
+ * request. The credentials manager refreshes a stale session silently and
+ * restores a saved session on relaunch. The token is never logged here.
+ */
+export async function getIdTokenSafe(): Promise<string | null> {
+  try {
+    const credentials = await getStandaloneClient().credentialsManager.getCredentials();
+    return credentials?.idToken ?? null;
+  } catch {
+    // No credentials, or a silent refresh failed. Treat as signed out: the
+    // caller sends an anonymous request and RLS returns no rows.
+    return null;
+  }
+}
+
+/**
  * Return the current Auth0 access token for use outside React, throwing if no
  * valid session exists. Use this when you want the caller to handle a missing
  * token explicitly (e.g., redirect to login) rather than send an anonymous
@@ -86,9 +109,10 @@ export async function getAccessToken(): Promise<string> {
 
 /**
  * OAuth scopes requested at login. `offline_access` yields a refresh token so
- * the SDK can refresh silently; `openid profile email` cover identity. The
- * audience ties the issued access token to the Masari API so it carries the
- * claims Supabase RLS reads.
+ * the SDK can refresh silently; `openid profile email` cover identity. No API
+ * audience is requested: Supabase consumes the Auth0 ID token (which carries
+ * the `role: authenticated` custom claim), not an access token minted for an
+ * API audience.
  */
 const LOGIN_SCOPE = 'openid profile email offline_access';
 
@@ -136,10 +160,11 @@ export function useSession(): Session {
   const { user, isLoading, authorize, clearSession, clearCredentials, getCredentials } = useAuth0();
 
   const login = async (): Promise<void> => {
-    // Universal Login. The audience ties the token to the Masari API; the scope
-    // requests a refresh token for silent renewal. The SDK stores the resulting
-    // credentials in its Credentials Manager.
-    await authorize({ scope: LOGIN_SCOPE, audience: config.auth0Audience });
+    // Universal Login. The scope requests a refresh token for silent renewal.
+    // No API audience is passed: Supabase consumes the ID token, so we do not
+    // need an access token minted for a specific API. The SDK stores the
+    // resulting credentials in its Credentials Manager.
+    await authorize({ scope: LOGIN_SCOPE });
   };
 
   const logout = async (): Promise<void> => {
