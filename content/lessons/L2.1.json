@@ -1,0 +1,85 @@
+{
+  "id": "L2.1",
+  "unit": 2,
+  "order": 1,
+  "kind": "lesson",
+  "title": "Charts Tell Stories",
+  "bigIdea": "A chart is a story of price over time, and the time range changes the story.",
+  "estimatedMinutes": 3,
+  "xp": 10,
+  "passScore": 60,
+  "prerequisite": "B1",
+  "concepts": ["charts", "time-range", "trend"],
+  "unlocks": ["chart_time_ranges", "trade_markers"],
+  "steps": [
+    {
+      "id": "hook",
+      "type": "predict",
+      "prompt": "Same stock, two charts: one shows a single day, the other shows five years. Which one is more likely to look scary?",
+      "options": [
+        { "id": "a", "text": "The one-day chart, where small moves look huge" },
+        { "id": "b", "text": "The five-year chart, which hides every move" },
+        { "id": "c", "text": "They always look exactly the same" }
+      ],
+      "correctId": "a",
+      "reveal": "Zoomed into one day, tiny moves fill the whole screen and look dramatic. Zoomed out to five years, the same wiggle barely shows.",
+      "scored": true,
+      "concept": "time-range"
+    },
+    {
+      "id": "learn",
+      "type": "cards",
+      "cards": [
+        {
+          "title": "A line chart",
+          "body": "A line chart connects prices over time. Left is older, right is newer. The line's path is the story.",
+          "emoji": "📉"
+        },
+        {
+          "title": "Time ranges",
+          "body": "You can view one day, one month, one year, or more. Each range answers a different question about the stock.",
+          "emoji": "📅"
+        },
+        {
+          "title": "Zooming out",
+          "body": "Zooming out shows the bigger trend and calms down day-to-day noise. Neither view predicts the future.",
+          "emoji": "🔭"
+        }
+      ]
+    },
+    {
+      "id": "lab",
+      "type": "sort",
+      "prompt": "Match each anonymized chart shape to the headline that most likely goes with it. (Simulation; these are sample stories, not real companies.)",
+      "buckets": [
+        { "id": "steady-climb", "label": "Chart: a long, steady climb" },
+        { "id": "sharp-drop", "label": "Chart: a sudden sharp drop" },
+        { "id": "flat-then-spike", "label": "Chart: flat, then a sharp spike" },
+        { "id": "choppy", "label": "Chart: lots of up-and-down chop" }
+      ],
+      "items": [
+        { "id": "h1", "text": "Company grows sales steadily for years", "bucketId": "steady-climb" },
+        { "id": "h2", "text": "Surprise bad news hits in a single day", "bucketId": "sharp-drop" },
+        { "id": "h3", "text": "Quiet for months, then a sudden breakthrough", "bucketId": "flat-then-spike" },
+        { "id": "h4", "text": "Traders argue back and forth with no clear direction", "bucketId": "choppy" }
+      ],
+      "explanation": "The chart's shape mirrors the story: steady growth climbs, a shock drops sharply, a breakthrough spikes after calm, and uncertainty looks choppy.",
+      "scored": true,
+      "concept": "charts"
+    },
+    {
+      "id": "check",
+      "type": "mcq",
+      "prompt": "A friend says a stock \"looks terrifying\" after seeing only its one-day chart. What is the best advice?",
+      "options": [
+        { "id": "a", "text": "Zoom out to a longer range to see the bigger picture before judging" },
+        { "id": "b", "text": "Trust the one-day chart; it predicts the future" },
+        { "id": "c", "text": "Ignore charts entirely, they never mean anything" }
+      ],
+      "correctId": "a",
+      "explanation": "The time range shapes the story. Zooming out to a longer range gives context that a single day cannot.",
+      "scored": true,
+      "concept": "time-range"
+    }
+  ]
+}

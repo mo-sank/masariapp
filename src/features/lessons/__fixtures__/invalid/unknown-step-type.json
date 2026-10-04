@@ -1,0 +1,21 @@
+{
+  "id": "BAD5",
+  "unit": 1,
+  "order": 1,
+  "kind": "lesson",
+  "title": "Unknown step type",
+  "bigIdea": "A step type must be one of the known step kinds.",
+  "estimatedMinutes": 3,
+  "xp": 10,
+  "passScore": 60,
+  "prerequisite": null,
+  "concepts": ["shares"],
+  "unlocks": [],
+  "steps": [
+    {
+      "id": "s1",
+      "type": "video",
+      "url": "https://example.com/clip.mp4"
+    }
+  ]
+}

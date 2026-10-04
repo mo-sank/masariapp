@@ -1,0 +1,72 @@
+{
+  "id": "L1.4",
+  "unit": 1,
+  "order": 4,
+  "kind": "lesson",
+  "title": "Your First Trade",
+  "bigIdea": "A market order buys at the current price, right now.",
+  "estimatedMinutes": 3,
+  "xp": 15,
+  "passScore": 60,
+  "prerequisite": "L1.3",
+  "concepts": ["market-order", "shares", "rationale"],
+  "unlocks": ["market_buy", "portfolio", "pre_trade_rationale"],
+  "steps": [
+    {
+      "id": "hook",
+      "type": "predict",
+      "prompt": "Ready to make your first move? Nothing real is at risk. When you tap Buy with a market order, when does the trade happen?",
+      "options": [
+        { "id": "a", "text": "Right away, at about the current price" },
+        { "id": "b", "text": "Only if the price drops first" },
+        { "id": "c", "text": "At the end of the week" }
+      ],
+      "correctId": "a",
+      "reveal": "A market order fills right away at roughly the current price. You trade speed for not picking an exact price.",
+      "scored": true,
+      "concept": "market-order"
+    },
+    {
+      "id": "learn",
+      "type": "cards",
+      "cards": [
+        {
+          "title": "What a market order is",
+          "body": "A market order says: buy now, at whatever the going price is. It is the simplest way to buy a share.",
+          "emoji": "🛒"
+        },
+        {
+          "title": "What a share count means",
+          "body": "Buying 3 shares means you own 3 slices. Your cost is roughly 3 times the current price.",
+          "emoji": "🔢"
+        },
+        {
+          "title": "After you tap Buy",
+          "body": "The shares land in your paper portfolio. This is practice money only, so you can learn without any real risk.",
+          "emoji": "🎉"
+        }
+      ]
+    },
+    {
+      "id": "lab",
+      "type": "guided_trade",
+      "symbols": "starter",
+      "requireRationale": true
+    },
+    {
+      "id": "check",
+      "type": "mcq",
+      "variant": "explain",
+      "prompt": "In your own words, what did you just get when your buy went through?",
+      "options": [
+        { "id": "a", "text": "A small ownership stake in that company, held in my paper portfolio" },
+        { "id": "b", "text": "A loan the company now owes me" },
+        { "id": "c", "text": "A guarantee that the price will go up" }
+      ],
+      "correctId": "a",
+      "explanation": "A market buy gave you shares, meaning a small ownership stake. It is not a loan and it is never a guarantee of profit.",
+      "scored": true,
+      "concept": "market-order"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "BAD3",
+  "unit": 1,
+  "order": 1,
+  "kind": "lesson",
+  "title": "mcq correctId does not match any option",
+  "bigIdea": "correctId must reference a declared option.",
+  "estimatedMinutes": 3,
+  "xp": 10,
+  "passScore": 60,
+  "prerequisite": null,
+  "concepts": ["shares"],
+  "unlocks": [],
+  "steps": [
+    {
+      "id": "s1",
+      "type": "mcq",
+      "prompt": "What is a share?",
+      "options": [
+        { "id": "a", "text": "A slice of ownership" },
+        { "id": "b", "text": "A loan" }
+      ],
+      "correctId": "z",
+      "explanation": "A share is a slice of ownership.",
+      "concept": "shares"
+    }
+  ]
+}

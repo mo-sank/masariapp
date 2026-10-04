@@ -1,0 +1,80 @@
+{
+  "id": "L1.1",
+  "unit": 1,
+  "order": 1,
+  "kind": "lesson",
+  "title": "Slice the Pizza",
+  "bigIdea": "A share is a small slice of ownership in a company.",
+  "estimatedMinutes": 3,
+  "xp": 10,
+  "passScore": 60,
+  "prerequisite": "L0",
+  "concepts": ["shares", "ownership", "dilution"],
+  "unlocks": ["explore"],
+  "steps": [
+    {
+      "id": "hook",
+      "type": "predict",
+      "prompt": "You own 1 of 100 slices of a pizza shop. What do you actually own?",
+      "options": [
+        { "id": "a", "text": "1% of the whole shop" },
+        { "id": "b", "text": "One free pizza" },
+        { "id": "c", "text": "Nothing until the shop closes" }
+      ],
+      "correctId": "a",
+      "reveal": "A share is a slice of the whole company, not a product. One slice out of 100 is 1% of the shop.",
+      "scored": true,
+      "concept": "ownership"
+    },
+    {
+      "id": "learn",
+      "type": "cards",
+      "cards": [
+        {
+          "title": "A share is a slice",
+          "body": "A share (also called a stock) is a small piece of ownership in a company. Own one share and you own a tiny part of the whole business.",
+          "emoji": "🍕"
+        },
+        {
+          "title": "Why companies sell shares",
+          "body": "Selling shares is one way a company raises cash to grow, without borrowing. Buyers get ownership; the company gets money.",
+          "emoji": "💰"
+        },
+        {
+          "title": "What the founder gives up",
+          "body": "Every share sold is a slice handed to someone else. The founder ends up owning a smaller percentage of a (hopefully) bigger company.",
+          "emoji": "🤝"
+        }
+      ]
+    },
+    {
+      "id": "lab",
+      "type": "sim",
+      "simId": "ownership_split",
+      "goal": "Raise $400 for a better cart, but keep at least 51% of your lemonade stand. (Simulation.)",
+      "params": {
+        "totalShares": 100,
+        "pricePerShareCents": 2500,
+        "targetRaiseCents": 40000,
+        "minOwnerPct": 51
+      },
+      "scored": true,
+      "concept": "dilution"
+    },
+    {
+      "id": "check",
+      "type": "mcq",
+      "variant": "explain",
+      "prompt": "Why did your ownership percentage drop after you sold shares?",
+      "options": [
+        { "id": "a", "text": "You traded away part of the company in exchange for cash" },
+        { "id": "b", "text": "The price of lemonade went down" },
+        { "id": "c", "text": "You still own 100%, the number just looks smaller" }
+      ],
+      "correctId": "a",
+      "explanation": "Selling shares trades ownership for cash. Giving up slices means you own a smaller percentage. That trade-off is called dilution.",
+      "scored": true,
+      "concept": "dilution"
+    }
+  ]
+}

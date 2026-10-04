@@ -1,0 +1,152 @@
+{
+  "id": "B1",
+  "unit": 1,
+  "order": 6,
+  "kind": "boss",
+  "title": "Opening Bell Boss",
+  "bigIdea": "Put Unit 1 together: ownership, prices, stock cards, and trades in one trading day.",
+  "estimatedMinutes": 5,
+  "xp": 30,
+  "passScore": 70,
+  "prerequisite": "L1.5",
+  "concepts": ["shares", "supply-demand", "market-order", "realized-unrealized", "news-reaction"],
+  "unlocks": ["daily_briefing", "rank_rookie"],
+  "steps": [
+    {
+      "id": "intro",
+      "type": "cards",
+      "cards": [
+        {
+          "title": "Boss battle",
+          "body": "This brings Unit 1 together. Answer a quick gauntlet, then trade through a fictional opening bell. Beat it to earn the Rookie rank.",
+          "emoji": "🔔"
+        }
+      ]
+    },
+    {
+      "id": "g1",
+      "type": "mcq",
+      "prompt": "A share of a company gives you what?",
+      "options": [
+        { "id": "a", "text": "A small slice of ownership in that company" },
+        { "id": "b", "text": "A promise of a fixed monthly payment" },
+        { "id": "c", "text": "A discount on the company's products" }
+      ],
+      "correctId": "a",
+      "explanation": "A share is a slice of ownership, not a loan or a coupon.",
+      "scored": true,
+      "concept": "shares"
+    },
+    {
+      "id": "g2",
+      "type": "truefalse",
+      "prompt": "When many more buyers than sellers want in, the price tends to rise.",
+      "answer": true,
+      "explanation": "More demand than supply pushes buyers to compete, which lifts the price.",
+      "scored": true,
+      "concept": "supply-demand"
+    },
+    {
+      "id": "g3",
+      "type": "mcq",
+      "prompt": "You place a market order to buy. What should you expect?",
+      "options": [
+        { "id": "a", "text": "It fills right away at about the current price" },
+        { "id": "b", "text": "It fills only if the price falls to your target" },
+        { "id": "c", "text": "It never fills on a busy day" }
+      ],
+      "correctId": "a",
+      "explanation": "A market order trades now at roughly the current price.",
+      "scored": true,
+      "concept": "market-order"
+    },
+    {
+      "id": "g4",
+      "type": "truefalse",
+      "prompt": "A gain on a stock you still hold is realized profit you can spend.",
+      "answer": false,
+      "explanation": "A gain you have not sold is unrealized. It becomes realized only when you sell.",
+      "scored": true,
+      "concept": "realized-unrealized"
+    },
+    {
+      "id": "lab",
+      "type": "sim",
+      "simId": "opening_bell",
+      "goal": "Trade a 90-second fictional day. Read each headline, pick the best interpretation, then make a practice move. (Simulation.)",
+      "params": {
+        "symbol": "ACME",
+        "durationSeconds": 90,
+        "events": [
+          {
+            "id": "e1",
+            "headline": "ACME reports record sales, far above what analysts expected.",
+            "interpretations": [
+              { "id": "a", "text": "A big positive surprise that could lift the price" },
+              { "id": "b", "text": "Bad news, because sales should always be higher" }
+            ],
+            "correctInterpretationId": "a",
+            "explanation": "Beating expectations by a lot is a positive surprise, which often pushes a price up."
+          },
+          {
+            "id": "e2",
+            "headline": "ACME warns next quarter may be slower than it had guided.",
+            "interpretations": [
+              { "id": "a", "text": "A warning about the future that could weigh on the price" },
+              { "id": "b", "text": "Great news that guarantees the price rises" }
+            ],
+            "correctInterpretationId": "a",
+            "explanation": "A warning about weaker results ahead is a negative signal, even after a good day."
+          },
+          {
+            "id": "e3",
+            "headline": "A rival launches a copycat product at a lower price.",
+            "interpretations": [
+              { "id": "a", "text": "New competition that could pressure ACME" },
+              { "id": "b", "text": "Proof ACME has no competitors" }
+            ],
+            "correctInterpretationId": "a",
+            "explanation": "A cheaper rival product is competition that can pressure sales and the price."
+          },
+          {
+            "id": "e4",
+            "headline": "ACME's results met expectations exactly, with no surprises.",
+            "interpretations": [
+              { "id": "a", "text": "Roughly in line, so a small or quiet reaction is likely" },
+              { "id": "b", "text": "A huge surprise that will swing the price hard" }
+            ],
+            "correctInterpretationId": "a",
+            "explanation": "Prices react to surprises. Meeting expectations exactly usually brings a muted move."
+          },
+          {
+            "id": "e5",
+            "headline": "A rumor spreads online with no source or evidence.",
+            "interpretations": [
+              { "id": "a", "text": "An unverified rumor to treat with caution" },
+              { "id": "b", "text": "A confirmed fact to act on immediately" }
+            ],
+            "correctInterpretationId": "a",
+            "explanation": "An unsourced rumor is not confirmed news. Caution beats rushing to trade on it."
+          }
+        ]
+      },
+      "scored": true,
+      "concept": "news-reaction"
+    },
+    {
+      "id": "check",
+      "type": "mcq",
+      "variant": "explain",
+      "prompt": "Pick the best explanation of why a company's price can fall even after good news.",
+      "options": [
+        { "id": "a", "text": "The good news was still weaker than what people already expected" },
+        { "id": "b", "text": "Good news always makes prices fall" },
+        { "id": "c", "text": "Prices move completely at random and never follow news" }
+      ],
+      "correctId": "a",
+      "explanation": "Prices move on surprises versus expectations. If results are good but below what the crowd expected, the price can still drop.",
+      "scored": true,
+      "concept": "news-reaction"
+    }
+  ]
+}

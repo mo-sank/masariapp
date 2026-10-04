@@ -1,0 +1,159 @@
+{
+  "id": "L0",
+  "unit": 0,
+  "order": 0,
+  "kind": "placement",
+  "title": "Placement Quest",
+  "bigIdea": "A quick check-in so we know where to start you. There is no pass or fail.",
+  "estimatedMinutes": 4,
+  "xp": 0,
+  "passScore": 0,
+  "prerequisite": null,
+  "concepts": ["money-basics", "stock-basics", "risk"],
+  "unlocks": ["paper_account"],
+  "steps": [
+    {
+      "id": "intro",
+      "type": "cards",
+      "cards": [
+        {
+          "title": "Show us what you know",
+          "body": "This is a quick check-in, not a test. Answer however you like. We will use it to pick the best place for you to start.",
+          "emoji": "🧭"
+        },
+        {
+          "title": "No pass or fail",
+          "body": "Nothing here is graded and no answers are marked right or wrong. Just go with your gut and keep moving.",
+          "emoji": "😌"
+        }
+      ]
+    },
+    {
+      "id": "q1",
+      "type": "mcq",
+      "prompt": "You put $100 in a savings account that earns interest. What does \"interest\" mean here?",
+      "options": [
+        { "id": "a", "text": "Extra money the bank pays you for keeping your money there" },
+        { "id": "b", "text": "A fee you pay the bank each month" },
+        { "id": "c", "text": "The chance your money disappears" }
+      ],
+      "correctId": "a",
+      "explanation": "Interest is money a bank pays you for holding your deposit.",
+      "scored": true,
+      "concept": "money-basics"
+    },
+    {
+      "id": "q2",
+      "type": "mcq",
+      "prompt": "A budget is a plan for your money. What is it mostly used for?",
+      "options": [
+        { "id": "a", "text": "Deciding how much to spend and save ahead of time" },
+        { "id": "b", "text": "Guaranteeing you never lose money" },
+        { "id": "c", "text": "Making your money grow by itself" }
+      ],
+      "correctId": "a",
+      "explanation": "A budget plans your spending and saving before the money is spent.",
+      "scored": true,
+      "concept": "money-basics"
+    },
+    {
+      "id": "q3",
+      "type": "truefalse",
+      "prompt": "Inflation means that, over time, the same amount of money usually buys a little less.",
+      "answer": true,
+      "explanation": "Inflation is the slow rise in prices, so a dollar buys less over time.",
+      "scored": true,
+      "concept": "money-basics"
+    },
+    {
+      "id": "q4",
+      "type": "mcq",
+      "prompt": "What is a \"share\" of a company?",
+      "options": [
+        { "id": "a", "text": "A small slice of ownership in that company" },
+        { "id": "b", "text": "A loan the company must pay back to you" },
+        { "id": "c", "text": "A coupon for the company's products" }
+      ],
+      "correctId": "a",
+      "explanation": "A share is a small piece of ownership in a company.",
+      "scored": true,
+      "concept": "stock-basics"
+    },
+    {
+      "id": "q5",
+      "type": "mcq",
+      "prompt": "A stock exchange is best described as...",
+      "options": [
+        { "id": "a", "text": "A marketplace where people buy and sell shares" },
+        { "id": "b", "text": "A bank that stores your cash" },
+        { "id": "c", "text": "A government office that prints money" }
+      ],
+      "correctId": "a",
+      "explanation": "A stock exchange is a marketplace for buying and selling shares.",
+      "scored": true,
+      "concept": "stock-basics"
+    },
+    {
+      "id": "q6",
+      "type": "truefalse",
+      "prompt": "If a company's stock price goes up after you buy, your shares are worth more than you paid.",
+      "answer": true,
+      "explanation": "A higher price means each share you own is worth more than your purchase price.",
+      "scored": true,
+      "concept": "stock-basics"
+    },
+    {
+      "id": "q7",
+      "type": "mcq",
+      "prompt": "In investing, what does \"risk\" usually refer to?",
+      "options": [
+        { "id": "a", "text": "The chance that an investment loses value" },
+        { "id": "b", "text": "A promise that you will earn money" },
+        { "id": "c", "text": "The fee charged to open an account" }
+      ],
+      "correctId": "a",
+      "explanation": "Risk is the chance an investment loses value.",
+      "scored": true,
+      "concept": "risk"
+    },
+    {
+      "id": "q8",
+      "type": "mcq",
+      "prompt": "Why do people spread money across several investments instead of just one? (This idea is called diversification.)",
+      "options": [
+        { "id": "a", "text": "So one bad investment hurts them less" },
+        { "id": "b", "text": "Because it guarantees a profit" },
+        { "id": "c", "text": "Because the law requires it" }
+      ],
+      "correctId": "a",
+      "explanation": "Spreading money out (diversification) softens the blow if one investment drops.",
+      "scored": true,
+      "concept": "risk"
+    },
+    {
+      "id": "q9",
+      "type": "truefalse",
+      "prompt": "An investment that could earn a lot usually comes with a higher chance of losing money too.",
+      "answer": true,
+      "explanation": "Higher possible reward almost always comes with higher risk.",
+      "scored": true,
+      "concept": "risk"
+    },
+    {
+      "id": "q10",
+      "type": "sort",
+      "prompt": "Sort each item into where it belongs.",
+      "buckets": [
+        { "id": "safer", "label": "Usually lower risk" },
+        { "id": "riskier", "label": "Usually higher risk" }
+      ],
+      "items": [
+        { "id": "i1", "text": "Cash in an insured savings account", "bucketId": "safer" },
+        { "id": "i2", "text": "A single new company's stock", "bucketId": "riskier" }
+      ],
+      "explanation": "Insured cash savings is usually lower risk; a single new company's stock is usually higher risk.",
+      "scored": true,
+      "concept": "risk"
+    }
+  ]
+}

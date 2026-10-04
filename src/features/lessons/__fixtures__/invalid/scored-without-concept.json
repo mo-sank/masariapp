@@ -1,0 +1,24 @@
+{
+  "id": "BAD1",
+  "unit": 1,
+  "order": 1,
+  "kind": "lesson",
+  "title": "Scored item missing a concept tag",
+  "bigIdea": "Requirement 1.3: every scored item must carry a concept tag.",
+  "estimatedMinutes": 3,
+  "xp": 10,
+  "passScore": 60,
+  "prerequisite": null,
+  "concepts": ["shares"],
+  "unlocks": [],
+  "steps": [
+    {
+      "id": "s1",
+      "type": "truefalse",
+      "prompt": "A share is a slice of ownership.",
+      "answer": true,
+      "explanation": "Yes.",
+      "scored": true
+    }
+  ]
+}

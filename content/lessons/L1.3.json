@@ -1,0 +1,79 @@
+{
+  "id": "L1.3",
+  "unit": 1,
+  "order": 3,
+  "kind": "lesson",
+  "title": "Anatomy of a Stock Card",
+  "bigIdea": "Every number on a stock card tells you something.",
+  "estimatedMinutes": 3,
+  "xp": 10,
+  "passScore": 60,
+  "prerequisite": "L1.2",
+  "concepts": ["stock-card", "price-change", "volume"],
+  "unlocks": ["stock_detail"],
+  "steps": [
+    {
+      "id": "hook",
+      "type": "predict",
+      "prompt": "Here is a stock card for a sample company. The price shows a small green arrow and \"+3%\". What is the green most likely telling you?",
+      "options": [
+        { "id": "a", "text": "The price is up today" },
+        { "id": "b", "text": "The company is safe to buy" },
+        { "id": "c", "text": "The company paid a dividend" }
+      ],
+      "correctId": "a",
+      "reveal": "Green with an up arrow almost always means the price rose today. It is about movement, not whether something is a good buy.",
+      "scored": true,
+      "concept": "price-change"
+    },
+    {
+      "id": "learn",
+      "type": "cards",
+      "cards": [
+        {
+          "title": "Ticker and price",
+          "body": "The ticker is a short code for the company (like a nickname). The price is what one share last traded for. Quotes shown here are delayed.",
+          "emoji": "🏷️"
+        },
+        {
+          "title": "Daily change",
+          "body": "The change shows how much the price moved today, in dollars and percent. Green is up, red is down.",
+          "emoji": "📈"
+        },
+        {
+          "title": "Volume and previous close",
+          "body": "Volume is how many shares traded today. Previous close is yesterday's final price, the starting line for today's change.",
+          "emoji": "📊"
+        }
+      ]
+    },
+    {
+      "id": "lab",
+      "type": "match",
+      "prompt": "Match each part of a stock card to what it tells you.",
+      "pairs": [
+        { "id": "p1", "left": "Ticker", "right": "A short code that names the company" },
+        { "id": "p2", "left": "Daily change", "right": "How far the price moved today" },
+        { "id": "p3", "left": "Volume", "right": "How many shares traded today" },
+        { "id": "p4", "left": "Previous close", "right": "Yesterday's final price" }
+      ],
+      "explanation": "Each field has one job: the ticker names it, the change shows today's move, volume counts shares traded, and previous close is the day's starting point.",
+      "scored": true,
+      "concept": "stock-card"
+    },
+    {
+      "id": "check",
+      "type": "mcq",
+      "prompt": "A card shows the price is up 3%. What does that mean for someone who bought exactly one day ago?",
+      "options": [
+        { "id": "a", "text": "Their share is now worth about 3% more than yesterday's close" },
+        { "id": "b", "text": "They earned a 3% cash payment" },
+        { "id": "c", "text": "They now own 3% more shares" }
+      ],
+      "correctId": "a",
+      "explanation": "A 3% rise means each share is worth about 3% more than the previous close. It is a change in value, not cash or extra shares.",
+      "scored": true,
+      "concept": "price-change"
+    }
+  ]
+}

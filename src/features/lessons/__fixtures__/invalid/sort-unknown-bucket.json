@@ -1,0 +1,28 @@
+{
+  "id": "BAD4",
+  "unit": 1,
+  "order": 1,
+  "kind": "lesson",
+  "title": "sort item references an unknown bucket",
+  "bigIdea": "Every sort item bucketId must reference a declared bucket.",
+  "estimatedMinutes": 3,
+  "xp": 10,
+  "passScore": 60,
+  "prerequisite": null,
+  "concepts": ["money basics"],
+  "unlocks": [],
+  "steps": [
+    {
+      "id": "s1",
+      "type": "sort",
+      "prompt": "Sort each item.",
+      "buckets": [
+        { "id": "save", "label": "Saving" },
+        { "id": "spend", "label": "Spending" }
+      ],
+      "items": [{ "id": "i1", "text": "Putting $5 in a jar", "bucketId": "invest" }],
+      "explanation": "Saving stores value.",
+      "concept": "money basics"
+    }
+  ]
+}

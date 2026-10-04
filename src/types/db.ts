@@ -91,6 +91,117 @@ export type Database = {
           },
         ];
       };
+      lesson_progress: {
+        Row: {
+          attempts: number;
+          best_score: number | null;
+          completed_at: string | null;
+          first_try_score: number | null;
+          lesson_id: string;
+          status: string;
+          updated_at: string;
+          user_id: string;
+          xp_awarded: number;
+        };
+        Insert: {
+          attempts?: number;
+          best_score?: number | null;
+          completed_at?: string | null;
+          first_try_score?: number | null;
+          lesson_id: string;
+          status: string;
+          updated_at?: string;
+          user_id: string;
+          xp_awarded?: number;
+        };
+        Update: {
+          attempts?: number;
+          best_score?: number | null;
+          completed_at?: string | null;
+          first_try_score?: number | null;
+          lesson_id?: string;
+          status?: string;
+          updated_at?: string;
+          user_id?: string;
+          xp_awarded?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'lesson_progress_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['user_id'];
+          },
+        ];
+      };
+      user_unlocks: {
+        Row: {
+          feature_key: string;
+          source_lesson_id: string | null;
+          unlocked_at: string;
+          user_id: string;
+        };
+        Insert: {
+          feature_key: string;
+          source_lesson_id?: string | null;
+          unlocked_at?: string;
+          user_id: string;
+        };
+        Update: {
+          feature_key?: string;
+          source_lesson_id?: string | null;
+          unlocked_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_unlocks_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['user_id'];
+          },
+        ];
+      };
+      rewind_items: {
+        Row: {
+          box: number;
+          due_at: string;
+          id: string;
+          item_id: string;
+          last_seen_at: string | null;
+          lesson_id: string;
+          user_id: string;
+        };
+        Insert: {
+          box?: number;
+          due_at?: string;
+          id?: string;
+          item_id: string;
+          last_seen_at?: string | null;
+          lesson_id: string;
+          user_id: string;
+        };
+        Update: {
+          box?: number;
+          due_at?: string;
+          id?: string;
+          item_id?: string;
+          last_seen_at?: string | null;
+          lesson_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'rewind_items_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['user_id'];
+          },
+        ];
+      };
       instruments: {
         Row: {
           is_active: boolean;
@@ -240,6 +351,44 @@ export type Database = {
           p_events: Json;
         };
         Returns: number;
+      };
+      complete_lesson: {
+        Args: {
+          p_lesson_id: string;
+          p_score: number;
+          p_duration_ms: number;
+          p_answers: Json;
+        };
+        Returns: Json;
+      };
+      submit_assessment: {
+        Args: {
+          p_lesson_id: string;
+          p_form: string;
+          p_item_results: Json;
+        };
+        Returns: {
+          id: string;
+          user_id: string;
+          lesson_id: string;
+          form: string;
+          score_pct: number;
+          item_results: Json;
+          taken_at: string;
+        };
+      };
+      save_rewind_items: {
+        Args: {
+          p_items: Json;
+        };
+        Returns: number;
+      };
+      review_rewind_item: {
+        Args: {
+          p_item_id: string;
+          p_correct: boolean;
+        };
+        Returns: Database['public']['Tables']['rewind_items']['Row'];
       };
     };
     Enums: {

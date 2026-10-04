@@ -1,0 +1,255 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1. Content schema and validation": [
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791138436984
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791138445097
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791138934771
+      }
+    ],
+    "2. Database for learning": [
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791138437012
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791138939236
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791139534485
+      }
+    ],
+    "3. Catalog sync script": [
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791138437037
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791139539072
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791139802546
+      }
+    ],
+    "4. Content loader and session store": [
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791138437066
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791139807037
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791140083050
+      }
+    ],
+    "5. Lesson player shell": [
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791138437088
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791140087594
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791140960522
+      }
+    ],
+    "6. Core step components": [
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791138437111
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791140965111
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791141646295
+      }
+    ],
+    "7. Interactive step components": [
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791138437136
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791141650896
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791143827195
+      }
+    ],
+    "8. Sim framework and first two labs": [
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791138437162
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791143832060
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791145137227
+      }
+    ],
+    "9. Remaining labs": [
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791138437192
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791145142621
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791145690387
+      }
+    ],
+    "10. Learning path screen": [
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791138437211
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791145695165
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791146347676
+      }
+    ],
+    "11. Completion flow and offline queue": [
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791138437232
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791146352421
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791147312681
+      }
+    ],
+    "12. Placement Quest (L0)": [
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791138437253
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791147317757
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791147915973
+      }
+    ],
+    "13. Rewind queue": [
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791138437271
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791147921415
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791148781226
+      }
+    ],
+    "14. Author lesson content": [
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791138437290
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791148787307
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791149111451
+      }
+    ],
+    "15. Checkpoint": [
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791138437311
+      },
+      {
+        "executionId": "42d1df3b-4988-4c92-94d6-cbf469e95df4",
+        "chatSessionId": "sess_0d92d4a9-65b7-49ad-a0cf-e41c58e8a4a5",
+        "timestamp": 1791149119178
+      }
+    ]
+  }
+}

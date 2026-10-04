@@ -1,0 +1,102 @@
+{
+  "id": "L1.2",
+  "unit": 1,
+  "order": 2,
+  "kind": "lesson",
+  "title": "The Auction Room",
+  "bigIdea": "Prices move when buyers and sellers disagree.",
+  "estimatedMinutes": 3,
+  "xp": 10,
+  "passScore": 60,
+  "prerequisite": "L1.1",
+  "concepts": ["supply-demand", "price-discovery"],
+  "unlocks": ["watchlist", "price_tickers"],
+  "steps": [
+    {
+      "id": "hook",
+      "type": "predict",
+      "prompt": "A rare trading card goes up for auction. Suddenly a crowd of new buyers shows up. What happens to the price?",
+      "options": [
+        { "id": "a", "text": "It rises as buyers compete" },
+        { "id": "b", "text": "It falls because there is more interest" },
+        { "id": "c", "text": "It stays the same no matter what" }
+      ],
+      "correctId": "a",
+      "reveal": "More buyers chasing the same item means they bid against each other, so the price rises. That is demand at work.",
+      "scored": true,
+      "concept": "supply-demand"
+    },
+    {
+      "id": "learn",
+      "type": "cards",
+      "cards": [
+        {
+          "title": "Supply and demand",
+          "body": "Demand is how many people want to buy. Supply is how many want to sell. Price is where the two meet.",
+          "emoji": "⚖️"
+        },
+        {
+          "title": "Bid and ask",
+          "body": "A bid is the highest price a buyer will pay. An ask is the lowest price a seller will accept. A trade happens when they agree.",
+          "emoji": "🙋"
+        },
+        {
+          "title": "News shifts the crowd",
+          "body": "Good news can pull in buyers and push the price up. Bad news can send sellers rushing and push it down.",
+          "emoji": "📰"
+        }
+      ]
+    },
+    {
+      "id": "lab",
+      "type": "sim",
+      "simId": "auction",
+      "goal": "Play headline cards, predict which way the price moves each round, and watch the crowd react. (Simulation.)",
+      "params": {
+        "startPriceCents": 5000,
+        "baseDemand": 10,
+        "baseSupply": 10,
+        "sensitivity": 0.2,
+        "noise": 0.01,
+        "rounds": 3,
+        "headlines": [
+          {
+            "id": "h-good",
+            "text": "Surprise award: the item is rarer than anyone thought.",
+            "demandDelta": 8,
+            "supplyDelta": -2
+          },
+          {
+            "id": "h-bad",
+            "text": "A near-identical copy turns up, so sellers rush to list.",
+            "demandDelta": -3,
+            "supplyDelta": 8
+          },
+          {
+            "id": "h-neutral",
+            "text": "Quiet day: a few more buyers, a few more sellers.",
+            "demandDelta": 2,
+            "supplyDelta": 2
+          }
+        ]
+      },
+      "scored": true,
+      "concept": "price-discovery"
+    },
+    {
+      "id": "check",
+      "type": "mcq",
+      "variant": "explain",
+      "prompt": "The price just jumped. Which explanation fits best?",
+      "options": [
+        { "id": "a", "text": "More buyers wanted in than sellers wanted out, so bids pushed the price up" },
+        { "id": "b", "text": "The company printed more shares overnight" },
+        { "id": "c", "text": "Prices always go up on their own over time" }
+      ],
+      "correctId": "a",
+      "explanation": "When demand outweighs supply, buyers compete and the price rises. Price discovery is just buyers and sellers settling on a number.",
+      "scored": true,
+      "concept": "price-discovery"
+    }
+  ]
+}

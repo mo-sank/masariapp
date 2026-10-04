@@ -1,0 +1,59 @@
+{
+  "id": "L0",
+  "unit": 0,
+  "order": 0,
+  "kind": "placement",
+  "title": "Where Are You Starting?",
+  "bigIdea": "A quick check-in so the path fits you.",
+  "estimatedMinutes": 3,
+  "xp": 0,
+  "passScore": 0,
+  "prerequisite": null,
+  "concepts": ["money basics", "stock basics", "risk"],
+  "unlocks": [],
+  "steps": [
+    {
+      "id": "q1",
+      "type": "truefalse",
+      "prompt": "Saving means spending money as soon as you get it.",
+      "answer": false,
+      "explanation": "Saving is setting money aside for later.",
+      "scored": true,
+      "concept": "money basics"
+    },
+    {
+      "id": "q2",
+      "type": "sort",
+      "prompt": "Sort each item into saving or spending.",
+      "buckets": [
+        { "id": "save", "label": "Saving" },
+        { "id": "spend", "label": "Spending" }
+      ],
+      "items": [
+        { "id": "i1", "text": "Putting $5 in a jar", "bucketId": "save" },
+        { "id": "i2", "text": "Buying a snack", "bucketId": "spend" }
+      ],
+      "explanation": "Saving stores value; spending exchanges it now.",
+      "scored": true,
+      "concept": "money basics"
+    },
+    {
+      "id": "q3",
+      "type": "match",
+      "prompt": "Match each term with its meaning.",
+      "pairs": [
+        { "id": "p1", "left": "Share", "right": "A slice of ownership" },
+        { "id": "p2", "left": "Risk", "right": "The chance things go differently than hoped" }
+      ],
+      "explanation": "These are the two ideas we build on.",
+      "scored": true,
+      "concept": "stock basics"
+    },
+    {
+      "id": "q4",
+      "type": "guided_trade",
+      "symbols": "starter",
+      "requireRationale": true
+    }
+  ]
+}

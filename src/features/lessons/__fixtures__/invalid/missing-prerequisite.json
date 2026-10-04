@@ -1,0 +1,21 @@
+{
+  "id": "BAD6",
+  "unit": 2,
+  "order": 1,
+  "kind": "lesson",
+  "title": "Prerequisite that does not exist",
+  "bigIdea": "A prerequisite must reference a real lesson id (cross-file rule).",
+  "estimatedMinutes": 3,
+  "xp": 10,
+  "passScore": 60,
+  "prerequisite": "DOES_NOT_EXIST",
+  "concepts": ["shares"],
+  "unlocks": [],
+  "steps": [
+    {
+      "id": "s1",
+      "type": "cards",
+      "cards": [{ "body": "A share is a slice of ownership." }]
+    }
+  ]
+}

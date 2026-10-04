@@ -35,6 +35,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Validate lesson content
+        run: npm run validate:content
+
       - name: Unit tests
         run: npm test -- --ci
 

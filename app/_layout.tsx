@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ErrorBoundary, ToastProvider } from '../src/components/ui';
 import { AuthGate } from '../src/features/auth/auth-gate';
+import { useCompletionQueue } from '../src/features/lessons/hooks/use-completion-queue';
 import { useSessionAnalytics } from '../src/features/progress/use-session-analytics';
 import { AuthProvider } from '../src/lib/auth0';
 import { queryClient } from '../src/lib/query-client';
@@ -35,10 +36,13 @@ initSentry();
  *
  * The AuthGate renders no UI — it only decides routing and manages the splash
  * screen — so it sits next to <Stack />, which renders the actual screens.
- * useSessionAnalytics logs the session_start event once per app session.
+ * useSessionAnalytics logs the session_start event once per app session, and
+ * useCompletionQueue retries any lesson completions queued while offline.
  */
 function RootLayout() {
   useSessionAnalytics();
+  // Retry any lesson completions that were queued offline (requirement 5.5).
+  useCompletionQueue();
 
   return (
     <SafeAreaProvider>

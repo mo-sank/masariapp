@@ -1,0 +1,72 @@
+{
+  "id": "L1.1",
+  "unit": 1,
+  "order": 1,
+  "kind": "lesson",
+  "title": "Slice the Pizza",
+  "bigIdea": "A share is a small slice of ownership in a company.",
+  "estimatedMinutes": 3,
+  "xp": 10,
+  "passScore": 60,
+  "prerequisite": "L0",
+  "concepts": ["shares", "ownership"],
+  "unlocks": ["explore"],
+  "steps": [
+    {
+      "id": "s1",
+      "type": "predict",
+      "prompt": "You own 1 of 100 slices of a pizza shop. What do you own?",
+      "options": [
+        { "id": "a", "text": "1% of the shop" },
+        { "id": "b", "text": "1 pizza" },
+        { "id": "c", "text": "Nothing yet" }
+      ],
+      "correctId": "a",
+      "reveal": "Right: a share is a slice of the whole company, not a product.",
+      "scored": true,
+      "concept": "ownership"
+    },
+    {
+      "id": "s2",
+      "type": "cards",
+      "cards": [
+        {
+          "title": "Companies sell slices",
+          "body": "To raise money, a company can sell small pieces of itself called shares."
+        },
+        {
+          "title": "Owners share the upside",
+          "body": "If the company grows in value, each slice can be worth more."
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "type": "sim",
+      "simId": "ownership_split",
+      "goal": "Raise $400 for a new cart but keep at least 51% of your shop.",
+      "params": {
+        "totalShares": 100,
+        "pricePerShareCents": 2500,
+        "targetRaiseCents": 40000,
+        "minOwnerPct": 51
+      },
+      "scored": true,
+      "concept": "dilution"
+    },
+    {
+      "id": "s4",
+      "type": "mcq",
+      "variant": "explain",
+      "prompt": "Why did your ownership percentage drop after selling shares?",
+      "options": [
+        { "id": "a", "text": "You gave away part of the company in exchange for cash" },
+        { "id": "b", "text": "The price fell" }
+      ],
+      "correctId": "a",
+      "explanation": "Selling shares trades ownership for cash.",
+      "scored": true,
+      "concept": "dilution"
+    }
+  ]
+}

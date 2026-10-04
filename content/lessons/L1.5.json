@@ -1,0 +1,97 @@
+{
+  "id": "L1.5",
+  "unit": 1,
+  "order": 5,
+  "kind": "lesson",
+  "title": "Win, Lose, or Hold",
+  "bigIdea": "Profit and loss are unrealized until you sell.",
+  "estimatedMinutes": 4,
+  "xp": 15,
+  "passScore": 60,
+  "prerequisite": "L1.4",
+  "concepts": ["realized-unrealized", "pnl", "percent-vs-dollar"],
+  "unlocks": ["market_sell", "pnl_display", "trade_history", "post_trade_reflection"],
+  "steps": [
+    {
+      "id": "hook",
+      "type": "predict",
+      "prompt": "Your stock is up $50 on screen, but you have not sold. Did you actually make $50?",
+      "options": [
+        { "id": "a", "text": "Not yet, it is only on paper until I sell" },
+        { "id": "b", "text": "Yes, the $50 is already in my cash" },
+        { "id": "c", "text": "No, gains never count unless the stock doubles" }
+      ],
+      "correctId": "a",
+      "reveal": "A gain you have not sold is unrealized, meaning it is real on paper but can still change. It becomes realized only when you sell.",
+      "scored": true,
+      "concept": "realized-unrealized"
+    },
+    {
+      "id": "learn",
+      "type": "cards",
+      "cards": [
+        {
+          "title": "Realized vs unrealized",
+          "body": "Unrealized profit or loss is the change in value while you still hold. Realized is what you lock in once you sell.",
+          "emoji": "🔒"
+        },
+        {
+          "title": "Percent vs dollars",
+          "body": "A $50 gain sounds big, but on a $5,000 position it is 1%. Percent shows the size of a move relative to what you put in.",
+          "emoji": "➗"
+        },
+        {
+          "title": "Sell or hold is a choice",
+          "body": "Selling locks in today's result. Holding keeps you in for more upside, and more risk. Neither is automatically right.",
+          "emoji": "🤔"
+        }
+      ]
+    },
+    {
+      "id": "lab",
+      "type": "sim",
+      "simId": "pnl_replay",
+      "goal": "Fast-forward a week on your holding, then choose to sell or hold and see your profit or loss. (Simulation.)",
+      "params": {
+        "shares": 10,
+        "buyIndex": 0,
+        "promptIndex": 4,
+        "prices": [5000, 5200, 5100, 5400, 5600, 5300, 5500]
+      },
+      "scored": true,
+      "concept": "pnl"
+    },
+    {
+      "id": "sort",
+      "type": "sort",
+      "prompt": "Sort each statement into realized or unrealized profit and loss.",
+      "buckets": [
+        { "id": "realized", "label": "Realized (you sold)" },
+        { "id": "unrealized", "label": "Unrealized (still holding)" }
+      ],
+      "items": [
+        { "id": "i1", "text": "You sold your shares for $60 more than you paid", "bucketId": "realized" },
+        { "id": "i2", "text": "Your held stock shows a $40 gain on screen", "bucketId": "unrealized" },
+        { "id": "i3", "text": "You sold at a $25 loss to free up cash", "bucketId": "realized" },
+        { "id": "i4", "text": "Your stock dropped $10 but you have not sold", "bucketId": "unrealized" }
+      ],
+      "explanation": "If a trade is closed by selling, the result is realized. If you still hold the shares, any gain or loss is unrealized and can still change.",
+      "scored": true,
+      "concept": "realized-unrealized"
+    },
+    {
+      "id": "check",
+      "type": "mcq",
+      "prompt": "You bought 10 shares at $50 each and sold them all at $56. What is your realized profit?",
+      "options": [
+        { "id": "a", "text": "$60" },
+        { "id": "b", "text": "$6" },
+        { "id": "c", "text": "$560" }
+      ],
+      "correctId": "a",
+      "explanation": "The price rose $6 per share. Across 10 shares that is 10 times $6, which is $60 of realized profit.",
+      "scored": true,
+      "concept": "pnl"
+    }
+  ]
+}
