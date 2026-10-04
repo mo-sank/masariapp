@@ -1,109 +1,186 @@
-# Profile creation error and Auth0 redirect fix
+# Fix: Improve Auth0 session handling in onboarding
 
-The PR addresses two user-reported issues: (1) "something went wrong trying to create your profile" when picking a username during sign-up, and (2) unexpected redirection to Auth0 Universal Login. The fix was not a source code change but verification that the Supabase `create_profile` RPC exists on the remote database and that the Auth0-to-Supabase token bridge is correctly wired. The expected sign-up flow is now: age gate → welcome → Auth0 Universal Login → onboarding → tabs.
+This commit addresses the "something went wrong trying to create your profile" error by implementing two key changes: (1) a new `getAccessToken()` function that throws when credentials are unavailable instead of silently returning `null`, and (2) an `isSignedIn` check in the onboarding screen before attempting profile creation. The Auth0 Universal Login redirect is expected behavior—the app correctly routes unauthenticated users through the welcome screen to Auth0, then back to onboarding.
 
-**Watch for:** The Supabase client uses `getAccessTokenSafe()` which can return `null`. When the Auth0 session is not ready or refresh fails, the client omits the Authorization header and RLS returns no rows, causing `not_authenticated` errors in RPC calls. The `create_profile` RPC requires a valid Auth0 access token to derive the user's `sub` via `public.current_user_id()`.
+**Watch for:** The new `getAccessToken()` function in `src/lib/auth0.ts` throws when credentials are unavailable, which callers must handle. If callers don't catch the error or don't show a recovery path, users could see unhandled exceptions or confusing errors. The `isSignedIn` check in `onboarding.tsx` shows "Please log in again to continue." when the session is missing, but this doesn't re-authenticate the user—after they tap "log in again," the screen must handle the return from Auth0 correctly.
 
 **Verdict**: NEEDS_CHANGES
 
 ## High-level view
 
-The sign-up flow works as documented: unauthenticated users start at the age gate, authenticate via Auth0, then proceed to onboarding where `create_profile` is called. The RPC exists on the remote Supabase database and the token-bridge wiring is correct per tech.md decision: `src/lib/supabase.ts` supplies the Auth0 access token via an `accessToken` callback. However, the current implementation uses `getAccessTokenSafe()` which returns `null` when credentials are unavailable, causing RPC calls to be made anonymously. A profile creation fails with `not_authenticated` if the Auth0 session is not yet ready, if a silent refresh failed, or if the user logged out between opening the app and reaching onboarding.
+The fix introduces `getAccessToken()` in `src/lib/auth0.ts` that throws when the Auth0 access token is unavailable instead of returning `null`. This allows callers to detect a missing session and show a clear error message. The onboarding screen now checks `isSignedIn` before calling `submitOnboarding()` and improves error handling to detect `not_authenticated` errors and show "Your session has expired. Please log in again." However, the screen only shows these messages—it doesn't re-authenticate the user, so after tapping "log in again," the user may end up at the same screen without a valid session. Additionally, the `getAccessToken()` in `useSession` and the standalone module-level `getAccessToken()` are redundant—they call the same underlying SDK method but the module-level one is used by `supabase.ts` while `useSession`'s version is used elsewhere, creating a split API surface.
+
+## Issues (3)
+
+1. **Duplicate `getAccessToken()` implementations** — There are two `getAccessToken()` functions: one in `useSession` hook and one module-level standalone function. They both call the same underlying SDK method, creating redundancy. Code should use one canonical way to get the access token.
+
+2. **No re-authentication flow after `not_authenticated` error** — The onboarding screen detects `not_authenticated` errors and shows "Your session has expired. Please log in again.", but tapping a recovery action isn't implemented. The user has no way to re-authenticate from the error state.
+
+3. **Race condition between Universal Login and onboarding** — After completing Auth0 Universal Login, the `isSignedIn` check and `getAccessToken()` may still fail if the SDK hasn't stored credentials yet. The fix doesn't address this timing issue.
 
 ## `<details><summary>Details</summary>`
 
-### Token availability and profile creation failure
+### New `getAccessToken()` function
 
-The root cause of "something went wrong trying to create your profile" is that `src/lib/supabase.ts` uses `getAccessTokenSafe()` in the `accessToken` callback:
+The standalone `getAccessToken()` function in `src/lib/auth0.ts` is a new addition:
 
 ```ts
-accessToken: async () => {
-  return getAccessTokenSafe();
-},
+export async function getAccessToken(): Promise<string> {
+  const credentials = await getStandaloneClient().credentialsManager.getCredentials();
+  if (!credentials?.accessToken) {
+    throw new Error('No Auth0 access token available');
+  }
+  return credentials.accessToken;
+}
 ```
 
-`getAccessTokenSafe()` catches all errors and returns `null` when no credentials exist or a silent refresh fails. When it returns `null`, supabase-js omits the Authorization header, so Supabase treats the request as anonymous. RLS on the `profiles` table (and all user-owned tables) returns zero rows for anonymous sessions, and the `create_profile` RPC reads `public.current_user_id()` which returns `null` when `auth.jwt()` yields no claims. The RPC then raises `not_authenticated`.
+It reads credentials from the SDK's native Credentials Manager (iOS Keychain / Android EncryptedCredentials) and throws if no access token exists. This is the expected behavior for callers that need a valid session and want to surface the lack of credentials explicitly.
 
-This manifests as a generic error when the Auth0 session is not yet established (e.g., the user just completed Universal Login but the SDK hasn't stored credentials yet), when a silent refresh failed, or when the user logs out between opening the app and reaching onboarding. The screen shows "Something went wrong creating your profile. Please try again" without distinguishing a transient auth state from a permanent error.
+The existing `getAccessTokenSafe()` function remains unchanged and is still used by `src/lib/supabase.ts`:
 
-### Confirmed patterns
+```ts
+export async function getAccessTokenSafe(): Promise<string | null> {
+  try {
+    const credentials = await getStandaloneClient().credentialsManager.getCredentials();
+    return credentials?.accessToken ?? null;
+  } catch {
+    return null;
+  }
+}
+```
 
-**Confirmed**: The `create_profile` RPC exists on the remote database and is properly wired. Migrations are applied, and the function grants execute to `authenticated`. This part of the fix is correct.
+This is correct for the Supabase client's `accessToken` callback, which should silently fall back to an anonymous request (RLS returns nothing) rather than crash. However, the Supabase client should not be calling `create_profile` when the session is missing—the onboarding screen should prevent that.
 
-**Confirmed**: The token-bridge decision (use Auth0 access token, not ID token) is correctly implemented per tech.md. The callback returns the access token via `getAccessTokenSafe()`.
+### Onboarding screen changes
 
-**Confirmed**: The onboarding screen catches `CreateProfileError` with typed codes (`not_authenticated`, `under_min_age`, `invalid_username`, `username_taken`) and branches appropriately. The `error` case shows the generic retryable message.
+The onboarding screen now has an early `isSignedIn` check before profile creation:
 
-**Confirmed**: `submitOnboarding` retries once with a fresh username on `username_taken`. This matches requirement 5.5.
+```tsx
+// Early check: if the user is not signed in, show a clear message
+if (!isSignedIn) {
+  setError('Please log in again to continue.');
+  setBusy(false);
+  return;
+}
+```
 
-**Confirmed**: The onboarding screen guards against missing birth month/year and shows a friendly message. However, this is unrelated to the `not_authenticated` error.
+If `isSignedIn` is false, the user sees "Please log in again to continue." This is helpful, but it doesn't actually log the user in again. The user has no way to trigger re-authentication from this error state.
 
-### Issues that need fixing
+The `onContinue` callback also improved error handling:
 
-1. **Auth0 session race in `getAccessTokenSafe`** — confirmed. `getAccessTokenSafe()` catches errors and returns `null` when credentials are unavailable. The Supabase client's `accessToken` callback passes this `null` to supabase-js, which omits the Authorization header. The `create_profile` RPC then raises `not_authenticated`.
+```tsx
+case 'error':
+default: {
+  // Check if this is a not_authenticated error
+  const errorMessage = result.error instanceof Error ? result.error.message : '';
+  if (errorMessage.includes('not_authenticated')) {
+    setError('Your session has expired. Please log in again.');
+  } else {
+    setError('Something went wrong creating your profile. Please try again.');
+  }
+  setBusy(false);
+  return;
+}
+```
 
-2. **No fallback if Auth0 session is unavailable** — confirmed. There is no mechanism to refresh the session before attempting `create_profile`. If the user completes Universal Login but the SDK hasn't stored credentials yet (race condition), the RPC fails with `not_authenticated`.
+This checks the error message for `not_authenticated` and shows a clearer message. However, `errorMessage.includes('not_authenticated')` is fragile—the error might be wrapped (e.g., `Error: No Auth0 access token available`), or the underlying RPC might raise a different message. A more robust approach would check `instanceof CreateProfileError` and inspect `code === 'not_authenticated'`.
 
-3. **Silent refresh failures propagate as anonymous requests** — likely. If the SDK's silent refresh fails (network issue, expired refresh token), `getAccessTokenSafe()` returns `null`. The RPC call proceeds anonymously and fails with `not_authenticated`. The user sees a generic error without a path to recover.
+The `submitOnboarding` function in `src/features/auth/onboarding.ts` returns `{ kind: 'error'; error: unknown }` for any failure that isn't explicitly `under_min_age` or `username_taken`. The onboarding screen receives this and tries to extract `not_authenticated` from the error message, but it doesn't handle the `CreateProfileError` case that `createProfile` actually throws.
 
-4. **Logout between auth and onboarding** — possible. If the user logs out after completing Universal Login but before reaching onboarding, `getAccessTokenSafe()` returns `null`. The RPC fails with `not_authenticated`. The screen shows a generic error without re-authenticating.
+### `createProfile` function
+
+The `createProfile` function in `src/features/auth/api/create-profile.ts` throws a typed `CreateProfileError` when the RPC raises a known code:
+
+```ts
+if (error) {
+  console.log('[createProfile] RPC Error - code:', error.code, 'message:', error.message);
+  const code = mapErrorMessage(error.message);
+  if (code) {
+    throw new CreateProfileError(code);
+  }
+  throw error;
+}
+```
+
+`mapErrorMessage` checks if the error message includes any of the known codes:
+
+```ts
+export function mapErrorMessage(message: string | undefined): CreateProfileErrorCode | undefined {
+  if (!message) {
+    return undefined;
+  }
+  return KNOWN_CODES.find((code) => message.includes(code));
+}
+```
+
+This substring matching works for RPC-raised messages like `RAISE EXCEPTION 'not_authenticated'`, but it's not robust. If Supabase changes the error message format or the RPC uses a different error-raising pattern, the code mapping could break.
+
+### Redundant `getAccessToken` functions
+
+There are two `getAccessToken` functions in the Auth0 wrapper:
+
+1. **Module-level standalone** (`src/lib/auth0.ts`):
+   ```ts
+   export async function getAccessToken(): Promise<string> { ... }
+   ```
+
+2. **Hook's method** (`src/lib/auth0.ts` `useSession`):
+   ```ts
+   const getAccessToken = async (): Promise<string> => {
+     const credentials = await getCredentials();
+     if (!credentials?.accessToken) {
+       throw new Error('No Auth0 access token available');
+     }
+     return credentials.accessToken;
+   };
+   ```
+
+Both call the same underlying SDK method (`credentialsManager.getCredentials()` vs `getCredentials()`), both throw when no token exists, and both are used in different places. The module-level one is used by `supabase.ts` (via `getAccessTokenSafe`, not `getAccessToken`), while the hook's version would be used in components that call `useSession().getAccessToken()`.
+
+This split API surface is unnecessary. There should be one canonical way to get the access token. The hook's version is more React-idiomatic, so the module-level one should either be removed or its purpose clarified (e.g., used only when hooks aren't available).
 
 ### Not tested
 
-**Not tested**: The scenario where `getAccessTokenSafe()` returns `null` (no credentials, silent refresh failed) has not been tested. Unit tests for `createProfile` mock the Supabase client but do not test the case where the access token callback returns `null`.
+**Not tested**: The `isSignedIn` check in onboarding is a new guard, but there's no test verifying that `submitOnboarding` is not called when `isSignedIn` is false. The existing test suite for `onboarding.tsx` likely tests the success, `username_taken`, and `under_min_age` paths, but not the "not signed in" path.
 
-**Not tested**: The onboarding screen's error handling for `not_authenticated` was not verified end-to-end. The test suite does not include a flow test that simulates an Auth0 session that is not yet ready.
+**Not tested**: The improved `not_authenticated` error handling in the `error` case is not tested. Unit tests for `submitOnboarding` cover the typed result kinds (`success`, `under_min_age`, `username_taken`, `error`), but the onboarding screen's interpretation of `result.error` is not covered.
 
-**Not tested**: The race condition where a user completes Universal Login but the SDK hasn't stored credentials before reaching onboarding.
+**Not tested**: The substring matching in `mapErrorMessage` is not tested with edge cases like `undefined` messages, empty strings, or messages that partially match a code (e.g., `"user_not_authenticated_extra"`).
+
+**Not tested**: The race condition where `isSignedIn` is true but `getAccessToken()` would still throw (e.g., SDK hasn't stored credentials yet after Universal Login) is not covered. The check `isSignedIn: user != null` in `useSession` only verifies that the SDK has a `user` object, not that credentials are available.
 
 ### Edge cases not handled
 
-- **No Auth0 session on onboarding load**: If the user is routed to onboarding without a valid Auth0 session (e.g., deep link, app reload mid-flow), `getAccessTokenSafe()` returns `null` and `create_profile` raises `not_authenticated`.
+- **`isSignedIn` true but token unavailable**: The `useSession` hook reports `isSignedIn` based on `user != null`. If the user has completed Universal Login but the SDK hasn't stored credentials yet, `user` might be `null` or the credentials might be unavailable. In that case, `isSignedIn` could be false, but there's also a window where `user` exists but `getCredentials()` would fail (e.g., refresh token expired, network issue during credential storage). The fix doesn't address this timing gap.
 
-- **Silent refresh fails**: If the SDK's silent refresh fails (expired refresh token, network error), `getAccessTokenSafe()` returns `null` and subsequent RPCs fail anonymously.
+- **Error message format changes**: The `mapErrorMessage` function uses `message.includes(code)` to match RPC-raised errors. If Supabase changes the error message format or the RPC uses a different exception pattern, the code mapping could break. A more robust approach would be to parse the error code from the RPC's JSON response or use a stricter pattern.
 
-- **Logout between auth and onboarding**: If the user logs out after completing Universal Login but before reaching onboarding, `getAccessTokenSafe()` returns `null`.
+- **Logout mid-onboarding**: If the user logs out after `isSignedIn` is checked but before `submitOnboarding` completes, the `createProfile` call will still happen and fail. The check is a one-time guard, not a persistent session validation.
 
-### Recommendations
+- **Deep links to onboarding**: If the app is launched with a deep link to `/onboarding` and no Auth0 session exists, the `isSignedIn` check will catch it, but the user has no way to trigger re-authentication from the onboarding screen.
 
-1. **Change `src/lib/supabase.ts` to use `getAccessToken()` instead of `getAccessTokenSafe()`** — `getAccessToken()` is already implemented in `useSession` and throws when credentials are unavailable. This would cause the Supabase client to throw before making an RPC call, giving the caller a chance to re-authenticate or show a clear error message. However, this requires updating `src/lib/auth0.ts` to export `getAccessToken` or exposing `useSession()`'s `getAccessToken` for module-level use.
+## Recommendations
 
-2. **Add an Auth0 session check before attempting `create_profile`** — In `src/features/auth/onboarding.ts` or `app/(auth)/onboarding.tsx`, check `useSession().isSignedIn` before calling `submitOnboarding`. If `isSignedIn` is false, redirect to the welcome screen and prompt the user to log in again.
+1. **Unify `getAccessToken` implementations** — Remove the module-level `getAccessToken()` function and use `useSession().getAccessToken()` everywhere. If a caller truly cannot use hooks, introduce a separate "legacy" or "non-React" wrapper with a clear name that signals it's a temporary fallback.
 
-3. **Improve error handling in `onboarding.tsx`** — When `submitOnboarding` returns `{ kind: 'error' }`, inspect the error to see if it's `not_authenticated`. If so, redirect to the welcome screen with a message like "Your session expired. Please log in again." This gives the user a recovery path instead of a generic error.
+2. **Add re-authentication flow** — After detecting `not_authenticated` or `isSignedIn` being false, provide a button that calls `useSession().login()` to re-authenticate the user, then re-attempt profile creation or navigate to the appropriate screen.
 
-4. **Add integration test for token unavailability** — Test the full sign-up flow with a mocked `getAccessTokenSafe()` that returns `null` to verify the error path is handled correctly.
+3. **Improve `not_authenticated` detection** — Instead of `errorMessage.includes('not_authenticated')`, check `if (result.error instanceof CreateProfileError && result.error.code === 'not_authenticated')`. This is more robust and uses the typed error structure that `createProfile` already provides.
 
-## Issues (4)
+4. **Add integration tests for auth flows** — Test the full sign-up flow with scenarios: (a) no Auth0 session on onboarding load, (b) `getAccessToken()` throws, (c) logout during onboarding, (d) silent refresh failure. These should verify the error messages and any re-authentication paths.
 
-1. **Use of `getAccessTokenSafe` causes anonymous RPC calls** — The Supabase client's `accessToken` callback uses `getAccessTokenSafe()` which returns `null` when credentials are unavailable, causing Supabase to treat the request as anonymous and the `create_profile` RPC to raise `not_authenticated`.
-
-2. **No Auth0 session check before profile creation** — There is no mechanism to verify the Auth0 session is ready before calling `create_profile`, so the RPC can be invoked with an unavailable access token.
-
-3. **Silent refresh failures result in generic errors** — If the SDK's silent refresh fails, `getAccessTokenSafe()` returns `null` and subsequent RPCs fail with `not_authenticated`, showing the user a generic retry message.
-
-4. **Logout between auth and onboarding is not handled** — If the user logs out after completing Universal Login but before reaching onboarding, `getAccessTokenSafe()` returns `null` and `create_profile` fails with `not_authenticated`.
-
-</details>
+5. **Add unit tests for `mapErrorMessage`** — Test with `undefined`, empty string, exact matches, partial matches, and case sensitivity. Ensure the function doesn't falsely match codes like `"user_not_authenticated"` when looking for `"not_authenticated"`.
 
 ## File map
 
 <details>
-<summary>Files changed (12 files)</summary>
+<summary>Files changed (3 files)</summary>
 
-- `.gitignore` — Added `coverage/` and `.env.local` to ignore list.
-- `.kiro/.kiro/specs/foundation-auth-data/design.md` — Reformatted from markdown code blocks to plain prose; added correctness properties section.
-- `.kiro/.kiro/specs/foundation-auth-data/requirements.md` — Reformatted; added glossary and updated acceptance criteria.
-- `.kiro/.kiro/specs/foundation-auth-data/tasks.md` — Reformatted; added task dependency graph.
-- `.kiro/.kiro/steering/structure.md` — Minor formatting update.
-- `.kiro/.kiro/steering/tech.md` — Added token-bridge decision notes (use Auth0 access token, not ID token).
-- `App.tsx` — Deleted (placeholder app file replaced by Expo Router entry).
-- `app.json` — Updated to add Expo config plugin for react-native-auth0 and deep link scheme.
-- `index.ts` — Deleted (replaced by Expo Router entry point).
-- `package.json` — Added Expo dependencies (expo-router, expo-dev-client, etc.), Auth0 SDK, Supabase JS, state management libraries; updated scripts.
-- `package-lock.json` — Updated to match new `package.json` dependencies.
-- `tsconfig.json` — Enabled TypeScript strict mode.
+- `src/lib/auth0.ts` — Added `getAccessToken()` function that throws when credentials are unavailable.
+- `app/(auth)/onboarding.tsx` — Added `isSignedIn` check before profile creation and improved error handling for auth-related failures.
+- `src/features/auth/api/create-profile.ts` — No changes to this file in the commit; it was already throwing typed `CreateProfileError` with codes.
 
-Full diff: `git diff main 2>&1`
+Full diff: commit 1894f3368613f788516240a18deb6bc5417cd6db
 
+</details>
 </details>

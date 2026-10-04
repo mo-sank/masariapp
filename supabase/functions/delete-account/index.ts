@@ -1,11 +1,12 @@
 // delete-account Edge Function (requirements 8.3, 8.4, 8.5).
 //
 // Triggered by the app's Settings → Delete account flow with a POST carrying the
-// user's Auth0 access token on the Authorization header. Because the caller
-// presents an AUTH0 token (not a Supabase JWT), Supabase's gateway cannot verify
-// it — so this function is configured with verify_jwt = false (see
-// supabase/config.toml) and verifies the token itself with jose against the
-// Auth0 JWKS. This is the "safe fallback" called out in
+// user's Auth0 ID token on the Authorization header. Because the caller presents
+// an AUTH0 token (not a Supabase JWT), Supabase's gateway cannot verify it — so
+// this function is configured with verify_jwt = false (see supabase/config.toml)
+// and verifies the token itself with jose against the Auth0 JWKS. The app sends
+// the ID token (the same JWT Supabase consumes), so its `aud` is the Auth0
+// client id. This is the "safe fallback" called out in
 // docs/db-and-api-reference.md section 7.
 //
 // Flow:

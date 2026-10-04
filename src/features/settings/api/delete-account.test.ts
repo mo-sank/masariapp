@@ -1,10 +1,12 @@
 // Mock the Auth0 token source and the config singleton so the wrapper can be
 // tested without native modules or a real environment. The module under test
-// reads the current token via `getAccessTokenSafe` and the Supabase URL/anon
-// key from `config`.
-const mockGetAccessTokenSafe = jest.fn();
+// reads the current token via `getIdTokenSafe` and the Supabase URL/anon key
+// from `config`. It sends the Auth0 ID token (the same JWT Supabase consumes),
+// not an access token, so the Edge Function can verify it against the Auth0
+// client id without the app requesting an API audience at login.
+const mockGetIdTokenSafe = jest.fn();
 jest.mock('../../../lib/auth0', () => ({
-  getAccessTokenSafe: () => mockGetAccessTokenSafe(),
+  getIdTokenSafe: () => mockGetIdTokenSafe(),
 }));
 
 jest.mock('../../../lib/config', () => ({
@@ -20,7 +22,7 @@ import { deleteAccount, deleteAccountUrl, DeleteAccountError } from './delete-ac
 const mockFetch = jest.fn();
 
 beforeEach(() => {
-  mockGetAccessTokenSafe.mockReset();
+  mockGetIdTokenSafe.mockReset();
   mockFetch.mockReset();
   globalThis.fetch = mockFetch as unknown as typeof fetch;
 });
@@ -40,8 +42,8 @@ describe('deleteAccountUrl', () => {
 });
 
 describe('deleteAccount', () => {
-  it('POSTs with the bearer token and apikey, and resolves on 204', async () => {
-    mockGetAccessTokenSafe.mockResolvedValue('access-token-xyz');
+  it('POSTs the Auth0 ID token as the bearer token with the apikey, and resolves on 204', async () => {
+    mockGetIdTokenSafe.mockResolvedValue('id-token-xyz');
     mockFetch.mockResolvedValue({ ok: true, status: 204 });
 
     await expect(deleteAccount()).resolves.toBeUndefined();
@@ -50,14 +52,16 @@ describe('deleteAccount', () => {
     const [url, init] = mockFetch.mock.calls[0];
     expect(url).toBe('https://project.supabase.co/functions/v1/delete-account');
     expect(init.method).toBe('POST');
-    expect(init.headers.Authorization).toBe('Bearer access-token-xyz');
+    // The Authorization header carries the Auth0 ID token (what getIdTokenSafe
+    // returns), the same JWT Supabase consumes — not an access token.
+    expect(init.headers.Authorization).toBe('Bearer id-token-xyz');
     expect(init.headers.apikey).toBe('anon-publishable-key');
     // Requirement 8.5: no user id is sent; the function reads it from the token.
     expect(init.body).toBeUndefined();
   });
 
   it('throws a non-retryable not_authenticated error when there is no token', async () => {
-    mockGetAccessTokenSafe.mockResolvedValue(null);
+    mockGetIdTokenSafe.mockResolvedValue(null);
 
     const err = await deleteAccount().catch((e) => e);
     expect(err).toBeInstanceOf(DeleteAccountError);
@@ -68,7 +72,7 @@ describe('deleteAccount', () => {
   });
 
   it('throws a retryable network error when fetch rejects', async () => {
-    mockGetAccessTokenSafe.mockResolvedValue('access-token-xyz');
+    mockGetIdTokenSafe.mockResolvedValue('id-token-xyz');
     mockFetch.mockRejectedValue(new Error('Network request failed'));
 
     const err = await deleteAccount().catch((e) => e);
@@ -78,7 +82,7 @@ describe('deleteAccount', () => {
   });
 
   it('throws a retryable server error for a non-2xx response (8.4 partial delete)', async () => {
-    mockGetAccessTokenSafe.mockResolvedValue('access-token-xyz');
+    mockGetIdTokenSafe.mockResolvedValue('id-token-xyz');
     // 502: Supabase delete succeeded but the Auth0 Management API delete failed.
     mockFetch.mockResolvedValue({ ok: false, status: 502 });
 
@@ -90,7 +94,7 @@ describe('deleteAccount', () => {
   });
 
   it('completes on a retry after a prior server failure (idempotent)', async () => {
-    mockGetAccessTokenSafe.mockResolvedValue('access-token-xyz');
+    mockGetIdTokenSafe.mockResolvedValue('id-token-xyz');
     // First call fails with a server error, retry succeeds.
     mockFetch
       .mockResolvedValueOnce({ ok: false, status: 502 })

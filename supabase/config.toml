@@ -372,8 +372,8 @@ authorization_url_path = "/oauth/consent"
 # Allow dynamic client registration
 allow_dynamic_registration = false
 
-# delete-account verifies an Auth0 access token itself (with jose against the
-# Auth0 JWKS), not a Supabase JWT, so the gateway must NOT reject the request for
+# delete-account verifies an Auth0 ID token itself (with jose against the Auth0
+# JWKS), not a Supabase JWT, so the gateway must NOT reject the request for
 # lacking a Supabase token. Disable gateway JWT verification for this function;
 # the function does its own verification. See supabase/functions/delete-account.
 [functions.delete-account]

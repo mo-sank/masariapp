@@ -1,0 +1,24 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "label": "delete-account access-token audience regression",
+      "confidence": "likely",
+      "blocking": true,
+      "detail": "Removing the `audience` option from the login authorize() call means Auth0 no longer mints an access token for the Masari API audience. deleteAccount() still sends that access token to the delete-account Edge Function, whose verifyAuth0Jwt asserts audience: env.audience (the Masari API audience). The access token's aud will no longer match, so account deletion should start failing with a 401. Decide whether to request the API audience just for the delete-account token, or verify the ID token in the Edge Function the way Supabase does; that decision belongs in this change because this change removes the audience."
+    },
+    {
+      "label": "No test covers the client-token / Edge-Function audience contract",
+      "confidence": "confirmed",
+      "blocking": false,
+      "detail": "delete-account.test.ts mocks getAccessTokenSafe to a literal string and mocks fetch wholesale, so the token's aud claim is never produced or asserted. The passing 186-test suite cannot catch the audience regression. Any remediation should ship with a test that fails on an audience mismatch."
+    },
+    {
+      "label": "Onboarding store rewrite after reset (minor)",
+      "confidence": "likely",
+      "blocking": false,
+      "detail": "On successful submit, resetOnboarding() nulls the stored username while the onboarding screen is still mounted, and the mount effect immediately writes the local username back into the store before navigation completes. Harmless in the current flow because the gate routes away, but confirm no delayed-navigation path can leave a stale username in the store."
+    }
+  ],
+  "reviewDoc": "/Users/mohamednazirsankari/Apps/masariapp/.agents/tasks/token-bridge-review.md"
+}

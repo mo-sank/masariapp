@@ -14,11 +14,13 @@ Native. Lint/typecheck them with the Supabase CLI / Deno.
 ## delete-account
 
 Triggered by the app's Settings → Delete account flow (`POST
-/functions/v1/delete-account` with the user's Auth0 access token on the
+/functions/v1/delete-account` with the user's Auth0 ID token on the
 `Authorization` header). It:
 
 1. Verifies the Auth0 token itself with `jose` against the Auth0 JWKS (issuer +
-   audience) and reads `sub`. Because the caller presents an Auth0 token (not a
+   audience) and reads `sub`. The app sends the Auth0 ID token (the same JWT
+   Supabase consumes), so the audience checked here is the Auth0 **client id**,
+   not an API audience. Because the caller presents an Auth0 token (not a
    Supabase JWT), the gateway cannot verify it, so this function sets
    `verify_jwt = false` in `config.toml` and does its own verification.
 2. Deletes the `profiles` row for that `sub` via the service role; `ON DELETE
@@ -38,7 +40,8 @@ Set these as Edge Function secrets (`supabase secrets set --env-file ...`) for
 the dev and prod projects:
 
 - `AUTH0_DOMAIN` — tenant domain (token issuer + JWKS).
-- `AUTH0_AUDIENCE` — API audience the access token is issued for.
+- `AUTH0_CLIENT_ID` — Auth0 application client id; the ID token's `aud`, asserted
+  during verification.
 - `AUTH0_MGMT_DOMAIN` — Management API tenant domain (defaults to `AUTH0_DOMAIN`).
 - `AUTH0_MGMT_CLIENT_ID` / `AUTH0_MGMT_CLIENT_SECRET` — Management API (M2M) app
   with `delete:users`.

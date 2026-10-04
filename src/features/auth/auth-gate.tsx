@@ -133,6 +133,18 @@ export function AuthGate() {
     hasProfile,
   });
 
+  console.log('[AuthGate]', JSON.stringify({
+    pathname,
+    ageBlockLoading,
+    isBlocked,
+    sessionLoading,
+    isSignedIn,
+    profileLoading,
+    hasProfile,
+    target,
+    willRedirect: target != null && shouldRedirect(target, pathname),
+  }));
+
   useEffect(() => {
     // Still resolving initial state: keep the splash up and do nothing.
     if (target == null) {

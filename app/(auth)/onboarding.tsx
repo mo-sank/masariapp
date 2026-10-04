@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Button, Screen, Text } from '../../src/components/ui';
@@ -53,12 +53,22 @@ export default function OnboardingScreen() {
   const queryClient = useQueryClient();
   const { isSignedIn, login } = useSession();
 
+  // Set once the profile is created and `reset()` has cleared the store, so the
+  // sync effect below does NOT write the local username back and resurrect a
+  // stale value if navigation away is delayed by a frame.
+  const completedRef = useRef(false);
+
   // Source the username from the in-memory onboarding store so a transient
   // remount of this screen (e.g. a brief gate re-route mid-submit) reuses the
   // same name instead of generating a new one under the user. On first mount
   // with no stored username, generate one and record it.
   const [username, setUsername] = useState(() => storedUsername ?? generateUsername());
   useEffect(() => {
+    // After a successful submit the store is intentionally cleared; do not
+    // write the local username back into it.
+    if (completedRef.current) {
+      return;
+    }
     if (username !== storedUsername) {
       setStoredUsername(username);
     }
@@ -139,6 +149,9 @@ export default function OnboardingScreen() {
         // Requirement 9.3: log onboarding completion. Fire-and-forget; no PII in
         // props (the event name is in the shared allowlist).
         track('onboarding_completed');
+        // Mark the flow complete BEFORE resetting so the username-sync effect
+        // does not rewrite the local name back into the just-cleared store.
+        completedRef.current = true;
         // Clear the in-memory birth date and refresh the profile query so the
         // AuthGate observes the new profile and routes to the tabs.
         resetOnboarding();

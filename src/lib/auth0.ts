@@ -28,7 +28,7 @@ import { config } from './config';
  *
  * The `useSession` hook covers everything inside the component tree, but the
  * Supabase client (src/lib/supabase.ts) is a plain module with no access to
- * hooks, and it needs the current access token on every request. This instance
+ * hooks, and it needs the current ID token on every request. This instance
  * shares the same native credentials store (iOS Keychain / Android
  * EncryptedSharedPreferences) as the Auth0Provider, so credentials saved during
  * Universal Login are readable here. It is created lazily so config validation
@@ -46,35 +46,16 @@ function getStandaloneClient(): Auth0 {
 }
 
 /**
- * Return the current Auth0 access token for use outside React, or `null` when
- * no valid session exists (signed out, cleared, or refresh failed).
- *
- * Unlike {@link Session.getAccessToken}, this NEVER throws: it is called from
- * the Supabase client's `accessToken` callback, where a missing token must
- * simply produce an anonymous (unauthenticated) request rather than crash the
- * request. The credentials manager refreshes a stale token silently and
- * restores a saved session on relaunch. The token is never logged here.
- */
-export async function getAccessTokenSafe(): Promise<string | null> {
-  try {
-    const credentials = await getStandaloneClient().credentialsManager.getCredentials();
-    return credentials?.accessToken ?? null;
-  } catch {
-    // No credentials, or a silent refresh failed. Treat as signed out: the
-    // caller sends an anonymous request and RLS returns no rows.
-    return null;
-  }
-}
-
-/**
  * Return the current Auth0 ID token for use outside React, or `null` when no
  * valid session exists (signed out, cleared, or refresh failed).
  *
- * This is the token the Supabase client sends on every request: because Auth0
- * strips non-namespaced custom claims from access tokens, the ID token is the
- * one that carries the `role: authenticated` claim (added by an Auth0 Action)
- * plus `sub`, which Supabase reads. Like {@link getAccessTokenSafe} it NEVER
- * throws: a missing token simply produces an anonymous (unauthenticated)
+ * This is the token the app sends on every authenticated request: the Supabase
+ * client's `accessToken` callback and the delete-account Edge Function client
+ * both read it here. Because Auth0 strips non-namespaced custom claims from
+ * access tokens, the ID token is the one that carries the `role: authenticated`
+ * claim (added by an Auth0 Action) plus `sub`, which Supabase reads; its `aud`
+ * is the Auth0 client id, which the delete-account Edge Function verifies. It
+ * NEVER throws: a missing token simply produces an anonymous (unauthenticated)
  * request. The credentials manager refreshes a stale session silently and
  * restores a saved session on relaunch. The token is never logged here.
  */

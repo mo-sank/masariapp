@@ -1,1 +1,18 @@
-{"verdict":"CHANGES_REQUESTED","findings":["Use of `getAccessTokenSafe` causes anonymous RPC calls","No Auth0 session check before profile creation","Silent refresh failures result in generic errors","Logout between auth and onboarding is not handled"],"reviewDoc":"/Users/mohamednazirsankari/Apps/masariapp/.agents/tasks/signup-review.md"}
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "label": "Duplicate `getAccessToken()` implementations",
+      "description": "There are two `getAccessToken()` functions: one in `useSession` hook and one module-level standalone function. They both call the same underlying SDK method, creating redundancy."
+    },
+    {
+      "label": "No re-authentication flow after `not_authenticated` error",
+      "description": "The onboarding screen detects `not_authenticated` errors and shows a message, but provides no way for the user to re-authenticate from the error state."
+    },
+    {
+      "label": "Race condition between Universal Login and onboarding",
+      "description": "After completing Auth0 Universal Login, the `isSignedIn` check and `getAccessToken()` may still fail if the SDK hasn't stored credentials yet. The fix doesn't address this timing issue."
+    }
+  ],
+  "reviewDoc": "/Users/mohamednazirsankari/Apps/masariapp/.agents/tasks/signup-review.md"
+}

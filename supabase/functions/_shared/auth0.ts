@@ -1,8 +1,12 @@
 // Shared Auth0 helpers for Edge Functions (used by delete-account).
 //
 // Two concerns live here so the function body stays small:
-//   1. verifyAuth0Jwt — verify the incoming Auth0 access token with jose against
-//      the tenant's JWKS, checking the issuer and audience, and return the `sub`.
+//   1. verifyAuth0Jwt — verify the incoming Auth0 ID token with jose against the
+//      tenant's JWKS, checking the issuer and audience, and return the `sub`.
+//      The client sends the ID token (the same JWT Supabase consumes), so its
+//      `aud` is the Auth0 CLIENT ID, not an API audience. The app no longer
+//      requests an API audience at login, so there is no access token scoped to
+//      the Masari API to verify against.
 //   2. deleteAuth0User — get a Management API token (client-credentials) and
 //      DELETE the user, treating "already gone" as success for idempotency.
 //
@@ -15,8 +19,11 @@ import { createRemoteJWKSet, jwtVerify } from 'npm:jose@^5';
 export interface Auth0Env {
   /** Tenant domain for the token issuer and JWKS, e.g. "masari.us.auth0.com". */
   domain: string;
-  /** API audience the access token must be issued for. */
-  audience: string;
+  /**
+   * Auth0 application client id. The incoming ID token's `aud` is this client
+   * id, so it is what `verifyAuth0Jwt` asserts the audience against.
+   */
+  clientId: string;
   /** Management API tenant domain (usually the same tenant domain). */
   mgmtDomain: string;
   /** Management API (machine-to-machine) client id. */
@@ -28,14 +35,14 @@ export interface Auth0Env {
 /** Read and validate the required Auth0 environment for the function. */
 export function readAuth0Env(get: (key: string) => string | undefined): Auth0Env {
   const domain = get('AUTH0_DOMAIN');
-  const audience = get('AUTH0_AUDIENCE');
+  const clientId = get('AUTH0_CLIENT_ID');
   const mgmtDomain = get('AUTH0_MGMT_DOMAIN') ?? domain;
   const mgmtClientId = get('AUTH0_MGMT_CLIENT_ID');
   const mgmtClientSecret = get('AUTH0_MGMT_CLIENT_SECRET');
 
   const missing: string[] = [];
   if (!domain) missing.push('AUTH0_DOMAIN');
-  if (!audience) missing.push('AUTH0_AUDIENCE');
+  if (!clientId) missing.push('AUTH0_CLIENT_ID');
   if (!mgmtDomain) missing.push('AUTH0_MGMT_DOMAIN');
   if (!mgmtClientId) missing.push('AUTH0_MGMT_CLIENT_ID');
   if (!mgmtClientSecret) missing.push('AUTH0_MGMT_CLIENT_SECRET');
@@ -45,7 +52,7 @@ export function readAuth0Env(get: (key: string) => string | undefined): Auth0Env
 
   return {
     domain: domain!,
-    audience: audience!,
+    clientId: clientId!,
     mgmtDomain: mgmtDomain!,
     mgmtClientId: mgmtClientId!,
     mgmtClientSecret: mgmtClientSecret!,
@@ -74,16 +81,19 @@ function getJwks(domain: string) {
 }
 
 /**
- * Verify an Auth0 access token and return the `sub`.
+ * Verify an Auth0 ID token and return the `sub`.
  *
  * Checks the signature against the tenant JWKS and asserts the issuer and
- * audience. Throws if the token is missing, malformed, expired, or fails
- * verification. The caller must treat any throw as a 401.
+ * audience. The client sends the ID token (the same JWT Supabase consumes), so
+ * the audience asserted here is the Auth0 CLIENT ID — an ID token's `aud` is the
+ * application that requested it, not an API audience. Throws if the token is
+ * missing, malformed, expired, or fails verification. The caller must treat any
+ * throw as a 401.
  */
 export async function verifyAuth0Jwt(token: string, env: Auth0Env): Promise<string> {
   const { payload } = await jwtVerify(token, getJwks(env.domain), {
     issuer: issuerUrl(env.domain),
-    audience: env.audience,
+    audience: env.clientId,
   });
   const sub = payload.sub;
   if (!sub) {

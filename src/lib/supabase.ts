@@ -48,7 +48,9 @@ export const supabase = createClient<Database>(config.supabaseUrl, config.supaba
   // (no valid credentials) makes supabase-js omit the Authorization header, so
   // the request is treated as anonymous and RLS returns nothing.
   accessToken: async () => {
-    return getIdTokenSafe();
+    const token = await getIdTokenSafe();
+    console.log('[supabase] ID token present:', token != null, token ? `(len ${token.length})` : '(anonymous request)');
+    return token;
   },
   auth: {
     // We do not use Supabase Auth; Auth0 owns identity. Disable all GoTrue

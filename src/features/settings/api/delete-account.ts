@@ -4,7 +4,10 @@
  * The delete-account confirmation screen calls this to permanently delete the
  * signed-in user. It POSTs to the Supabase Edge Function
  * `/functions/v1/delete-account` (docs/db-and-api-reference.md section 7) with
- * the current Auth0 access token in the `Authorization` header.
+ * the current Auth0 ID token in the `Authorization` header. The ID token is the
+ * same JWT the Supabase client sends: the app no longer requests an API audience
+ * at login, so the Edge Function verifies the ID token (whose `aud` is the Auth0
+ * client id) rather than an access token minted for the Masari API.
  *
  * The Edge Function (not Supabase Auth) verifies the Auth0 JWT itself with jose,
  * derives the user from the verified `sub`, deletes the profiles row via the
@@ -20,9 +23,9 @@
  * {@link deleteAccount} again safely.
  *
  * This module never logs the token and never persists it. It reads the current
- * token straight from the Auth0 SDK via `getAccessTokenSafe`.
+ * token straight from the Auth0 SDK via `getIdTokenSafe`.
  */
-import { getAccessTokenSafe } from '../../../lib/auth0';
+import { getIdTokenSafe } from '../../../lib/auth0';
 import { config } from '../../../lib/config';
 
 /** Known failure reasons callers can branch on. */
@@ -72,7 +75,7 @@ export function deleteAccountUrl(supabaseUrl: string): string {
  *   delete, which a retry completes idempotently).
  */
 export async function deleteAccount(): Promise<void> {
-  const token = await getAccessTokenSafe();
+  const token = await getIdTokenSafe();
   if (!token) {
     // The confirmation screen is only reachable while signed in, but guard
     // anyway: without a token the function cannot identify the user.
@@ -84,9 +87,9 @@ export async function deleteAccount(): Promise<void> {
     response = await fetch(deleteAccountUrl(config.supabaseUrl), {
       method: 'POST',
       headers: {
-        // The Edge Function verifies this Auth0 JWT itself (verify_jwt = false),
-        // reading the user from the token's `sub`. We send no body: the function
-        // ignores any user id in it (requirement 8.5).
+        // The Edge Function verifies this Auth0 ID token itself (verify_jwt =
+        // false), reading the user from the token's `sub`. We send no body: the
+        // function ignores any user id in it (requirement 8.5).
         Authorization: `Bearer ${token}`,
         // Supabase's gateway requires the project anon key as `apikey` to route
         // the request to the function.
