@@ -8,7 +8,7 @@ masari/
   .kiro/steering/            steering files (this folder)
   .kiro/specs/<spec-name>/   requirements.md, design.md, tasks.md per spec
   app/                       Expo Router screens: thin, compose features
-    (auth)/                  age-gate, welcome, onboarding
+    (auth)/                  age-gate, age-block, welcome, onboarding
     (tabs)/                  learn, explore, portfolio, profile
     lesson/[id].tsx          lesson player
     stock/[symbol].tsx       stock detail
@@ -18,7 +18,7 @@ masari/
     features/                auth, lessons, trading, explore, progress, settings
       <feature>/             components/, hooks/, api/, store/, types.ts, *.test.ts(x)
     components/ui/           shared presentational components (Button, Card, Sheet...)
-    lib/                     supabase.ts, auth0.ts, money.ts, time.ts, analytics.ts, errors.ts
+    lib/                     supabase.ts, auth0.ts, config.ts, query-client.ts, analytics.ts, sentry.ts (money.ts, time.ts, errors.ts added as later specs need them)
     theme/                   tokens (colors, spacing, type), light/dark
     types/db.ts              GENERATED from Supabase; never hand-edit
   content/lessons/           one JSON file per lesson (L0.json, L1.1.json ...)
@@ -39,6 +39,7 @@ masari/
 - Edge Functions: kebab-case folder with index.ts.
 - Lesson ids: L0, L1.1 ... B1 (boss), match content filenames and lessons_catalog.lesson_id.
 - Feature keys: dotted lowercase (trade.market_buy). Defined once in src/features/progress/feature-keys.ts and in feature_unlock_rules.
+- Analytics event names: the canonical allowlist lives once in src/features/progress/analytics-events.ts (exported `ANALYTICS_EVENT_NAMES` + `isAllowedEventName`) and is mirrored verbatim in the log_events RPC migration's `v_allowed` array. A new event name is added to BOTH places in the same change; both sides reject unknown names.
  
 ## Boundaries
 - Screens in app/ contain no business logic; they call feature hooks.

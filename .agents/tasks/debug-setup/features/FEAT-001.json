@@ -1,0 +1,31 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Create a unified logging utility at src/lib/logger.ts with log(), warn(), error(), debug() methods that auto-include file/line context, strip dev-only logs in production, and create Sentry breadcrumbs for non-dev logs",
+  "status": "pending",
+  "steps": [
+    "Create src/lib/logger.ts with the full logging implementation",
+    "Implement getTimestamp() for HH:MM:SS.mmm format",
+    "Implement getCallerContext() to extract filename and line number from Error stack (skip internal frames)",
+    "Implement sendToSentry() to add breadcrumbs via Sentry.addBreadcrumb (respect scrubEvent rules)",
+    "Export log object with log(), warn(), error(), debug() methods",
+    "Add __DEV__ guards to log() and debug() to strip them in production builds",
+    "Add log.ifDev() and log.ifDebug() helpers",
+    "Ensure error() and warn() always log (never silent)"
+  ],
+  "acceptance_criteria": [
+    "Logger utility can be imported from '../lib/logger' in any file",
+    "log() calls show timestamp and file:line context in console output",
+    "log.debug() is stripped in production (no runtime overhead)",
+    "Sentry breadcrumbs are created for warn/error logs",
+    "Existing tests still pass after creating the file"
+  ],
+  "verification": [
+    "npx tsc --noEmit src/lib/logger.ts",
+    "npx eslint src/lib/logger.ts",
+    "Add test call in a component, verify console output includes timestamp and context",
+    "Check Sentry dashboard for breadcrumbs after warn/error calls"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

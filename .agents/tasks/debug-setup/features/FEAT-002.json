@@ -1,0 +1,28 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Add EXPO_PUBLIC_ENABLE_DEBUG environment variable to src/lib/config.ts for toggling verbose debug logging",
+  "status": "pending",
+  "steps": [
+    "Read src/lib/config.ts to understand current schema structure",
+    "Add 'enableDebug' field to configSchema with z.boolean().default(true)",
+    "Add enableDebug?: boolean to RawEnv type",
+    "Update readRawEnv() to read process.env.EXPO_PUBLIC_ENABLE_DEBUG (default true)",
+    "Export the enableDebug field in parsed config",
+    "Use config.enableDebug in logger.ts debug() method to control verbose output"
+  ],
+  "acceptance_criteria": [
+    "EXPO_PUBLIC_ENABLE_DEBUG defaults to true when unset",
+    "Setting EXPO_PUBLIC_ENABLE_DEBUG=false disables log.debug() output",
+    "log.debug() calls are stripped when enableDebug is false",
+    "Config validation passes with the new field"
+  ],
+  "verification": [
+    "npx tsc --noEmit",
+    "npx eslint .",
+    "Set EXPO_PUBLIC_ENABLE_DEBUG=false in .env, verify log.debug() calls are suppressed",
+    "Set EXPO_PUBLIC_ENABLE_DEBUG=true (or unset), verify log.debug() calls appear"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

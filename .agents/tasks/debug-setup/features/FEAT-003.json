@@ -1,0 +1,32 @@
+{
+  "id": "FEAT-003",
+  "type": "chore",
+  "description": "Verify React Native DevTools integration and create a simple test screen with logging to confirm the debugging setup works end-to-end",
+  "status": "pending",
+  "steps": [
+    "Read app/_layout.tsx to confirm Sentry.wrap is in place (no changes needed)",
+    "Read src/lib/sentry.ts to confirm scrubBreadcrumb handles log breadcrumbs (no changes needed)",
+    "Create a test debug screen at app/debug.tsx with examples of each log method",
+    "Run the app with npx expo start",
+    "Press J to open React Native DevTools",
+    "Verify logs appear in Console tab with correct format",
+    "Verify Sentry breadcrumbs appear for warn/error calls",
+    "Verify dev-only logs are stripped in production (npx expo start --no-dev)"
+  ],
+  "acceptance_criteria": [
+    "React Native DevTools opens when pressing J in the terminal",
+    "Console tab shows log/warn/error/debug output with timestamps and file context",
+    "Sentry breadcrumbs are created for warn/error logs",
+    "Dev-only logs are stripped in production builds",
+    "No breaking changes to existing functionality"
+  ],
+  "verification": [
+    "npx expo start (verify app launches)",
+    "Press J, verify DevTools opens with Console tab",
+    "Navigate to debug screen, verify log messages appear",
+    "Run npx expo start --no-dev, verify dev-only logs are hidden",
+    "npx tsc --noEmit && npx eslint ."
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

@@ -1,0 +1,1 @@
+{"verdict":"CHANGES_REQUESTED","findings":["Use of `getAccessTokenSafe` causes anonymous RPC calls","No Auth0 session check before profile creation","Silent refresh failures result in generic errors","Logout between auth and onboarding is not handled"],"reviewDoc":"/Users/mohamednazirsankari/Apps/masariapp/.agents/tasks/signup-review.md"}

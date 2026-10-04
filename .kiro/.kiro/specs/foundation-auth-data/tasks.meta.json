@@ -1,0 +1,190 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1. Scaffold the Expo app": [
+      {
+        "executionId": "52dafb06-75be-4f6b-9ef6-9b8e99340da1",
+        "chatSessionId": "sess_3af9bd41-acbd-44f1-ae16-b298c597723a",
+        "timestamp": 1791068999667
+      },
+      {
+        "executionId": "52dafb06-75be-4f6b-9ef6-9b8e99340da1",
+        "chatSessionId": "sess_3af9bd41-acbd-44f1-ae16-b298c597723a",
+        "timestamp": 1791069935006
+      }
+    ],
+    "2. Configuration and build profiles": [
+      {
+        "executionId": "0f9a3c2b-feac-4e8d-aac9-1c407c71b687",
+        "chatSessionId": "sess_672a7086-5e24-4d02-bfd6-5dbdc46d2d70",
+        "timestamp": 1791069974914
+      },
+      {
+        "executionId": "0f9a3c2b-feac-4e8d-aac9-1c407c71b687",
+        "chatSessionId": "sess_672a7086-5e24-4d02-bfd6-5dbdc46d2d70",
+        "timestamp": 1791070761232
+      }
+    ],
+    "3. Local Supabase and baseline migration": [
+      {
+        "executionId": "c9d6bc3e-eb59-46dd-b2d1-d8ceb530f173",
+        "chatSessionId": "sess_bcab130f-30d0-49a9-b38c-0b6091894c0c",
+        "timestamp": 1791071178238
+      },
+      {
+        "executionId": "f0a833a7-d806-433f-b664-d692aced8d9c",
+        "chatSessionId": "sess_d8b0b2ef-4671-47f6-8277-9448e4b3da41",
+        "timestamp": 1791087595194
+      },
+      {
+        "executionId": "f0a833a7-d806-433f-b664-d692aced8d9c",
+        "chatSessionId": "sess_d8b0b2ef-4671-47f6-8277-9448e4b3da41",
+        "timestamp": 1791087773257
+      }
+    ],
+    "4. Row-level security, grants, and pgTAP tests": [
+      {
+        "executionId": "65028233-a166-48cd-8b04-1e8037639a33",
+        "chatSessionId": "sess_06a42bd4-352b-42bd-b5be-4bead42e18ec",
+        "timestamp": 1791087880735
+      },
+      {
+        "executionId": "65028233-a166-48cd-8b04-1e8037639a33",
+        "chatSessionId": "sess_06a42bd4-352b-42bd-b5be-4bead42e18ec",
+        "timestamp": 1791088341675
+      }
+    ],
+    "5. Auth0 SDK integration": [
+      {
+        "executionId": "23a6ef8d-6cb1-4630-ad75-bd08037e45e2",
+        "chatSessionId": "sess_f47cea49-1a5b-40ea-971f-abd126541162",
+        "timestamp": 1791088360463
+      },
+      {
+        "executionId": "23a6ef8d-6cb1-4630-ad75-bd08037e45e2",
+        "chatSessionId": "sess_f47cea49-1a5b-40ea-971f-abd126541162",
+        "timestamp": 1791088946871
+      }
+    ],
+    "6. Age gate": [
+      {
+        "executionId": "35445f20-5ccb-4d89-9340-f24f1fdab3af",
+        "chatSessionId": "sess_79abcf86-7a61-430b-bd56-f577c0c43d6e",
+        "timestamp": 1791088997714
+      },
+      {
+        "executionId": "35445f20-5ccb-4d89-9340-f24f1fdab3af",
+        "chatSessionId": "sess_79abcf86-7a61-430b-bd56-f577c0c43d6e",
+        "timestamp": 1791089575559
+      }
+    ],
+    "7. SPIKE: Auth0 to Supabase token bridge": [
+      {
+        "executionId": "a7cc01af-c15e-4333-b490-6925336ca08a",
+        "chatSessionId": "sess_3de07d08-8290-49fd-ac9a-71f9b81fadb1",
+        "timestamp": 1791089692177
+      },
+      {
+        "executionId": "a7cc01af-c15e-4333-b490-6925336ca08a",
+        "chatSessionId": "sess_3de07d08-8290-49fd-ac9a-71f9b81fadb1",
+        "timestamp": 1791089872531
+      }
+    ],
+    "8. Supabase client, providers, and AuthGate": [
+      {
+        "executionId": "5b4efe54-3ecd-44b2-8ea2-ba183d03a881",
+        "chatSessionId": "sess_99b85c80-b759-4381-b36b-dd9dab577315",
+        "timestamp": 1791089909094
+      },
+      {
+        "executionId": "5b4efe54-3ecd-44b2-8ea2-ba183d03a881",
+        "chatSessionId": "sess_99b85c80-b759-4381-b36b-dd9dab577315",
+        "timestamp": 1791090381441
+      }
+    ],
+    "9. create_profile RPC and onboarding UI": [
+      {
+        "executionId": "00b43d30-c048-47f3-bb85-c8ba9bb588b2",
+        "chatSessionId": "sess_1727ec21-8afc-48d4-b1a9-11c49df35ae4",
+        "timestamp": 1791090418634
+      },
+      {
+        "executionId": "00b43d30-c048-47f3-bb85-c8ba9bb588b2",
+        "chatSessionId": "sess_1727ec21-8afc-48d4-b1a9-11c49df35ae4",
+        "timestamp": 1791090975755
+      }
+    ],
+    "10. Theme, UI kit, and app shell": [
+      {
+        "executionId": "fb570c33-4c22-4479-bf6a-f79dacf91674",
+        "chatSessionId": "sess_310520b7-540a-4895-aeda-740eac88db0f",
+        "timestamp": 1791091101557
+      },
+      {
+        "executionId": "fb570c33-4c22-4479-bf6a-f79dacf91674",
+        "chatSessionId": "sess_310520b7-540a-4895-aeda-740eac88db0f",
+        "timestamp": 1791091688348
+      }
+    ],
+    "11. Settings and account deletion": [
+      {
+        "executionId": "3a328640-4a0d-41b4-bde8-207c7b107c35",
+        "chatSessionId": "sess_e2e2630b-a9e0-4529-85d1-3bcfb5e20247",
+        "timestamp": 1791091750016
+      },
+      {
+        "executionId": "3a328640-4a0d-41b4-bde8-207c7b107c35",
+        "chatSessionId": "sess_e2e2630b-a9e0-4529-85d1-3bcfb5e20247",
+        "timestamp": 1791092486795
+      }
+    ],
+    "12. Observability and analytics plumbing": [
+      {
+        "executionId": "894baf97-627b-46d1-91e0-0ccc69d38e41",
+        "chatSessionId": "sess_f187e028-46e0-458c-9f58-1111c3f803db",
+        "timestamp": 1791092511169
+      },
+      {
+        "executionId": "894baf97-627b-46d1-91e0-0ccc69d38e41",
+        "chatSessionId": "sess_f187e028-46e0-458c-9f58-1111c3f803db",
+        "timestamp": 1791093587325
+      }
+    ],
+    "13. Accessibility pass": [
+      {
+        "executionId": "c2467872-790a-451d-9993-3a6c2142b849",
+        "chatSessionId": "sess_8c2d61bf-5ab4-4683-bddb-4f986d6771c2",
+        "timestamp": 1791093608110
+      },
+      {
+        "executionId": "c2467872-790a-451d-9993-3a6c2142b849",
+        "chatSessionId": "sess_8c2d61bf-5ab4-4683-bddb-4f986d6771c2",
+        "timestamp": 1791094000707
+      }
+    ],
+    "14. Continuous integration": [
+      {
+        "executionId": "cf2edc78-c3bd-4b52-b2a3-6647bf60542b",
+        "chatSessionId": "sess_702a453f-1f8a-42bb-9cec-053d0d9bac54",
+        "timestamp": 1791094020304
+      },
+      {
+        "executionId": "cf2edc78-c3bd-4b52-b2a3-6647bf60542b",
+        "chatSessionId": "sess_702a453f-1f8a-42bb-9cec-053d0d9bac54",
+        "timestamp": 1791094107026
+      }
+    ],
+    "15. Checkpoint": [
+      {
+        "executionId": "7523198c-b871-4392-af16-73ad32c8c8a1",
+        "chatSessionId": "sess_378df0f3-1639-47f4-82ab-96d272109265",
+        "timestamp": 1791094128701
+      },
+      {
+        "executionId": "7523198c-b871-4392-af16-73ad32c8c8a1",
+        "chatSessionId": "sess_378df0f3-1639-47f4-82ab-96d272109265",
+        "timestamp": 1791096802190
+      }
+    ]
+  }
+}

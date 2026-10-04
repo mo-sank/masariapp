@@ -1,0 +1,20 @@
+{
+  "project_type": "Expo/React Native mobile application",
+  "language": "TypeScript",
+  "build_system": "Bun with Expo CLI",
+  "test_framework": "Jest + @testing-library/react-native",
+  "build_command": "npx expo start",
+  "test_command": "npm run test",
+  "verification_instructions": "1. Run npx expo start. 2. Press J to open React Native DevTools. 3. Add log() calls to components. 4. Verify logs appear in DevTools Console tab. 5. Check Sentry breadcrumbs appear in dashboard.",
+  "snapshot_or_generated_files": null,
+  "environment_constraints": "Dev-only logs must be stripped in production builds via __DEV__ global. Sentry breadcrumbs must respect existing scrubbing rules.",
+  "contribution_requirements": "Must use npx expo install for packages. Follow existing patterns in src/lib/sentry.ts (scrubEvent, scrubBreadcrumb). Keep DevTools dev-only.",
+  "key_patterns": "1. Use __DEV__ to conditionally run dev-only code. 2. Attach Sentry breadcrumbs via addBreadcrumb. 3. Follow existing module structure in src/lib/. 4. Export utility from index if creating one. 5. Use TypeScript strict mode.",
+  "relevant_files": [
+    "src/lib/logger.ts (new)",
+    "src/lib/config.ts (modify)",
+    "src/lib/sentry.ts (read)",
+    "app/_layout.tsx (read, no changes needed)"
+  ],
+  "directory_structure": "src/lib/ contains core utilities (config, sentry, query-client, supabase, analytics). src/features/ contains feature-specific hooks/components. Routes live in app/."
+}
