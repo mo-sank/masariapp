@@ -2,7 +2,8 @@
  * MarketBanner (requirement 11.1).
  *
  * The open/closed banner shown on every price screen. It renders one of three
- * states — Open, Closed (after hours), or Closed (holiday) — from the
+ * states — Open, After-hours (extended), Closed (after hours), or Closed
+ * (holiday) — from the
  * {@link MarketStatus} the caller resolves via `useMarketStatus`. When today is
  * a holiday the banner names it (e.g. "Closed · Thanksgiving Day") so the closed
  * state reads as intentional rather than broken.
@@ -28,6 +29,8 @@ export function marketBannerLabel(status: MarketStatus, holidayName?: string | n
   switch (status) {
     case 'open':
       return 'Market open';
+    case 'extended':
+      return 'Market open · After-hours';
     case 'closed_holiday':
       return holidayName ? `Market closed · ${holidayName}` : 'Market closed · Holiday';
     case 'closed_after_hours':
@@ -43,10 +46,11 @@ export function MarketBanner({ status, holidayName }: MarketBannerProps) {
     return null;
   }
 
-  const isOpen = status === 'open';
+  // A live session (regular or extended) uses the brand color; fully-closed
+  // states use muted ink on the surface.
+  const sessionActive = status === 'open' || status === 'extended';
   const label = marketBannerLabel(status, holidayName);
-  // Open uses the brand color; closed states use muted ink on the surface.
-  const dotColor = isOpen ? theme.colors.primary : theme.colors.textMuted;
+  const dotColor = sessionActive ? theme.colors.primary : theme.colors.textMuted;
 
   return (
     <View

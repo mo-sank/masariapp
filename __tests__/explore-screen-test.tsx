@@ -38,7 +38,7 @@ jest.mock('../src/features/explore/use-explore-list', () => ({
 
 // Market status: open by default.
 let mockMarket: { data: MarketStatusResult } = {
-  data: { status: 'open', isOpen: true, holidayName: null },
+  data: { status: 'open', session: 'regular', isOpen: true, isExtended: false, holidayName: null },
 };
 jest.mock('../src/features/trading/use-market-status', () => ({
   useMarketStatus: () => mockMarket,
@@ -100,7 +100,7 @@ beforeEach(() => {
   mockSignedIn = true;
   mockUnlocks = [{ feature_key: 'explore' }];
   mockList = { isLoading: false, isError: false, refetch: jest.fn(), items: [] };
-  mockMarket = { data: { status: 'open', isOpen: true, holidayName: null } };
+  mockMarket = { data: { status: 'open', session: 'regular', isOpen: true, isExtended: false, holidayName: null } };
 });
 
 describe('<ExploreScreen />', () => {
@@ -144,7 +144,7 @@ describe('<ExploreScreen />', () => {
 
   it('labels prices as last close when the market is closed (11.2)', async () => {
     mockMarket = {
-      data: { status: 'closed_holiday', isOpen: false, holidayName: 'Independence Day' },
+      data: { status: 'closed_holiday', session: 'closed', isOpen: false, isExtended: false, holidayName: 'Independence Day' },
     };
     mockList = {
       isLoading: false,

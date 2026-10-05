@@ -9,6 +9,10 @@ describe('marketBannerLabel', () => {
     expect(marketBannerLabel('closed_after_hours')).toBe('Market closed · After hours');
   });
 
+  it('labels an extended (pre/after-hours) session as open', () => {
+    expect(marketBannerLabel('extended')).toBe('Market open · After-hours');
+  });
+
   it('names the holiday on a holiday close', () => {
     expect(marketBannerLabel('closed_holiday', 'Thanksgiving Day')).toBe(
       'Market closed · Thanksgiving Day',

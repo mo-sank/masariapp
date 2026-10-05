@@ -43,7 +43,7 @@ function makeDeps(overrides: Partial<IngestDeps> = {}): {
   const logger = recordingLogger();
   const deps: IngestDeps = {
     provider: stubProvider(() => Promise.resolve([])),
-    marketIsOpen: () => Promise.resolve(true),
+    marketSession: () => Promise.resolve('regular' as const),
     listActiveSymbols: () => Promise.resolve(['AAPL']),
     upsertQuotes: (rows: QuoteRow[]) => {
       upserted.push(rows);
@@ -71,16 +71,31 @@ function aaplQuote(overrides: Partial<ProviderQuote> = {}): ProviderQuote {
   };
 }
 
-Deno.test('skips without calling the provider when market closed and window passed', async () => {
+Deno.test('skips without calling the provider when fully closed and window passed', async () => {
   const provider = stubProvider(() => Promise.resolve([aaplQuote()]));
-  const { deps, upserted } = makeDeps({ provider, marketIsOpen: () => Promise.resolve(false) });
+  const { deps, upserted } = makeDeps({ provider, marketSession: () => Promise.resolve('closed' as const) });
 
   const result = await runIngest(deps);
 
   assertEquals(result.skipped, true);
   assertEquals(result.reason, 'market_closed');
+  assertEquals(result.session, 'closed');
   assertEquals(provider.calls.length, 0); // provider never called (requirement 2.2)
   assertEquals(upserted.length, 0);
+});
+
+Deno.test('ingests during the extended (pre/after-hours) session', async () => {
+  const provider = stubProvider(() => Promise.resolve([aaplQuote()]));
+  const { deps, upserted } = makeDeps({ provider, marketSession: () => Promise.resolve('extended' as const) });
+
+  const result = await runIngest(deps);
+
+  assertEquals(result.skipped, false);
+  assertEquals(result.session, 'extended');
+  assertEquals(provider.calls.length, 1);
+  assertEquals(upserted.length, 1);
+  // The row's source carries the session so the client can label it.
+  assertEquals(upserted[0][0].source, 'stub:extended');
 });
 
 Deno.test('runs during the 25-minute closing window even when closed right now', async () => {
@@ -92,7 +107,7 @@ Deno.test('runs during the 25-minute closing window even when closed right now',
   const { deps, upserted } = makeDeps({
     provider,
     now: () => now,
-    marketIsOpen: (at: Date) => Promise.resolve(at.getTime() === windowStart.getTime()),
+    marketSession: (at: Date) => Promise.resolve((at.getTime() === windowStart.getTime() ? 'regular' : 'closed') as const),
   });
 
   const result = await runIngest(deps);
@@ -125,7 +140,7 @@ Deno.test('requests all active symbols and upserts valid rows in integer cents',
   // Row records as_of, is_delayed, source (requirement 2.6).
   assertEquals(aapl.as_of, '2024-04-01T14:55:00.000Z');
   assertEquals(aapl.is_delayed, true);
-  assertEquals(aapl.source, 'stub');
+  assertEquals(aapl.source, 'stub:regular'); // provider name + session
   assertEquals(aapl.updated_at, '2024-04-01T15:00:00.000Z');
 });
 

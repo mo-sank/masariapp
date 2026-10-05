@@ -9,8 +9,9 @@
 //
 // Responsibilities (delegated to ./ingest.ts so the logic is unit-testable):
 //   1. Reject the request with 401 unless x-cron-secret matches CRON_SECRET.
-//   2. Skip (200 {skipped:true}) unless the market is open now or was open
-//      within the last 25 minutes — never calling the provider when skipping.
+//   2. Skip (200 {skipped:true}) only when the market is fully closed (overnight
+//      / weekend / holiday); otherwise ingest during the regular AND extended
+//      (pre/after-hours) sessions. Never calls the provider when skipping.
 //   3. Fetch snapshots for all active instruments via the configured provider,
 //      convert dollars to integer cents once, and upsert into public.quotes.
 //   4. Keep last-known-good rows on failure; never write a zero/null price.
@@ -21,7 +22,7 @@ import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@^2'
 
 import { getProvider } from '../_shared/providers/index.ts';
 import type { QuoteProvider } from '../_shared/providers/types.ts';
-import { runIngest, type IngestResult, type Logger, type QuoteRow } from './ingest.ts';
+import { runIngest, type IngestResult, type Logger, type MarketSession, type QuoteRow } from './ingest.ts';
 
 const CORS_HEADERS: Record<string, string> = {
   'access-control-allow-origin': '*',
@@ -114,7 +115,7 @@ export default {
     try {
       result = await runIngest({
         provider,
-        marketIsOpen: (at: Date) => marketIsOpen(supabase, at),
+        marketSession: (at: Date) => marketSession(supabase, at),
         listActiveSymbols: () => listActiveSymbols(supabase),
         upsertQuotes: (rows: QuoteRow[]) => upsertQuotes(supabase, rows),
         logger: consoleLogger,
@@ -131,13 +132,15 @@ export default {
   },
 };
 
-/** Call the public.market_is_open(timestamptz) DB function. */
-async function marketIsOpen(supabase: SupabaseClient, at: Date): Promise<boolean> {
-  const { data, error } = await supabase.rpc('market_is_open', { p_at: at.toISOString() });
+/** Call the public.market_session(timestamptz) DB function. */
+async function marketSession(supabase: SupabaseClient, at: Date): Promise<MarketSession> {
+  const { data, error } = await supabase.rpc('market_session', { p_at: at.toISOString() });
   if (error) {
-    throw new Error(`market_is_open failed: ${error.message}`);
+    throw new Error(`market_session failed: ${error.message}`);
   }
-  return data === true;
+  // Defensive: an unexpected value is treated as 'closed' so we never ingest on
+  // a bad classification.
+  return data === 'regular' || data === 'extended' ? data : 'closed';
 }
 
 /** Select active instrument symbols (instruments.is_active = true). */

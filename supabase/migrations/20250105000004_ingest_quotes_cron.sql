@@ -8,12 +8,17 @@
 -- then checks market hours itself, so this schedule can fire slightly outside
 -- market hours harmlessly — the function skips without calling the provider.
 --
--- The cron window `*/5 13-21 * * 1-5` is UTC (pg_cron uses the server's UTC
--- clock). 13:00-21:59 UTC covers 09:00-17:59 ET during US Eastern Daylight Time
--- and 08:00-16:59 ET during Standard Time, which brackets the 09:30-16:00 ET
--- session plus the 25-minute closing window across both DST states. The
--- function's own market_is_open() check is the source of truth for whether a
--- given firing does any work.
+-- The cron window `*/5 0,8-23 * * 1-5` is UTC (pg_cron uses the server's UTC
+-- clock). The ET extended window is 04:00-20:00 ET; in EDT that is 08:00-24:00
+-- UTC and in EST it is 09:00-01:00 UTC. The union across both DST regimes is
+-- UTC hours {0, 8..23}, so this fires every 5 min across pre-market, regular,
+-- and after-hours in either regime (the extra off-regime early-UTC hour is
+-- harmless). The function's own
+-- market_session() check is the source of truth for whether a given firing does
+-- any work: it ingests during the regular AND extended sessions and skips when
+-- the market is fully closed (overnight/weekend/holiday), so firing slightly
+-- outside those hours is harmless. Weekdays only — the weekend dead zone has no
+-- new prices to fetch.
 --
 -- Two values differ per environment and must NOT be committed, so they live in
 -- Supabase Vault and are read at the moment pg_net builds the request:
@@ -51,7 +56,7 @@ where exists (select 1 from cron.job where jobname = 'ingest-quotes');
 
 select cron.schedule(
   'ingest-quotes',
-  '*/5 13-21 * * 1-5',
+  '*/5 0,8-23 * * 1-5',
   $cron$
   select net.http_post(
     url := (select decrypted_secret from vault.decrypted_secrets where name = 'project_url')

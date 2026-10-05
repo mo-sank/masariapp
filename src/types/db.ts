@@ -730,6 +730,12 @@ export type Database = {
         };
         Returns: boolean;
       };
+      market_session: {
+        Args: {
+          p_at?: string;
+        };
+        Returns: string;
+      };
       place_market_order: {
         Args: {
           p_symbol: string;

@@ -94,7 +94,7 @@ jest.mock('../src/features/trading/use-orders', () => ({
 
 // Market status: open by default.
 let mockMarket = {
-  data: { status: 'open', isOpen: true, holidayName: null },
+  data: { status: 'open', session: 'regular', isOpen: true, isExtended: false, holidayName: null },
 };
 jest.mock('../src/features/trading/use-market-status', () => ({
   useMarketStatus: () => mockMarket,
@@ -185,7 +185,7 @@ beforeEach(() => {
     ],
   };
   mockOrders = { data: [] };
-  mockMarket = { data: { status: 'open', isOpen: true, holidayName: null } };
+  mockMarket = { data: { status: 'open', session: 'regular', isOpen: true, isExtended: false, holidayName: null } };
   mockWatchlist = [];
 });
 

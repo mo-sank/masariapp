@@ -89,8 +89,9 @@ export function pathnameToBranch(pathname: string): Branch | undefined {
   if (pathname.includes("onboarding")) return "onboarding";
   if (pathname.includes("age-gate") || pathname.includes("welcome")) return "auth";
   // The signed-in app is more than the four tab screens: the tab routes AND the
-  // authenticated screens reachable from them (lesson/*, rewind, settings/*) all
-  // belong to the tabs branch. Mapping them here means navigating to a lesson is
+  // authenticated screens reachable from them (lesson/*, rewind, settings/*,
+  // and the trading screens stock/*, trade/*, history) all belong to the tabs
+  // branch. Mapping them here means navigating to, e.g., a stock detail page is
   // NOT treated as a wrong-branch move that bounces the user back to
   // /(tabs)/learn. The bare index ("/") stays undefined so the gate still
   // performs the initial redirect from the placeholder route into a branch.
@@ -102,7 +103,10 @@ export function pathnameToBranch(pathname: string): Branch | undefined {
     pathname.startsWith("/profile") ||
     pathname.startsWith("/lesson") ||
     pathname.startsWith("/rewind") ||
-    pathname.startsWith("/settings")
+    pathname.startsWith("/settings") ||
+    pathname.startsWith("/stock") ||
+    pathname.startsWith("/trade") ||
+    pathname.startsWith("/history")
   ) {
     return "tabs";
   }

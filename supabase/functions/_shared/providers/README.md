@@ -17,9 +17,18 @@ provider directly; only these functions do, on a schedule, writing to the
   paces requests under the free-tier limit, and retries rate-limited calls with
   exponential backoff. A missing/zero/malformed symbol is skipped, never written
   as a zero price (requirement 2.3).
-- `index.ts` — `getProvider()` reads the `PROVIDER` env var and returns the
-  matching implementation, so swapping providers is a config change and touches
-  only this folder (requirement 2.5).
+- `alpaca.ts` — a **bars-only** `QuoteProvider`. Finnhub's free tier 403s on
+  historical candles, so daily bars come from Alpaca's free market-data plan
+  (IEX feed, ~15 min delayed) via `GET /v2/stocks/bars`. Validates with Zod,
+  paginates `next_page_token`, paces + retries. `getSnapshots` throws — this
+  provider is only used for `getDailyBars` (quotes stay on Finnhub).
+- `index.ts` — `getProvider()` returns the configured provider, so swapping or
+  splitting providers is a config change that touches only this folder
+  (requirement 2.5). `PROVIDER` (default `finnhub`) chooses the QUOTES provider;
+  the optional `BARS_PROVIDER` chooses a different provider for daily BARS. With
+  `PROVIDER=finnhub` + `BARS_PROVIDER=alpaca`, quotes come from Finnhub and bars
+  from Alpaca via a small composite; when `BARS_PROVIDER` is unset the single
+  provider serves both (backward compatible).
 - `__fixtures__/`, `*.test.ts` — recorded-fixture tests. No live network calls.
 
 ## Running the tests
@@ -67,6 +76,22 @@ disclaimer, requirement 13.1) must stay within those terms.
 
 ## Secrets
 
-`MARKET_DATA_API_KEY` is an Edge Function secret (never shipped in the app).
-`PROVIDER` optionally overrides the default (`finnhub`). Set both with
-`supabase secrets set` for the dev and prod projects.
+All are Edge Function secrets (never shipped in the app); set with
+`supabase secrets set` per project.
+
+- `MARKET_DATA_API_KEY` — Finnhub key for QUOTES (`/quote`).
+- `PROVIDER` — optional; overrides the default quotes provider (`finnhub`).
+- `BARS_PROVIDER` — optional; set to `alpaca` to source daily BARS from Alpaca
+  instead of the quotes provider. Needed because Finnhub's free tier 403s on
+  historical candles.
+- `ALPACA_API_KEY_ID` / `ALPACA_API_SECRET_KEY` — Alpaca market-data creds
+  (required when `BARS_PROVIDER=alpaca`). The free plan serves IEX daily bars.
+
+### Why the split (post-launch finding)
+
+The task-1 spike chose Finnhub, but Finnhub later moved historical daily
+candles behind a paid plan (the free `/stock/candle` returns 403). Finnhub's
+`/quote` still works on the free tier, so quotes stay on Finnhub and only the
+bars source moved to Alpaca — a config-level change (`BARS_PROVIDER=alpaca`)
+with no edits to the ingest functions or the app, exactly what the
+`QuoteProvider` abstraction was designed to allow (requirement 2.5).

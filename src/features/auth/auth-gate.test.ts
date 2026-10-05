@@ -117,6 +117,12 @@ describe('pathnameToBranch', () => {
     expect(pathnameToBranch('/lesson/placement')).toBe('tabs');
     expect(pathnameToBranch('/rewind')).toBe('tabs');
     expect(pathnameToBranch('/settings')).toBe('tabs');
+    // Trading screens (market-data-paper-trading spec) are also signed-in
+    // routes outside the (tabs) group and must map to the tabs branch, so the
+    // gate does not bounce the user back to /(tabs)/learn when they open one.
+    expect(pathnameToBranch('/stock/AAPL')).toBe('tabs');
+    expect(pathnameToBranch('/trade/AAPL')).toBe('tabs');
+    expect(pathnameToBranch('/history')).toBe('tabs');
   });
 
   it('returns undefined for an unknown route (e.g. the index placeholder)', () => {

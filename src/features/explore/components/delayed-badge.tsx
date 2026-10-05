@@ -1,32 +1,54 @@
 /**
- * DelayedBadge (requirements 4.4, 11.2).
+ * DelayedBadge (requirements 4.4, 11.2; extended for pre/after-hours).
  *
- * A small pill shown on price screens so the learner always knows quotes are
- * delayed, not live. Its label switches to "Last close" wording when the market
- * is closed (requirement 11.2) — a closed-market price is the previous session's
- * close, not a ~15-minute-delayed intraday quote.
+ * A small pill on price screens so the learner always knows these are delayed
+ * prices, not live, and WHICH session they reflect:
+ *   - regular session  -> "Delayed ~15 min"
+ *   - pre/after-hours   -> "After-hours" (extended session)
+ *   - fully closed      -> "Last close"
  *
- * Purely presentational: the caller passes whether the market is open. The
- * component carries no data of its own.
+ * Prefer passing `session` (from useMarketStatus). The legacy `marketOpen` prop
+ * is still honoured for callers that only know open/closed: open -> delayed,
+ * closed -> last close. If both are given, `session` wins.
+ *
+ * Purely presentational: the caller passes the session/flag; the component
+ * carries no data of its own.
  */
 import { StyleSheet, View } from 'react-native';
 
 import { Text } from '../../../components/ui';
 import { useTheme } from '../../../theme/theme-provider';
+import type { MarketSession } from '../../trading/use-market-status';
 
 export interface DelayedBadgeProps {
-  /** When false, the badge labels prices as the last close (requirement 11.2). */
+  /** The market session; drives the label when provided (preferred). */
+  session?: MarketSession;
+  /**
+   * Legacy flag for callers that only know open vs closed. When `session` is
+   * absent: true -> "Delayed ~15 min", false -> "Last close" (requirement 11.2).
+   */
   marketOpen?: boolean;
 }
 
-/** The copy used while the market is open (quotes are ~15 min delayed). */
+/** The copy used during the regular session (quotes are ~15 min delayed). */
 export const DELAYED_LABEL = 'Delayed ~15 min';
-/** The copy used while the market is closed (prices are the last close). */
+/** The copy used during pre-market / after-hours (extended session). */
+export const EXTENDED_LABEL = 'After-hours · delayed';
+/** The copy used while the market is fully closed (prices are the last close). */
 export const LAST_CLOSE_LABEL = 'Last close';
 
-export function DelayedBadge({ marketOpen = true }: DelayedBadgeProps) {
+/** Resolve the label from the session (preferred) or the legacy open flag. */
+export function delayedBadgeLabel(session: MarketSession | undefined, marketOpen: boolean): string {
+  if (session === 'regular') return DELAYED_LABEL;
+  if (session === 'extended') return EXTENDED_LABEL;
+  if (session === 'closed') return LAST_CLOSE_LABEL;
+  // No session provided: fall back to the open/closed flag.
+  return marketOpen ? DELAYED_LABEL : LAST_CLOSE_LABEL;
+}
+
+export function DelayedBadge({ session, marketOpen = true }: DelayedBadgeProps) {
   const theme = useTheme();
-  const label = marketOpen ? DELAYED_LABEL : LAST_CLOSE_LABEL;
+  const label = delayedBadgeLabel(session, marketOpen);
 
   return (
     <View

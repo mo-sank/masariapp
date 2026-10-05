@@ -92,7 +92,7 @@ function ExploreList({ theme }: { theme: ReturnType<typeof useTheme> }) {
 
       <MarketBanner status={market.data?.status} holidayName={market.data?.holidayName} />
 
-      <DelayedBadge marketOpen={marketOpen} />
+      <DelayedBadge session={market.data?.session} marketOpen={marketOpen} />
 
       <TextInput
         value={search}

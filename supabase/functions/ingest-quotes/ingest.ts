@@ -9,8 +9,9 @@
 //   2.1 On a scheduled run during market hours (or within 25 minutes after
 //       close) fetch snapshots for all active instruments and upsert quotes in
 //       integer cents.
-//   2.2 When the market is closed and the closing window has passed, exit
-//       without calling the provider.
+//   2.2 When the market is fully closed (overnight / weekend / holiday) exit
+//       without calling the provider. (Extended: we also ingest during the
+//       pre-market and after-hours sessions, not just the regular session.)
 //   2.3 On provider failure or partial data, keep the last-known-good rows, log
 //       the failure, and never write a zero or null price.
 //   2.6 Each written row records as_of, is_delayed, and source.
@@ -19,6 +20,9 @@
 // and config.toml respectively.
 import type { ProviderQuote, QuoteProvider } from '../_shared/providers/types.ts';
 import { CentsConversionError, optionalDollarsToCents, positiveDollarsToCents } from '../_shared/providers/cents.ts';
+
+/** US market session at an instant, as classified by public.market_session. */
+export type MarketSession = 'regular' | 'extended' | 'closed';
 
 /** A row ready to upsert into public.quotes. Money is already integer cents. */
 export interface QuoteRow {
@@ -46,8 +50,12 @@ export interface Logger {
 export interface IngestDeps {
   /** The configured market-data provider (from getProvider()). */
   provider: QuoteProvider;
-  /** True when the market is open at the given instant (public.market_is_open). */
-  marketIsOpen(at: Date): Promise<boolean>;
+  /**
+   * The market session at the given instant (public.market_session):
+   * 'regular' | 'extended' | 'closed'. The ingest runs during 'regular' and
+   * 'extended' and skips only when 'closed'.
+   */
+  marketSession(at: Date): Promise<MarketSession>;
   /** Active instrument symbols to refresh (instruments.is_active = true). */
   listActiveSymbols(): Promise<string[]>;
   /**
@@ -75,6 +83,8 @@ export interface IngestResult {
   upserted: number;
   /** Symbols that were requested but produced no written row. */
   missing: string[];
+  /** The market session this run observed ('regular' | 'extended' | 'closed'). */
+  session?: MarketSession;
 }
 
 /** 25-minute closing window (requirement 2.1) so the final close is captured. */
@@ -98,21 +108,35 @@ export async function runIngest(deps: IngestDeps): Promise<IngestResult> {
   const now = deps.now();
   const windowStart = new Date(now.getTime() - CLOSING_WINDOW_MS);
 
-  // 1. Market-hours gate. We check both `now` and `now - 25 min` so that a run
-  // fired just after the 16:00 close still captures the final print, while a
-  // run well after hours (or on a weekend/holiday) exits without touching the
-  // provider (requirement 2.2).
-  const [openNow, openInWindow] = await Promise.all([deps.marketIsOpen(now), deps.marketIsOpen(windowStart)]);
-  if (!openNow && !openInWindow) {
-    deps.logger.info('ingest-quotes skipped: market closed and closing window passed');
-    return { skipped: true, reason: 'market_closed', requested: 0, received: 0, upserted: 0, missing: [] };
+  // 1. Session gate. We ingest during the regular AND extended (pre/after-hours)
+  // sessions. We check both `now` and `now - 25 min` so a run fired just after a
+  // session boundary still captures the final print; a run only skips when BOTH
+  // instants are fully closed (overnight / weekend / holiday) — then the
+  // provider is never called (requirement 2.2).
+  const [sessionNow, sessionInWindow] = await Promise.all([
+    deps.marketSession(now),
+    deps.marketSession(windowStart),
+  ]);
+  const activeSession: MarketSession =
+    sessionNow !== 'closed' ? sessionNow : sessionInWindow !== 'closed' ? sessionInWindow : 'closed';
+  if (activeSession === 'closed') {
+    deps.logger.info('ingest-quotes skipped: market fully closed (overnight/weekend/holiday)');
+    return {
+      skipped: true,
+      reason: 'market_closed',
+      requested: 0,
+      received: 0,
+      upserted: 0,
+      missing: [],
+      session: 'closed',
+    };
   }
 
   // 2. Which instruments to refresh.
   const symbols = await deps.listActiveSymbols();
   if (symbols.length === 0) {
     deps.logger.warn('ingest-quotes found no active instruments');
-    return { skipped: false, requested: 0, received: 0, upserted: 0, missing: [] };
+    return { skipped: false, requested: 0, received: 0, upserted: 0, missing: [], session: activeSession };
   }
 
   // 3. Fetch snapshots. If the whole call fails (timeout / persistent rate
@@ -126,14 +150,14 @@ export async function runIngest(deps: IngestDeps): Promise<IngestResult> {
       error: err instanceof Error ? err.message : String(err),
       requested: symbols.length,
     });
-    return { skipped: false, requested: symbols.length, received: 0, upserted: 0, missing: symbols };
+    return { skipped: false, requested: symbols.length, received: 0, upserted: 0, missing: symbols, session: activeSession };
   }
 
   // 4. Validate + convert to integer cents, exactly once, at this boundary.
   const writtenAt = now.toISOString();
   const rows: QuoteRow[] = [];
   for (const quote of snapshots) {
-    const row = toQuoteRow(quote, deps.provider.name, writtenAt, deps.logger);
+    const row = toQuoteRow(quote, deps.provider.name, writtenAt, deps.logger, activeSession);
     if (row) rows.push(row);
   }
 
@@ -167,6 +191,7 @@ export async function runIngest(deps: IngestDeps): Promise<IngestResult> {
     received: snapshots.length,
     upserted: rows.length,
     missing,
+    session: activeSession,
   };
 }
 
@@ -177,14 +202,17 @@ export async function runIngest(deps: IngestDeps): Promise<IngestResult> {
  * and the previous row is kept (requirement 2.3) rather than overwritten with a
  * zero or null price.
  *
- * The row records as_of (provider timestamp), is_delayed (true — the MVP uses
- * delayed data), and source (the provider name), per requirement 2.6.
+ * The row records as_of (provider timestamp), is_delayed (true — all quotes
+ * here are delayed, never real-time), and source. The source is suffixed with
+ * the session (e.g. "finnhub+alpaca:extended") so the client can label a price
+ * as regular / pre- or after-hours honestly (requirement 2.6).
  */
 export function toQuoteRow(
   quote: ProviderQuote,
   source: string,
   writtenAt: string,
   logger: Logger,
+  session: MarketSession = 'regular',
 ): QuoteRow | null {
   const symbol = quote.symbol?.trim().toUpperCase();
   if (!symbol) {
@@ -215,7 +243,9 @@ export function toQuoteRow(
       volume,
       as_of: quote.asOf,
       is_delayed: true,
-      source,
+      // Suffix the provider name with the session so the client banner/badge can
+      // distinguish a regular-hours delayed quote from a pre/after-hours one.
+      source: `${source}:${session}`,
       updated_at: writtenAt,
     };
   } catch (err) {
