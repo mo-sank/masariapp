@@ -1,0 +1,51 @@
+symbol,name,type,sector,is_starter,sort_order
+AAPL,Apple Inc.,stock,Information Technology,true,1
+MSFT,Microsoft Corporation,stock,Information Technology,true,2
+NVDA,NVIDIA Corporation,stock,Information Technology,true,3
+DIS,The Walt Disney Company,stock,Communication Services,true,4
+NKE,NIKE Inc.,stock,Consumer Discretionary,true,5
+KO,The Coca-Cola Company,stock,Consumer Staples,true,6
+SBUX,Starbucks Corporation,stock,Consumer Discretionary,true,7
+MCD,McDonald's Corporation,stock,Consumer Discretionary,true,8
+GOOGL,Alphabet Inc.,stock,Communication Services,false,9
+AMZN,Amazon.com Inc.,stock,Consumer Discretionary,false,10
+META,Meta Platforms Inc.,stock,Communication Services,false,11
+NFLX,Netflix Inc.,stock,Communication Services,false,12
+ADBE,Adobe Inc.,stock,Information Technology,false,13
+CRM,Salesforce Inc.,stock,Information Technology,false,14
+ORCL,Oracle Corporation,stock,Information Technology,false,15
+INTC,Intel Corporation,stock,Information Technology,false,16
+AMD,Advanced Micro Devices Inc.,stock,Information Technology,false,17
+CSCO,Cisco Systems Inc.,stock,Information Technology,false,18
+IBM,International Business Machines Corporation,stock,Information Technology,false,19
+QCOM,QUALCOMM Incorporated,stock,Information Technology,false,20
+TSLA,Tesla Inc.,stock,Consumer Discretionary,false,21
+HD,The Home Depot Inc.,stock,Consumer Discretionary,false,22
+LOW,Lowe's Companies Inc.,stock,Consumer Discretionary,false,23
+TGT,Target Corporation,stock,Consumer Discretionary,false,24
+WMT,Walmart Inc.,stock,Consumer Staples,false,25
+COST,Costco Wholesale Corporation,stock,Consumer Staples,false,26
+PG,The Procter & Gamble Company,stock,Consumer Staples,false,27
+PEP,PepsiCo Inc.,stock,Consumer Staples,false,28
+JNJ,Johnson & Johnson,stock,Health Care,false,29
+PFE,Pfizer Inc.,stock,Health Care,false,30
+UNH,UnitedHealth Group Incorporated,stock,Health Care,false,31
+ABBV,AbbVie Inc.,stock,Health Care,false,32
+MRK,Merck & Co. Inc.,stock,Health Care,false,33
+JPM,JPMorgan Chase & Co.,stock,Financials,false,34
+BAC,Bank of America Corporation,stock,Financials,false,35
+V,Visa Inc.,stock,Financials,false,36
+MA,Mastercard Incorporated,stock,Financials,false,37
+AXP,American Express Company,stock,Financials,false,38
+BRK.B,Berkshire Hathaway Inc.,stock,Financials,false,39
+XOM,Exxon Mobil Corporation,stock,Energy,false,40
+CVX,Chevron Corporation,stock,Energy,false,41
+BA,The Boeing Company,stock,Industrials,false,42
+CAT,Caterpillar Inc.,stock,Industrials,false,43
+GE,General Electric Company,stock,Industrials,false,44
+UPS,United Parcel Service Inc.,stock,Industrials,false,45
+LIN,Linde plc,stock,Materials,false,46
+NEE,NextEra Energy Inc.,stock,Utilities,false,47
+AMT,American Tower Corporation,stock,Real Estate,false,48
+T,AT&T Inc.,stock,Communication Services,false,49
+VZ,Verizon Communications Inc.,stock,Communication Services,false,50

@@ -1,0 +1,321 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1. Market data provider spike and shared provider code": [
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151457326
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151462929
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791152096774
+      }
+    ],
+    "2. Database for market data and trading": [
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151457359
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791152099186
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791152615950
+      }
+    ],
+    "3. Market hours function and tests": [
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151457382
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791152618683
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791152802966
+      }
+    ],
+    "4. ingest-quotes Edge Function": [
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151457406
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791152805714
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791154694630
+      }
+    ],
+    "5. ingest-bars Edge Function": [
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151457434
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791154697855
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791155448104
+      }
+    ],
+    "6. place_market_order RPC": [
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151457481
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791155451017
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791155783893
+      }
+    ],
+    "7. Supporting RPCs and snapshot job": [
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151457500
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791155786467
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791156081821
+      }
+    ],
+    "8. Client money and data layer": [
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151457523
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791156084585
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791156459031
+      }
+    ],
+    "9. Explore and search": [
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151457541
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791156461660
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791156991978
+      }
+    ],
+    "10. Stock detail and chart": [
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151457563
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791156994661
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791157476225
+      }
+    ],
+    "11. Watchlist": [
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151457582
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791157478955
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791157878741
+      }
+    ],
+    "12. Portfolio": [
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151457605
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791157881482
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791158058918
+      }
+    ],
+    "13. Order ticket": [
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151457629
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791158061730
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791158787311
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791158969674
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791159099655
+      }
+    ],
+    "14. Reflection and trade history": [
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151457659
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791159102659
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791160362051
+      }
+    ],
+    "15. Guided trade step for lesson L1.4": [
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151457681
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791160365016
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791160572257
+      }
+    ],
+    "16. Disclaimers and copy review": [
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151457699
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791160575190
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791160947212
+      }
+    ],
+    "17. Analytics events": [
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151457721
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791160950240
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791161265703
+      }
+    ],
+    "18. Checkpoint": [
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791151457740
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791161274888
+      },
+      {
+        "executionId": "2b7af31e-254e-472b-85c8-2bfee1827608",
+        "chatSessionId": "sess_cbf16ada-d83b-4b85-b11a-c3b8f2c33bbd",
+        "timestamp": 1791161777063
+      }
+    ]
+  }
+}

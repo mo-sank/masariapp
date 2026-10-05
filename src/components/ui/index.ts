@@ -7,6 +7,7 @@
  */
 export { Button, type ButtonProps, type ButtonVariant } from './button';
 export { Card, type CardProps } from './card';
+export { Disclaimer, DISCLAIMER_TEXT, type DisclaimerProps } from './disclaimer';
 export { ErrorBoundary, type ErrorBoundaryProps } from './error-boundary';
 export { LockedState, type LockedStateProps } from './locked-state';
 export { Screen, type ScreenProps } from './screen';

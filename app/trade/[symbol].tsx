@@ -1,16 +1,31 @@
-import { useLocalSearchParams } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
 
-// Placeholder order-ticket modal route. Order entry arrives in the trading spec.
+import { OrderTicket } from '../../src/features/trading/components';
+import { useSession } from '../../src/lib/auth0';
+
+/**
+ * Order-ticket modal route (requirements 8.1, 8.4, 8.5, 8.6, 8.7, 9.1).
+ *
+ * Reached from the stock detail page's Trade button. This route stays thin: it
+ * resolves the `symbol` route param and the session, then hands off to
+ * {@link OrderTicket}, which owns the whole order flow (side toggle, quantity,
+ * estimate, rationale, idempotent submit, confirmation, and error mapping). All
+ * trading rules and the fill price are decided server-side by
+ * `place_market_order` — the client never sends a price.
+ *
+ * Dismissing a filled order (or an un-tradeable, locked ticket) routes back to
+ * the previous screen.
+ */
 export default function TradeScreen() {
-  const { symbol } = useLocalSearchParams<{ symbol: string }>();
+  const { symbol: rawSymbol } = useLocalSearchParams<{ symbol: string }>();
+  const symbol = (rawSymbol ?? '').toUpperCase();
+  const { isSignedIn } = useSession();
+
   return (
-    <View style={styles.container}>
-      <Text accessibilityRole="header">Trade {symbol}</Text>
-    </View>
+    <OrderTicket
+      symbol={symbol}
+      isSignedIn={isSignedIn}
+      onClose={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/explore'))}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-});

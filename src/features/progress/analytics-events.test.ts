@@ -6,6 +6,13 @@ describe('analytics event allowlist', () => {
     expect(ANALYTICS_EVENT_NAMES).toContain('onboarding_completed');
   });
 
+  it('includes the four trading events (requirements 8.4, 9.2)', () => {
+    expect(ANALYTICS_EVENT_NAMES).toContain('trade_placed');
+    expect(ANALYTICS_EVENT_NAMES).toContain('reflection_submitted');
+    expect(ANALYTICS_EVENT_NAMES).toContain('watchlist_changed');
+    expect(ANALYTICS_EVENT_NAMES).toContain('stock_viewed');
+  });
+
   it('has no duplicate names', () => {
     const unique = new Set(ANALYTICS_EVENT_NAMES);
     expect(unique.size).toBe(ANALYTICS_EVENT_NAMES.length);

@@ -232,6 +232,340 @@ export type Database = {
         };
         Relationships: [];
       };
+      quotes: {
+        Row: {
+          as_of: string;
+          high_cents: number | null;
+          is_delayed: boolean;
+          low_cents: number | null;
+          open_cents: number | null;
+          prev_close_cents: number | null;
+          price_cents: number;
+          source: string;
+          symbol: string;
+          updated_at: string;
+          volume: number | null;
+        };
+        Insert: {
+          as_of: string;
+          high_cents?: number | null;
+          is_delayed?: boolean;
+          low_cents?: number | null;
+          open_cents?: number | null;
+          prev_close_cents?: number | null;
+          price_cents: number;
+          source: string;
+          symbol: string;
+          updated_at?: string;
+          volume?: number | null;
+        };
+        Update: {
+          as_of?: string;
+          high_cents?: number | null;
+          is_delayed?: boolean;
+          low_cents?: number | null;
+          open_cents?: number | null;
+          prev_close_cents?: number | null;
+          price_cents?: number;
+          source?: string;
+          symbol?: string;
+          updated_at?: string;
+          volume?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'quotes_symbol_fkey';
+            columns: ['symbol'];
+            isOneToOne: true;
+            referencedRelation: 'instruments';
+            referencedColumns: ['symbol'];
+          },
+        ];
+      };
+      quote_bars: {
+        Row: {
+          bar_date: string;
+          close_cents: number;
+          high_cents: number;
+          low_cents: number;
+          open_cents: number;
+          symbol: string;
+          volume: number | null;
+        };
+        Insert: {
+          bar_date: string;
+          close_cents: number;
+          high_cents: number;
+          low_cents: number;
+          open_cents: number;
+          symbol: string;
+          volume?: number | null;
+        };
+        Update: {
+          bar_date?: string;
+          close_cents?: number;
+          high_cents?: number;
+          low_cents?: number;
+          open_cents?: number;
+          symbol?: string;
+          volume?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'quote_bars_symbol_fkey';
+            columns: ['symbol'];
+            isOneToOne: false;
+            referencedRelation: 'instruments';
+            referencedColumns: ['symbol'];
+          },
+        ];
+      };
+      market_holidays: {
+        Row: {
+          holiday_date: string;
+          is_early_close: boolean;
+          name: string;
+        };
+        Insert: {
+          holiday_date: string;
+          is_early_close?: boolean;
+          name: string;
+        };
+        Update: {
+          holiday_date?: string;
+          is_early_close?: boolean;
+          name?: string;
+        };
+        Relationships: [];
+      };
+      positions: {
+        Row: {
+          account_id: string;
+          cost_basis_cents: number;
+          qty: number;
+          symbol: string;
+          updated_at: string;
+        };
+        Insert: {
+          account_id: string;
+          cost_basis_cents: number;
+          qty: number;
+          symbol: string;
+          updated_at?: string;
+        };
+        Update: {
+          account_id?: string;
+          cost_basis_cents?: number;
+          qty?: number;
+          symbol?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'positions_account_id_fkey';
+            columns: ['account_id'];
+            isOneToOne: false;
+            referencedRelation: 'paper_accounts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'positions_symbol_fkey';
+            columns: ['symbol'];
+            isOneToOne: false;
+            referencedRelation: 'instruments';
+            referencedColumns: ['symbol'];
+          },
+        ];
+      };
+      orders: {
+        Row: {
+          account_id: string;
+          created_at: string;
+          fill_price_cents: number | null;
+          id: string;
+          idempotency_key: string;
+          order_type: string;
+          price_as_of: string | null;
+          price_source: string | null;
+          qty: number;
+          rationale_tags: string[];
+          rationale_text: string | null;
+          realized_pl_cents: number | null;
+          side: string;
+          status: string;
+          symbol: string;
+          total_cents: number | null;
+          user_id: string;
+        };
+        Insert: {
+          account_id: string;
+          created_at?: string;
+          fill_price_cents?: number | null;
+          id?: string;
+          idempotency_key: string;
+          order_type?: string;
+          price_as_of?: string | null;
+          price_source?: string | null;
+          qty: number;
+          rationale_tags?: string[];
+          rationale_text?: string | null;
+          realized_pl_cents?: number | null;
+          side: string;
+          status?: string;
+          symbol: string;
+          total_cents?: number | null;
+          user_id: string;
+        };
+        Update: {
+          account_id?: string;
+          created_at?: string;
+          fill_price_cents?: number | null;
+          id?: string;
+          idempotency_key?: string;
+          order_type?: string;
+          price_as_of?: string | null;
+          price_source?: string | null;
+          qty?: number;
+          rationale_tags?: string[];
+          rationale_text?: string | null;
+          realized_pl_cents?: number | null;
+          side?: string;
+          status?: string;
+          symbol?: string;
+          total_cents?: number | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'orders_account_id_fkey';
+            columns: ['account_id'];
+            isOneToOne: false;
+            referencedRelation: 'paper_accounts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'orders_symbol_fkey';
+            columns: ['symbol'];
+            isOneToOne: false;
+            referencedRelation: 'instruments';
+            referencedColumns: ['symbol'];
+          },
+          {
+            foreignKeyName: 'orders_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['user_id'];
+          },
+        ];
+      };
+      trade_reflections: {
+        Row: {
+          created_at: string;
+          expectation: string;
+          id: string;
+          note: string | null;
+          order_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          expectation: string;
+          id?: string;
+          note?: string | null;
+          order_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          expectation?: string;
+          id?: string;
+          note?: string | null;
+          order_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'trade_reflections_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: true;
+            referencedRelation: 'orders';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'trade_reflections_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['user_id'];
+          },
+        ];
+      };
+      watchlist_items: {
+        Row: {
+          added_at: string;
+          symbol: string;
+          user_id: string;
+        };
+        Insert: {
+          added_at?: string;
+          symbol: string;
+          user_id: string;
+        };
+        Update: {
+          added_at?: string;
+          symbol?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'watchlist_items_symbol_fkey';
+            columns: ['symbol'];
+            isOneToOne: false;
+            referencedRelation: 'instruments';
+            referencedColumns: ['symbol'];
+          },
+          {
+            foreignKeyName: 'watchlist_items_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['user_id'];
+          },
+        ];
+      };
+      portfolio_snapshots: {
+        Row: {
+          account_id: string;
+          cash_cents: number;
+          equity_cents: number;
+          positions_value_cents: number;
+          snap_date: string;
+        };
+        Insert: {
+          account_id: string;
+          cash_cents: number;
+          equity_cents: number;
+          positions_value_cents: number;
+          snap_date: string;
+        };
+        Update: {
+          account_id?: string;
+          cash_cents?: number;
+          equity_cents?: number;
+          positions_value_cents?: number;
+          snap_date?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'portfolio_snapshots_account_id_fkey';
+            columns: ['account_id'];
+            isOneToOne: false;
+            referencedRelation: 'paper_accounts';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       paper_accounts: {
         Row: {
           cash_cents: number;
@@ -389,6 +723,43 @@ export type Database = {
           p_correct: boolean;
         };
         Returns: Database['public']['Tables']['rewind_items']['Row'];
+      };
+      market_is_open: {
+        Args: {
+          p_at?: string;
+        };
+        Returns: boolean;
+      };
+      place_market_order: {
+        Args: {
+          p_symbol: string;
+          p_side: string;
+          p_qty: number;
+          p_idempotency_key: string;
+          p_rationale_tags?: string[];
+          p_rationale_text?: string | null;
+        };
+        Returns: Database['public']['Tables']['orders']['Row'];
+      };
+      submit_reflection: {
+        Args: {
+          p_order_id: string;
+          p_expectation: string;
+          p_note?: string | null;
+        };
+        Returns: Database['public']['Tables']['trade_reflections']['Row'];
+      };
+      watchlist_add: {
+        Args: {
+          p_symbol: string;
+        };
+        Returns: Database['public']['Tables']['watchlist_items']['Row'];
+      };
+      watchlist_remove: {
+        Args: {
+          p_symbol: string;
+        };
+        Returns: undefined;
       };
     };
     Enums: {

@@ -69,7 +69,7 @@ schema_paths = []
 enabled = true
 # Specifies an ordered list of seed files to load during db reset.
 # Supports glob patterns relative to supabase directory: "./seeds/*.sql"
-sql_paths = ["./seed/seed.sql", "./seed/catalog.generated.sql"]
+sql_paths = ["./seed/seed.sql", "./seed/catalog.generated.sql", "./seed/instruments.sql", "./seed/holidays.sql"]
 
 [db.network_restrictions]
 # Enable management of network restrictions.
@@ -377,6 +377,23 @@ allow_dynamic_registration = false
 # lacking a Supabase token. Disable gateway JWT verification for this function;
 # the function does its own verification. See supabase/functions/delete-account.
 [functions.delete-account]
+verify_jwt = false
+
+# ingest-quotes is called by pg_cron (not a signed-in user), so there is no
+# Supabase JWT to verify. The function authenticates the caller itself with the
+# shared `x-cron-secret` header (value stored in Vault). Disable gateway JWT
+# verification so the request is not rejected for lacking a Supabase token.
+# See supabase/functions/ingest-quotes and docs/db-and-api-reference.md §7.
+[functions.ingest-quotes]
+verify_jwt = false
+
+# ingest-bars is called by pg_cron nightly and by a deployer running a one-off
+# backfill (not a signed-in user), so there is no Supabase JWT to verify. Like
+# ingest-quotes, the function authenticates the caller itself with the shared
+# `x-cron-secret` header (value stored in Vault). Disable gateway JWT
+# verification so the request is not rejected for lacking a Supabase token.
+# See supabase/functions/ingest-bars and docs/db-and-api-reference.md §7.
+[functions.ingest-bars]
 verify_jwt = false
 
 [edge_runtime]

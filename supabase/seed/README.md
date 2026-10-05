@@ -17,7 +17,12 @@ Seed data loaded after migrations on `supabase db reset` (see `[db.seed]` in
   existing database. A local `supabase db reset` applies it automatically; to
   seed a remote/linked project, apply it explicitly (see below).
 
-- `instruments.csv`, `holidays.csv` — populated by later specs.
+- `instruments.csv`, `holidays.csv` — human-readable source of truth for the
+  instrument universe (~50 symbols, 8 starters) and the NYSE holiday calendar.
+- `instruments.sql`, `holidays.sql` — idempotent (`insert ... on conflict do
+  update`) seeds generated from the CSVs above and listed in `config.toml`
+  `[db.seed]`. Keep each `.sql` in sync with its `.csv`. Apply to a linked
+  project the same way as the catalog (`psql "$DATABASE_URL" -f ...`).
 
 ## Seeding a remote project
 

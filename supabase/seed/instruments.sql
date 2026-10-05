@@ -1,0 +1,67 @@
+-- Instrument universe seed (Requirements 1.1, 1.2).
+-- Source of truth: supabase/seed/instruments.csv (human-readable). Keep this
+-- file in sync with that CSV. ~50 large US companies across all GICS sectors,
+-- 8 marked is_starter. Per .kiro/steering/security-privacy.md the universe
+-- excludes penny stocks, meme stocks, leveraged/inverse products, and
+-- crypto-related products. Neutral names only — never a recommendation.
+--
+-- Idempotent: safe to re-run and to apply to a linked project after migrations.
+
+insert into public.instruments(symbol, name, type, sector, is_starter, is_active, sort_order) values
+  ('AAPL', 'Apple Inc.', 'stock', 'Information Technology', true, true, 1),
+  ('MSFT', 'Microsoft Corporation', 'stock', 'Information Technology', true, true, 2),
+  ('NVDA', 'NVIDIA Corporation', 'stock', 'Information Technology', true, true, 3),
+  ('DIS', 'The Walt Disney Company', 'stock', 'Communication Services', true, true, 4),
+  ('NKE', 'NIKE Inc.', 'stock', 'Consumer Discretionary', true, true, 5),
+  ('KO', 'The Coca-Cola Company', 'stock', 'Consumer Staples', true, true, 6),
+  ('SBUX', 'Starbucks Corporation', 'stock', 'Consumer Discretionary', true, true, 7),
+  ('MCD', 'McDonald''s Corporation', 'stock', 'Consumer Discretionary', true, true, 8),
+  ('GOOGL', 'Alphabet Inc.', 'stock', 'Communication Services', false, true, 9),
+  ('AMZN', 'Amazon.com Inc.', 'stock', 'Consumer Discretionary', false, true, 10),
+  ('META', 'Meta Platforms Inc.', 'stock', 'Communication Services', false, true, 11),
+  ('NFLX', 'Netflix Inc.', 'stock', 'Communication Services', false, true, 12),
+  ('ADBE', 'Adobe Inc.', 'stock', 'Information Technology', false, true, 13),
+  ('CRM', 'Salesforce Inc.', 'stock', 'Information Technology', false, true, 14),
+  ('ORCL', 'Oracle Corporation', 'stock', 'Information Technology', false, true, 15),
+  ('INTC', 'Intel Corporation', 'stock', 'Information Technology', false, true, 16),
+  ('AMD', 'Advanced Micro Devices Inc.', 'stock', 'Information Technology', false, true, 17),
+  ('CSCO', 'Cisco Systems Inc.', 'stock', 'Information Technology', false, true, 18),
+  ('IBM', 'International Business Machines Corporation', 'stock', 'Information Technology', false, true, 19),
+  ('QCOM', 'QUALCOMM Incorporated', 'stock', 'Information Technology', false, true, 20),
+  ('TSLA', 'Tesla Inc.', 'stock', 'Consumer Discretionary', false, true, 21),
+  ('HD', 'The Home Depot Inc.', 'stock', 'Consumer Discretionary', false, true, 22),
+  ('LOW', 'Lowe''s Companies Inc.', 'stock', 'Consumer Discretionary', false, true, 23),
+  ('TGT', 'Target Corporation', 'stock', 'Consumer Discretionary', false, true, 24),
+  ('WMT', 'Walmart Inc.', 'stock', 'Consumer Staples', false, true, 25),
+  ('COST', 'Costco Wholesale Corporation', 'stock', 'Consumer Staples', false, true, 26),
+  ('PG', 'The Procter & Gamble Company', 'stock', 'Consumer Staples', false, true, 27),
+  ('PEP', 'PepsiCo Inc.', 'stock', 'Consumer Staples', false, true, 28),
+  ('JNJ', 'Johnson & Johnson', 'stock', 'Health Care', false, true, 29),
+  ('PFE', 'Pfizer Inc.', 'stock', 'Health Care', false, true, 30),
+  ('UNH', 'UnitedHealth Group Incorporated', 'stock', 'Health Care', false, true, 31),
+  ('ABBV', 'AbbVie Inc.', 'stock', 'Health Care', false, true, 32),
+  ('MRK', 'Merck & Co. Inc.', 'stock', 'Health Care', false, true, 33),
+  ('JPM', 'JPMorgan Chase & Co.', 'stock', 'Financials', false, true, 34),
+  ('BAC', 'Bank of America Corporation', 'stock', 'Financials', false, true, 35),
+  ('V', 'Visa Inc.', 'stock', 'Financials', false, true, 36),
+  ('MA', 'Mastercard Incorporated', 'stock', 'Financials', false, true, 37),
+  ('AXP', 'American Express Company', 'stock', 'Financials', false, true, 38),
+  ('BRK.B', 'Berkshire Hathaway Inc.', 'stock', 'Financials', false, true, 39),
+  ('XOM', 'Exxon Mobil Corporation', 'stock', 'Energy', false, true, 40),
+  ('CVX', 'Chevron Corporation', 'stock', 'Energy', false, true, 41),
+  ('BA', 'The Boeing Company', 'stock', 'Industrials', false, true, 42),
+  ('CAT', 'Caterpillar Inc.', 'stock', 'Industrials', false, true, 43),
+  ('GE', 'General Electric Company', 'stock', 'Industrials', false, true, 44),
+  ('UPS', 'United Parcel Service Inc.', 'stock', 'Industrials', false, true, 45),
+  ('LIN', 'Linde plc', 'stock', 'Materials', false, true, 46),
+  ('NEE', 'NextEra Energy Inc.', 'stock', 'Utilities', false, true, 47),
+  ('AMT', 'American Tower Corporation', 'stock', 'Real Estate', false, true, 48),
+  ('T', 'AT&T Inc.', 'stock', 'Communication Services', false, true, 49),
+  ('VZ', 'Verizon Communications Inc.', 'stock', 'Communication Services', false, true, 50)
+on conflict (symbol) do update set
+  name = excluded.name,
+  type = excluded.type,
+  sector = excluded.sector,
+  is_starter = excluded.is_starter,
+  is_active = excluded.is_active,
+  sort_order = excluded.sort_order;

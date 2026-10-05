@@ -19,7 +19,15 @@
  *   - `lesson_completed`: logged when a lesson run finishes (with duration).
  *   - `rewind_session_completed`: logged when a Rewind session finishes.
  *
- * Later specs (trading, progression) append their own names to both places.
+ * The market-data-paper-trading spec (requirements 8.4, 9.2) adds the trading
+ * lifecycle events — all carrying only enums/identifiers, never free text:
+ *   - `trade_placed`: logged when an order is successfully placed.
+ *   - `reflection_submitted`: logged when a post-trade reflection is saved.
+ *   - `watchlist_changed`: logged when a symbol is added to / removed from the
+ *     watchlist.
+ *   - `stock_viewed`: logged when a stock detail screen opens for a symbol.
+ *
+ * Later specs (progression) append their own names to both places.
  * Keeping the canonical list in the progress feature matches the spec's
  * requirement text and keeps all analytics vocabulary in one module.
  *
@@ -42,6 +50,11 @@ export const ANALYTICS_EVENT_NAMES = [
   'step_answered',
   'lesson_completed',
   'rewind_session_completed',
+  // market-data-paper-trading (requirements 8.4, 9.2)
+  'trade_placed',
+  'reflection_submitted',
+  'watchlist_changed',
+  'stock_viewed',
 ] as const;
 
 /** The union of every allowed event name. */
