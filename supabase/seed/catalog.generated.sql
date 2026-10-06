@@ -13,6 +13,7 @@ values
   ('L1.4', 1, 4, 'lesson', 15, 60, 'L1.3'),
   ('L1.5', 1, 5, 'lesson', 15, 60, 'L1.4'),
   ('B1', 1, 6, 'boss', 30, 70, 'L1.5'),
+  ('L0B', 0, 100, 'placement', 0, 0, NULL),
   ('L2.1', 2, 1, 'lesson', 10, 60, 'B1')
 on conflict (lesson_id) do update set
   unit = excluded.unit,

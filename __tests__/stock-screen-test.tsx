@@ -19,10 +19,19 @@ jest.mock('../src/lib/auth0', () => ({
   useSession: () => ({ isSignedIn: mockSignedIn, isLoading: false }),
 }));
 
-// Unlocks: control which feature keys are unlocked.
-let mockUnlocks: { feature_key: string }[] = [{ feature_key: 'stock_detail' }];
+// Unlocks: control which feature keys are unlocked. The shared useUnlock hook
+// (behind Gate and the chart sub-gates) only reports a feature unlocked when the
+// backing query has succeeded, so the mock reports isSuccess for a resolved
+// (non-empty-or-empty) data set and not-success while "loading".
+let mockUnlocks: { feature_key: string }[] | undefined = [{ feature_key: 'stock_detail' }];
 jest.mock('../src/features/lessons/hooks/use-unlocks', () => ({
-  useUnlocks: () => ({ data: mockUnlocks, isLoading: false, isError: false }),
+  useUnlocks: () => ({
+    data: mockUnlocks,
+    isSuccess: mockUnlocks !== undefined,
+    isLoading: mockUnlocks === undefined,
+    isError: false,
+    refetch: jest.fn(),
+  }),
 }));
 
 // Quote hook.
@@ -113,6 +122,17 @@ jest.mock('../src/features/watchlist/use-watchlist-mutations', () => ({
   useWatchlistRemove: () => ({ mutate: jest.fn(), isPending: false }),
   mapWatchlistError: () => 'error',
 }));
+// app_config: the WatchlistButton reads watchlist_max for its limit message
+// (8.1). Stub it so this screen test needs no QueryClient; the config-driven
+// behavior itself is covered by use-app-config.test.ts and watchlist-button.test.tsx.
+jest.mock('../src/features/config/use-app-config', () => ({
+  useAppConfig: () => ({
+    config: { watchlist_max: 5 },
+    isLoading: false,
+    isError: false,
+    getNumber: () => 5,
+  }),
+}));
 jest.mock('../src/components/ui', () => {
   const actual = jest.requireActual('../src/components/ui');
   return { ...actual, useToast: () => ({ show: jest.fn(), hide: jest.fn() }) };
@@ -193,14 +213,14 @@ describe('<StockScreen />', () => {
   it('shows the locked state naming the unlocking lesson when stock_detail is locked (5.1)', async () => {
     mockUnlocks = [];
     await renderScreen();
-    expect(screen.getByText('Stock details is locked')).toBeTruthy();
+    expect(screen.getByText('Stock detail is locked')).toBeTruthy();
     expect(screen.getByText(/Anatomy of a Stock Card/)).toBeTruthy();
   });
 
   it('fails closed while unlocks are empty even when signed in', async () => {
     mockUnlocks = [{ feature_key: 'explore' }];
     await renderScreen();
-    expect(screen.getByText('Stock details is locked')).toBeTruthy();
+    expect(screen.getByText('Stock detail is locked')).toBeTruthy();
   });
 
   it('renders price, previous close, day range, volume and sector when unlocked (5.1)', async () => {

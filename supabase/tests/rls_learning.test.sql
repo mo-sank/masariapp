@@ -16,9 +16,16 @@ create extension if not exists pgtap;
 \ir _helpers.sql
 
 -- Seed catalog (reference) and two users' owned rows as the privileged owner.
+-- The CLI test runner seeds supabase/seed/catalog.generated.sql before each test
+-- file, so L0/L1.1 and the 'explore' unlock rule may already exist; `on conflict
+-- do nothing` makes these reference rows idempotent instead of colliding on the
+-- primary keys. This test only needs the rows to exist (it reads them back for
+-- the isolation checks below), so DO NOTHING is sufficient.
 insert into public.lessons_catalog(lesson_id, unit, sort_order, kind)
-  values ('L0', 0, 0, 'placement'), ('L1.1', 1, 1, 'lesson');
-insert into public.feature_unlock_rules(feature_key, lesson_id) values ('explore', 'L1.1');
+  values ('L0', 0, 0, 'placement'), ('L1.1', 1, 1, 'lesson')
+  on conflict (lesson_id) do nothing;
+insert into public.feature_unlock_rules(feature_key, lesson_id) values ('explore', 'L1.1')
+  on conflict (feature_key) do nothing;
 
 insert into public.profiles(user_id, username, birth_year, age_band)
 values ('auth0|userA', 'red-fox-11', 2010, '13-15'),
@@ -57,11 +64,15 @@ select is((select count(*)::int from public.badges), 1,
 select is((select count(*)::int from public.rewind_items), 1,
   'A sees only its own rewind_items row');
 
--- Reference tables are readable by any authenticated user.
-select is((select count(*)::int from public.lessons_catalog), 2,
-  'A can read the shared lessons_catalog');
-select is((select count(*)::int from public.feature_unlock_rules), 1,
-  'A can read the shared feature_unlock_rules');
+-- Reference tables are readable by any authenticated user. The runner also seeds
+-- the full catalog, so assert the specific rows this test relies on are visible
+-- rather than an exact table count (which would depend on the seed set).
+select is(
+  (select count(*)::int from public.lessons_catalog where lesson_id in ('L0','L1.1')),
+  2, 'A can read the shared lessons_catalog');
+select is(
+  (select count(*)::int from public.feature_unlock_rules where feature_key = 'explore'),
+  1, 'A can read the shared feature_unlock_rules');
 
 -- ---------------------------------------------------------------------------
 -- Anon reads nothing: it holds no SELECT grant on the owned learning tables, so

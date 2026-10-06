@@ -6,6 +6,11 @@
  * a "go to feature" button for each unlock that has a destination (requirement
  * 5.4). A "Back to path" button returns to the Learn tab.
  *
+ * The newly unlocked features are rendered by {@link UnlockCelebration}, which
+ * animates each unlock in with a short description of what it does and a "Try it
+ * now" deep link (progression spec requirements 2.1, 2.2), falling back to a
+ * static version when the OS reduce-motion setting is on (requirement 2.3).
+ *
  * Replay handling (requirement 5.6): a replayed lesson awards no extra XP and no
  * new unlocks. The screen reads that from the result (`firstCompletion === false`
  * -> `xpAwarded === 0`, empty `unlocked`) and shows an encouraging "Nice replay"
@@ -19,11 +24,11 @@
  */
 import { View } from 'react-native';
 
-import { featureRoute } from './feature-routes';
 import { Button, Card, Screen, Text } from '../../../../components/ui';
+import { UnlockCelebration } from '../../../progress/components/UnlockCelebration';
+import { useReduceMotion } from '../../../../theme/use-reduce-motion';
 import { useTheme } from '../../../../theme/theme-provider';
 import type { CompletionPassed } from '../../api/complete-lesson';
-import { featureLabel } from '../path/feature-labels';
 
 export interface CompletionResultsProps {
   /** The parsed passing result from `complete_lesson`. */
@@ -43,14 +48,7 @@ export function CompletionResults({
   onBackToPath,
 }: CompletionResultsProps) {
   const theme = useTheme();
-
-  // Only unlocks with a known destination get a navigation button; the rest are
-  // still shown by name so the learner sees everything they earned.
-  const unlocks = result.unlocked.map((key) => ({
-    key,
-    label: featureLabel(key),
-    route: featureRoute(key),
-  }));
+  const reduceMotion = useReduceMotion();
 
   // Requirement 5.6: a replay awards no XP. Show encouragement, not "0 XP".
   const earnedXp = result.firstCompletion && result.xpAwarded > 0;
@@ -102,25 +100,11 @@ export function CompletionResults({
         />
       </Card>
 
-      {unlocks.length > 0 ? (
-        <View style={{ gap: theme.spacing.sm }}>
-          <Text variant="body" accessibilityRole="header">
-            You unlocked
-          </Text>
-          {unlocks.map((unlock) => (
-            <Card key={unlock.key} style={{ gap: theme.spacing.sm }}>
-              <Text variant="body">{`🎉 ${unlock.label}`}</Text>
-              {unlock.route ? (
-                <Button
-                  title={`Go to ${unlock.label}`}
-                  onPress={() => onGoToFeature(unlock.route as string)}
-                  accessibilityLabel={`Go to ${unlock.label}`}
-                />
-              ) : null}
-            </Card>
-          ))}
-        </View>
-      ) : null}
+      <UnlockCelebration
+        unlocked={result.unlocked}
+        onTryFeature={onGoToFeature}
+        reduceMotion={reduceMotion}
+      />
 
       <Button
         title="Back to path"

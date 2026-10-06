@@ -1,0 +1,199 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1. Feature keys and unlock hooks": [
+      {
+        "executionId": "8b022fb0-5265-4a82-ad80-f5ac6bf2eaad",
+        "chatSessionId": "sess_9fe8d087-a153-4ae2-936a-53fd4c88b8d4",
+        "timestamp": 1791213444913
+      },
+      {
+        "executionId": "8b022fb0-5265-4a82-ad80-f5ac6bf2eaad",
+        "chatSessionId": "sess_9fe8d087-a153-4ae2-936a-53fd4c88b8d4",
+        "timestamp": 1791213450618
+      },
+      {
+        "executionId": "8b022fb0-5265-4a82-ad80-f5ac6bf2eaad",
+        "chatSessionId": "sess_9fe8d087-a153-4ae2-936a-53fd4c88b8d4",
+        "timestamp": 1791213811402
+      }
+    ],
+    "2. Wire gating into every gated screen": [
+      {
+        "executionId": "8b022fb0-5265-4a82-ad80-f5ac6bf2eaad",
+        "chatSessionId": "sess_9fe8d087-a153-4ae2-936a-53fd4c88b8d4",
+        "timestamp": 1791213444944
+      },
+      {
+        "executionId": "8b022fb0-5265-4a82-ad80-f5ac6bf2eaad",
+        "chatSessionId": "sess_9fe8d087-a153-4ae2-936a-53fd4c88b8d4",
+        "timestamp": 1791213817805
+      },
+      {
+        "executionId": "6c313eaa-921b-49ba-b344-1581337e1c2a",
+        "chatSessionId": "sess_f26405bc-5171-4e6a-b814-3429c937c9ef",
+        "timestamp": 1791228004559
+      },
+      {
+        "executionId": "6c313eaa-921b-49ba-b344-1581337e1c2a",
+        "chatSessionId": "sess_f26405bc-5171-4e6a-b814-3429c937c9ef",
+        "timestamp": 1791228139429
+      }
+    ],
+    "3. Server-side unlock enforcement tests": [
+      {
+        "executionId": "8b022fb0-5265-4a82-ad80-f5ac6bf2eaad",
+        "chatSessionId": "sess_9fe8d087-a153-4ae2-936a-53fd4c88b8d4",
+        "timestamp": 1791213444976
+      },
+      {
+        "executionId": "23328bb4-5b2d-4106-bcb7-e32125d4c896",
+        "chatSessionId": "sess_c27ee65d-4598-43e6-97c8-3ea6eea38134",
+        "timestamp": 1791228184369
+      },
+      {
+        "executionId": "23328bb4-5b2d-4106-bcb7-e32125d4c896",
+        "chatSessionId": "sess_c27ee65d-4598-43e6-97c8-3ea6eea38134",
+        "timestamp": 1791228532199
+      }
+    ],
+    "4. Unlock celebration": [
+      {
+        "executionId": "8b022fb0-5265-4a82-ad80-f5ac6bf2eaad",
+        "chatSessionId": "sess_9fe8d087-a153-4ae2-936a-53fd4c88b8d4",
+        "timestamp": 1791213445010
+      },
+      {
+        "executionId": "23328bb4-5b2d-4106-bcb7-e32125d4c896",
+        "chatSessionId": "sess_c27ee65d-4598-43e6-97c8-3ea6eea38134",
+        "timestamp": 1791228537854
+      },
+      {
+        "executionId": "23328bb4-5b2d-4106-bcb7-e32125d4c896",
+        "chatSessionId": "sess_c27ee65d-4598-43e6-97c8-3ea6eea38134",
+        "timestamp": 1791229596369
+      }
+    ],
+    "5. Stats display and ranks": [
+      {
+        "executionId": "8b022fb0-5265-4a82-ad80-f5ac6bf2eaad",
+        "chatSessionId": "sess_9fe8d087-a153-4ae2-936a-53fd4c88b8d4",
+        "timestamp": 1791213445051
+      },
+      {
+        "executionId": "23328bb4-5b2d-4106-bcb7-e32125d4c896",
+        "chatSessionId": "sess_c27ee65d-4598-43e6-97c8-3ea6eea38134",
+        "timestamp": 1791229602720
+      },
+      {
+        "executionId": "23328bb4-5b2d-4106-bcb7-e32125d4c896",
+        "chatSessionId": "sess_c27ee65d-4598-43e6-97c8-3ea6eea38134",
+        "timestamp": 1791229905195
+      }
+    ],
+    "6. Daily Market Briefing": [
+      {
+        "executionId": "8b022fb0-5265-4a82-ad80-f5ac6bf2eaad",
+        "chatSessionId": "sess_9fe8d087-a153-4ae2-936a-53fd4c88b8d4",
+        "timestamp": 1791213445075
+      },
+      {
+        "executionId": "23328bb4-5b2d-4106-bcb7-e32125d4c896",
+        "chatSessionId": "sess_c27ee65d-4598-43e6-97c8-3ea6eea38134",
+        "timestamp": 1791229910845
+      },
+      {
+        "executionId": "23328bb4-5b2d-4106-bcb7-e32125d4c896",
+        "chatSessionId": "sess_c27ee65d-4598-43e6-97c8-3ea6eea38134",
+        "timestamp": 1791232379878
+      }
+    ],
+    "7. In-app feedback": [
+      {
+        "executionId": "8b022fb0-5265-4a82-ad80-f5ac6bf2eaad",
+        "chatSessionId": "sess_9fe8d087-a153-4ae2-936a-53fd4c88b8d4",
+        "timestamp": 1791213445101
+      },
+      {
+        "executionId": "23328bb4-5b2d-4106-bcb7-e32125d4c896",
+        "chatSessionId": "sess_c27ee65d-4598-43e6-97c8-3ea6eea38134",
+        "timestamp": 1791232385652
+      },
+      {
+        "executionId": "23328bb4-5b2d-4106-bcb7-e32125d4c896",
+        "chatSessionId": "sess_c27ee65d-4598-43e6-97c8-3ea6eea38134",
+        "timestamp": 1791233059526
+      }
+    ],
+    "8. Delayed review and Form B readiness": [
+      {
+        "executionId": "8b022fb0-5265-4a82-ad80-f5ac6bf2eaad",
+        "chatSessionId": "sess_9fe8d087-a153-4ae2-936a-53fd4c88b8d4",
+        "timestamp": 1791213445123
+      },
+      {
+        "executionId": "23328bb4-5b2d-4106-bcb7-e32125d4c896",
+        "chatSessionId": "sess_c27ee65d-4598-43e6-97c8-3ea6eea38134",
+        "timestamp": 1791233066268
+      },
+      {
+        "executionId": "23328bb4-5b2d-4106-bcb7-e32125d4c896",
+        "chatSessionId": "sess_c27ee65d-4598-43e6-97c8-3ea6eea38134",
+        "timestamp": 1791233567877
+      }
+    ],
+    "9. Evaluation views and report queries": [
+      {
+        "executionId": "8b022fb0-5265-4a82-ad80-f5ac6bf2eaad",
+        "chatSessionId": "sess_9fe8d087-a153-4ae2-936a-53fd4c88b8d4",
+        "timestamp": 1791213445143
+      },
+      {
+        "executionId": "23328bb4-5b2d-4106-bcb7-e32125d4c896",
+        "chatSessionId": "sess_c27ee65d-4598-43e6-97c8-3ea6eea38134",
+        "timestamp": 1791233574586
+      },
+      {
+        "executionId": "23328bb4-5b2d-4106-bcb7-e32125d4c896",
+        "chatSessionId": "sess_c27ee65d-4598-43e6-97c8-3ea6eea38134",
+        "timestamp": 1791233826216
+      }
+    ],
+    "10. Config-driven limits": [
+      {
+        "executionId": "8b022fb0-5265-4a82-ad80-f5ac6bf2eaad",
+        "chatSessionId": "sess_9fe8d087-a153-4ae2-936a-53fd4c88b8d4",
+        "timestamp": 1791213445168
+      },
+      {
+        "executionId": "23328bb4-5b2d-4106-bcb7-e32125d4c896",
+        "chatSessionId": "sess_c27ee65d-4598-43e6-97c8-3ea6eea38134",
+        "timestamp": 1791233831950
+      },
+      {
+        "executionId": "23328bb4-5b2d-4106-bcb7-e32125d4c896",
+        "chatSessionId": "sess_c27ee65d-4598-43e6-97c8-3ea6eea38134",
+        "timestamp": 1791234240856
+      }
+    ],
+    "11. Beta readiness": [
+      {
+        "executionId": "8b022fb0-5265-4a82-ad80-f5ac6bf2eaad",
+        "chatSessionId": "sess_9fe8d087-a153-4ae2-936a-53fd4c88b8d4",
+        "timestamp": 1791213445192
+      },
+      {
+        "executionId": "23328bb4-5b2d-4106-bcb7-e32125d4c896",
+        "chatSessionId": "sess_c27ee65d-4598-43e6-97c8-3ea6eea38134",
+        "timestamp": 1791234248330
+      }
+    ],
+    "12. Checkpoint": [
+      {
+        "executionId": "8b022fb0-5265-4a82-ad80-f5ac6bf2eaad",
+        "chatSessionId": "sess_9fe8d087-a153-4ae2-936a-53fd4c88b8d4",
+        "timestamp": 1791213445223
+      }
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
-import { Screen, StateView, useToast } from '../../src/components/ui';
+import { Button, Screen, StateView, Text, useToast } from '../../src/components/ui';
 import { buildRewindItems } from '../../src/features/lessons/api/save-rewind-items';
 import { buildItemResults } from '../../src/features/lessons/api/submit-assessment';
 import { trackLessonStarted } from '../../src/features/lessons/analytics';
@@ -9,12 +9,15 @@ import { LessonPlayer } from '../../src/features/lessons/components/LessonPlayer
 import { useCompletionResultStore } from '../../src/features/lessons/completion-result-store';
 import { getLesson } from '../../src/features/lessons/content';
 import { useCompleteLesson } from '../../src/features/lessons/hooks/use-complete-lesson';
+import { useLessonProgress } from '../../src/features/lessons/hooks/use-lesson-progress';
 import { useSaveRewindItems } from '../../src/features/lessons/hooks/use-save-rewind-items';
 import { useSubmitAssessment } from '../../src/features/lessons/hooks/use-submit-assessment';
+import { lessonStatus } from '../../src/features/lessons/path';
 import { usePlacementResultStore } from '../../src/features/lessons/placement-result-store';
 import type { Lesson } from '../../src/features/lessons/schema';
 import type { LessonScore } from '../../src/features/lessons/scoring';
 import { useSessionStore } from '../../src/features/lessons/store/session';
+import { useSession } from '../../src/lib/auth0';
 
 /**
  * Lesson player route (requirements 3.1, 3.3, 7.1, 10.1).
@@ -59,6 +62,27 @@ export default function LessonScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const lesson = id ? getLesson(id) : undefined;
 
+  // Prerequisite guard (lesson-engine design "Learning path logic"): a lesson is
+  // only playable when it is `available` — i.e. it has no prerequisite or the
+  // prerequisite is completed. Opening `/lesson/<id>` directly (e.g. via a
+  // locked tab's "Start lesson" button, which deep-links to the unlocking
+  // lesson) must NOT bypass that order. We load the learner's completed set and
+  // compute the status; a `locked` lesson shows a "finish the prerequisite
+  // first" state instead of the player, and no session is started for it. The
+  // server also re-enforces the unlock on completion, but the client must not
+  // even render the player for a lesson the learner has not earned.
+  const { isSignedIn } = useSession();
+  const progress = useLessonProgress(isSignedIn);
+  const completedIds = useMemo(() => {
+    const rows = progress.data ?? [];
+    return new Set(rows.filter((r) => r.status === 'completed').map((r) => r.lesson_id));
+  }, [progress.data]);
+
+  // While the completed set is loading we fail closed (treat as not-yet-known)
+  // so an available lesson does not flash the player before we can confirm, and
+  // a locked lesson is never shown even for a frame.
+  const progressLoading = isSignedIn && progress.isLoading;
+  const status = lesson ? lessonStatus(lesson, completedIds) : null;
 
   const resumeIfSameSession = useSessionStore((s) => s.resumeIfSameSession);
   const exitSession = useSessionStore((s) => s.exit);
@@ -73,7 +97,9 @@ export default function LessonScreen() {
   // a fresh session actually begins. A ref guards against double-invocation.
   const started = useRef(false);
   useEffect(() => {
-    if (!lesson || started.current) {
+    // Do not start a session until we know the lesson is playable: skip while
+    // the completed set is loading and skip entirely for a locked lesson.
+    if (!lesson || started.current || progressLoading || status === 'locked') {
       return;
     }
     started.current = true;
@@ -88,7 +114,7 @@ export default function LessonScreen() {
     if (isFreshStart) {
       trackLessonStarted(lesson.id);
     }
-  }, [lesson, resumeIfSameSession]);
+  }, [lesson, resumeIfSameSession, progressLoading, status]);
 
   if (!lesson) {
     return (
@@ -101,6 +127,26 @@ export default function LessonScreen() {
         />
       </Screen>
     );
+  }
+
+  // Fail closed while we confirm the lesson is unlocked: show a loading state
+  // rather than flashing the player (or a locked state) before progress loads.
+  if (progressLoading) {
+    return (
+      <Screen>
+        <StateView kind="loading" />
+      </Screen>
+    );
+  }
+
+  // Locked: the learner has not completed the prerequisite, so the lesson is not
+  // playable yet. Name the prerequisite and give them a way back rather than
+  // letting them take it out of order (this is the fix for opening a locked
+  // lesson via a gated tab's "Start lesson" deep link).
+  if (status === 'locked') {
+    const prerequisiteId = lesson.prerequisite;
+    const prerequisiteTitle = prerequisiteId ? getLesson(prerequisiteId)?.title : undefined;
+    return <LockedLesson prerequisiteTitle={prerequisiteTitle} />;
   }
 
   const handlePlacementComplete = async (completed: Lesson, score: LessonScore) => {
@@ -212,5 +258,35 @@ export default function LessonScreen() {
       onExit={() => router.back()}
       onComplete={(result) => void handleComplete(result)}
     />
+  );
+}
+
+/**
+ * Shown when a learner reaches a lesson whose prerequisite is not yet complete.
+ * Explains what to finish first and offers a way back to the learning path, so
+ * the learner is never stuck on a dead-end screen.
+ */
+function LockedLesson({ prerequisiteTitle }: { prerequisiteTitle?: string }) {
+  const message = prerequisiteTitle
+    ? `Finish "${prerequisiteTitle}" first to unlock this lesson.`
+    : 'Finish the earlier lessons first to unlock this one.';
+  return (
+    <Screen center style={{ gap: 16 }}>
+      <Text variant="title" style={{ fontSize: 40, lineHeight: 48 }} accessibilityElementsHidden>
+        🔒
+      </Text>
+      <Text variant="title" color="text" accessibilityRole="header" style={{ textAlign: 'center' }}>
+        Lesson locked
+      </Text>
+      <Text variant="body" color="textMuted" style={{ textAlign: 'center', maxWidth: 320 }}>
+        {message}
+      </Text>
+      <Button
+        title="Back to lessons"
+        variant="primary"
+        onPress={() => router.replace('/(tabs)/learn')}
+        accessibilityLabel="Back to lessons"
+      />
+    </Screen>
   );
 }

@@ -24,10 +24,18 @@ jest.mock('../src/lib/auth0', () => ({
   useSession: () => ({ isSignedIn: true }),
 }));
 
-// Unlocks: driven per test.
-let mockUnlocks: { data: { feature_key: string }[] };
+// Unlocks: driven per test. The shared useUnlock hook (behind Gate) only reports
+// a feature unlocked when the backing query has succeeded, so derive isSuccess /
+// isLoading from whether the data has resolved (undefined models loading).
+let mockUnlocks: { data: { feature_key: string }[] | undefined };
 jest.mock('../src/features/lessons/hooks/use-unlocks', () => ({
-  useUnlocks: () => mockUnlocks,
+  useUnlocks: () => ({
+    data: mockUnlocks.data,
+    isSuccess: mockUnlocks.data !== undefined,
+    isLoading: mockUnlocks.data === undefined,
+    isError: false,
+    refetch: jest.fn(),
+  }),
 }));
 
 // Orders / reflections queries: driven per test.
@@ -114,10 +122,12 @@ describe('<TradeHistoryScreen /> route', () => {
     ).toBeTruthy();
   });
 
-  it('fails closed (locked) while unlocks are still loading', async () => {
-    mockUnlocks = { data: undefined as unknown as { feature_key: string }[] };
+  it('fails closed while unlocks are still loading (shows loading, not the history)', async () => {
+    mockUnlocks = { data: undefined };
     await renderScreen();
-    expect(screen.getByText('Trade history is locked')).toBeTruthy();
+    // Fail closed: the gate shows a loading placeholder and never the history.
+    expect(screen.getByLabelText('Loading')).toBeTruthy();
+    expect(screen.queryByText('No trades yet')).toBeNull();
   });
 
   it('shows a friendly empty state when unlocked with no orders (10.1)', async () => {

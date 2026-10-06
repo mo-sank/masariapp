@@ -14,7 +14,7 @@
 -- under its definer privileges, so no direct DML grants are needed.
 
 begin;
-select plan(23);
+select plan(24);
 
 create extension if not exists pgtap;
 \set helpers_included on
@@ -47,23 +47,25 @@ select is((select count(*)::int from public.consents where user_id = 'auth0|mino
   0, 'under-13 attempt creates no consent rows');
 
 -- ---------------------------------------------------------------------------
--- Username format rules (Requirement 5.3 / profiles CHECK; 5.5 username_taken).
+-- Username rules (Requirement 5.3 via public.username_allowed; 5.5 username_taken).
+-- The format is now the relaxed ^[a-zA-Z0-9_-]{3,20}$, so a custom name like
+-- 'Cool_Trader' is valid; only a malformed OR blocklisted name is rejected.
 -- ---------------------------------------------------------------------------
 reset role;
 select tests.set_authenticated_claims('auth0|badname');
 set role authenticated;
 
--- Uppercase / digits in the wrong place: rejected before any write.
+-- A disallowed character (space) fails the format gate.
 select throws_ok(
-  $$ select public.create_profile('BadName123', 2008, 6, 'America/New_York', 'v1', 'v1') $$,
+  $$ select public.create_profile('bad name', 2008, 6, 'America/New_York', 'v1', 'v1') $$,
   'invalid_username',
-  'create_profile rejects a username that violates the format');
+  'create_profile rejects a username with a disallowed character');
 
--- Missing the numeric segment: also invalid.
+-- A blocklisted word is rejected as invalid_username (profane == invalid).
 select throws_ok(
-  $$ select public.create_profile('red-fox', 2008, 6, 'America/New_York', 'v1', 'v1') $$,
+  $$ select public.create_profile('shithead', 2008, 6, 'America/New_York', 'v1', 'v1') $$,
   'invalid_username',
-  'create_profile rejects a username missing the number segment');
+  'create_profile rejects a blocklisted username as invalid_username');
 
 reset role;
 select is((select count(*)::int from public.profiles where user_id = 'auth0|badname'),
@@ -148,6 +150,13 @@ select throws_ok(
   $$ select public.create_profile('cool-fox-77', 2008, 6, 'America/New_York', 'v1', 'v1') $$,
   'username_taken',
   'a taken username surfaces as username_taken for a different user');
+
+-- Uniqueness is case-insensitive: the SAME name in a different case is also
+-- reported as username_taken (not a raw unique_violation).
+select throws_ok(
+  $$ select public.create_profile('COOL-FOX-77', 2008, 6, 'America/New_York', 'v1', 'v1') $$,
+  'username_taken',
+  'a taken username is username_taken case-insensitively');
 
 select * from finish();
 rollback;

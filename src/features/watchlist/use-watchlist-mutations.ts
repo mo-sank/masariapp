@@ -31,7 +31,14 @@ import type { Database } from '../../types/db';
 
 type WatchlistItemRow = Database['public']['Tables']['watchlist_items']['Row'];
 
-/** The configured maximum watchlist size (app_config.watchlist_max). */
+/**
+ * Fallback maximum watchlist size, matching the server's coalesce default for
+ * `app_config.watchlist_max` (supporting_rpcs.sql). The real cap is tunable in
+ * app_config and enforced server-side; the client reads the live value for the
+ * limit *message* via {@link mapWatchlistError} so what the UI says matches what
+ * the server enforces (requirement 8.1). This constant is only the fallback used
+ * when the config has not loaded yet.
+ */
 export const WATCHLIST_MAX = 5;
 
 /** Stable error codes the watchlist RPCs can raise (as the error message). */
@@ -41,10 +48,12 @@ export type WatchlistErrorCode =
   | 'symbol_not_available'
   | 'not_authenticated';
 
-/** Friendly, teen-appropriate copy for each known watchlist error code. */
-const WATCHLIST_ERROR_MESSAGES: Record<WatchlistErrorCode, string> = {
-  // Requirement 6.2: a friendly limit message when the list is full.
-  watchlist_full: `Your watchlist is full. Remove one to add another (max ${WATCHLIST_MAX}).`,
+/**
+ * Friendly, teen-appropriate copy for each watchlist error code except
+ * `watchlist_full`, whose message names the configured max and is built per call
+ * from the live app_config value (see {@link mapWatchlistError}).
+ */
+const WATCHLIST_ERROR_MESSAGES: Record<Exclude<WatchlistErrorCode, 'watchlist_full'>, string> = {
   feature_locked: 'Finish the lesson that unlocks the watchlist to use it.',
   symbol_not_available: "That company isn't available to follow right now.",
   not_authenticated: 'Sign in to use your watchlist.',
@@ -54,23 +63,46 @@ const WATCHLIST_ERROR_MESSAGES: Record<WatchlistErrorCode, string> = {
 const WATCHLIST_FALLBACK_MESSAGE = "We couldn't update your watchlist. Please try again.";
 
 /**
+ * The friendly "list is full" message naming the configured max (requirement
+ * 6.2). The max comes from app_config via the caller so the number shown is the
+ * one the server actually enforces (requirement 8.1).
+ */
+export function watchlistFullMessage(max: number): string {
+  return `Your watchlist is full. Remove one to add another (max ${max}).`;
+}
+
+/**
  * Map a thrown watchlist error to friendly UI copy (requirement 6.2).
  *
  * The RPC raises Postgres exceptions whose message is the stable error code,
  * which PostgREST passes through as the error's `message`. We read that message
  * and look it up; anything unrecognised (network error, unexpected failure)
  * gets the generic fallback so the UI never shows a raw error string.
+ *
+ * `max` is the configured watchlist cap read from app_config (requirement 8.1);
+ * it is only used to fill in the `watchlist_full` limit message so the number
+ * shown matches what the server enforced. It defaults to {@link WATCHLIST_MAX}
+ * (the server's fallback) when a caller has no config value yet.
  */
-export function mapWatchlistError(error: unknown): string {
+export function mapWatchlistError(error: unknown, max: number = WATCHLIST_MAX): string {
   const code = watchlistErrorCode(error);
+  if (code === 'watchlist_full') {
+    return watchlistFullMessage(max);
+  }
   if (code && isWatchlistErrorCode(code)) {
     return WATCHLIST_ERROR_MESSAGES[code];
   }
   return WATCHLIST_FALLBACK_MESSAGE;
 }
 
-/** Narrow an arbitrary string to a known {@link WatchlistErrorCode}. */
-function isWatchlistErrorCode(code: string): code is WatchlistErrorCode {
+/**
+ * Narrow an arbitrary string to one of the static-message error codes (every
+ * code except `watchlist_full`, whose message is built per call from the config
+ * value).
+ */
+function isWatchlistErrorCode(
+  code: string,
+): code is Exclude<WatchlistErrorCode, 'watchlist_full'> {
   return Object.prototype.hasOwnProperty.call(WATCHLIST_ERROR_MESSAGES, code);
 }
 

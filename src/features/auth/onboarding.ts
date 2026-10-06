@@ -2,12 +2,16 @@
  * Onboarding submit orchestration (requirements 5.3-5.7).
  *
  * This is the pure, testable core behind the onboarding screen's "Continue"
- * button. It takes the user's chosen (generated) username, their in-memory
- * birth month/year, the consent versions, and the create_profile call, and
- * applies the required flow:
+ * button. It takes the user's CHOSEN username, their in-memory birth
+ * month/year, the consent versions, and the create_profile call, and applies
+ * the required flow:
  *
- *   - 5.5 username_taken: generate a NEW username and retry ONCE. If the retry
- *     also comes back username_taken, give up and report a friendly error.
+ *   - username_taken: the user picked a name that was claimed between the live
+ *     availability check and submit. We report `username_taken` so the screen
+ *     can ask them to pick another — WITHOUT changing the text they typed.
+ *     (Historically this auto-generated a new name and retried once; that only
+ *     made sense for machine-generated usernames. Now the user owns the name,
+ *     so we never silently swap it.)
  *   - 5.6 under_min_age: report that the user must be blocked and logged out.
  *     (The screen performs the device block + logout; this function only
  *     classifies the outcome so it stays free of side effects.)
@@ -18,8 +22,8 @@
  * error) is reported as a generic error the screen shows as retryable copy.
  *
  * Keeping this logic pure (dependencies injected) lets the screen stay a thin
- * shell and lets the retry/branching be unit tested without a device, a client,
- * or React.
+ * shell and lets the branching be unit tested without a device, a client, or
+ * React.
  */
 import { CreateProfileError, type CreateProfileArgs } from './api/create-profile';
 import type { Database } from '../../types/db';
@@ -41,8 +45,6 @@ export interface OnboardingSubmitInput {
 export interface OnboardingSubmitDeps {
   /** Create the profile; throws CreateProfileError for known RPC failures. */
   createProfile: (args: CreateProfileArgs) => Promise<ProfileRow>;
-  /** Produce a fresh username for the retry after username_taken. */
-  generateUsername: () => string;
 }
 
 /** The classified outcome of a submit attempt. */
@@ -50,8 +52,10 @@ export type OnboardingSubmitResult =
   | { kind: 'success'; profile: ProfileRow }
   /** The user is under the minimum age: screen must block + log out (5.6). */
   | { kind: 'under_min_age' }
-  /** Both the original and the retried username were taken (5.5). */
+  /** The chosen username was claimed; screen asks the user to pick another. */
   | { kind: 'username_taken' }
+  /** The chosen username was rejected by the server validator (format/profanity). */
+  | { kind: 'invalid_username' }
   /** Any other failure; show retryable error copy. */
   | { kind: 'error'; error: unknown };
 
@@ -68,9 +72,11 @@ function toArgs(username: string, input: OnboardingSubmitInput): CreateProfileAr
 }
 
 /**
- * Attempt to create the profile, applying the required retry-once-on-taken and
- * under-age handling. Never throws: every path resolves to a classified result
- * the screen can switch on.
+ * Attempt to create the profile with the user's chosen username. Never throws:
+ * every path resolves to a classified result the screen can switch on. The user
+ * picked the name (and the screen already gated Continue on a live "available"
+ * check), so we do NOT swap it on a clash — we report `username_taken` and let
+ * them choose a different one.
  */
 export async function submitOnboarding(
   input: OnboardingSubmitInput,
@@ -79,29 +85,23 @@ export async function submitOnboarding(
   try {
     const profile = await deps.createProfile(toArgs(input.username, input));
     return { kind: 'success', profile };
-  } catch (first) {
-    if (first instanceof CreateProfileError) {
-      if (first.code === 'under_min_age') {
+  } catch (err) {
+    if (err instanceof CreateProfileError) {
+      if (err.code === 'under_min_age') {
         return { kind: 'under_min_age' };
       }
-      if (first.code === 'username_taken') {
-        // 5.5: generate a new username and retry exactly once.
-        const retryUsername = deps.generateUsername();
-        try {
-          const profile = await deps.createProfile(toArgs(retryUsername, input));
-          return { kind: 'success', profile };
-        } catch (second) {
-          if (second instanceof CreateProfileError && second.code === 'username_taken') {
-            return { kind: 'username_taken' };
-          }
-          if (second instanceof CreateProfileError && second.code === 'under_min_age') {
-            return { kind: 'under_min_age' };
-          }
-          return { kind: 'error', error: second };
-        }
+      if (err.code === 'username_taken') {
+        // The name was claimed between the availability check and submit. Keep
+        // the user's text and ask them to pick another.
+        return { kind: 'username_taken' };
+      }
+      if (err.code === 'invalid_username') {
+        // The server validator rejected the name (format or blocklist). The
+        // client should have caught this, but surface it distinctly just in case.
+        return { kind: 'invalid_username' };
       }
     }
-    // not_authenticated, invalid_username, or any non-typed error.
-    return { kind: 'error', error: first };
+    // not_authenticated or any non-typed error.
+    return { kind: 'error', error: err };
   }
 }

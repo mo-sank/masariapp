@@ -30,7 +30,7 @@ import {
 } from './onboarding';
 
 const input: OnboardingSubmitInput = {
-  username: 'cool-fox-77',
+  username: 'Cool_Trader',
   birthMonth: 6,
   birthYear: 2008,
   timezone: 'America/New_York',
@@ -45,15 +45,12 @@ const profile = {
   created_at: '2025-01-01T00:00:00Z',
   timezone: 'America/New_York',
   user_id: 'auth0|userA',
-  username: 'cool-fox-77',
+  username: 'Cool_Trader',
 };
 
-/** Build deps with a stubbed createProfile and a generator returning fixed names. */
-function makeDeps(
-  createProfile: OnboardingSubmitDeps['createProfile'],
-  retryName = 'brave-owl-42',
-): OnboardingSubmitDeps {
-  return { createProfile, generateUsername: jest.fn(() => retryName) };
+/** Build deps with a stubbed createProfile. */
+function makeDeps(createProfile: OnboardingSubmitDeps['createProfile']): OnboardingSubmitDeps {
+  return { createProfile };
 }
 
 describe('submitOnboarding', () => {
@@ -66,38 +63,23 @@ describe('submitOnboarding', () => {
     expect(result).toEqual({ kind: 'success', profile });
     expect(createProfile).toHaveBeenCalledTimes(1);
     expect(createProfile).toHaveBeenCalledWith(
-      expect.objectContaining({ username: 'cool-fox-77' }),
+      expect.objectContaining({ username: 'Cool_Trader' }),
     );
   });
 
-  it('retries once with a new username after username_taken, then succeeds (5.5)', async () => {
-    const createProfile = jest
-      .fn()
-      .mockRejectedValueOnce(new CreateProfileError('username_taken'))
-      .mockResolvedValueOnce(profile);
-    const deps = makeDeps(createProfile, 'brave-owl-42');
-
-    const result = await submitOnboarding(input, deps);
-
-    expect(result).toEqual({ kind: 'success', profile });
-    expect(createProfile).toHaveBeenCalledTimes(2);
-    // Second attempt uses the regenerated username.
-    expect(createProfile).toHaveBeenNthCalledWith(
-      2,
-      expect.objectContaining({ username: 'brave-owl-42' }),
-    );
-    expect(deps.generateUsername).toHaveBeenCalledTimes(1);
-  });
-
-  it('gives up with username_taken when the retry is also taken (5.5)', async () => {
+  it('surfaces username_taken WITHOUT changing the typed name and without retrying', async () => {
     const createProfile = jest.fn().mockRejectedValue(new CreateProfileError('username_taken'));
     const deps = makeDeps(createProfile);
 
     const result = await submitOnboarding(input, deps);
 
     expect(result).toEqual({ kind: 'username_taken' });
-    // Exactly two attempts: original + one retry. Never a third.
-    expect(createProfile).toHaveBeenCalledTimes(2);
+    // The user owns the name now, so there is exactly ONE attempt — never a
+    // silent regenerate-and-retry.
+    expect(createProfile).toHaveBeenCalledTimes(1);
+    expect(createProfile).toHaveBeenCalledWith(
+      expect.objectContaining({ username: 'Cool_Trader' }),
+    );
   });
 
   it('classifies under_min_age so the screen can block + log out (5.6)', async () => {
@@ -110,16 +92,14 @@ describe('submitOnboarding', () => {
     expect(createProfile).toHaveBeenCalledTimes(1);
   });
 
-  it('surfaces under_min_age discovered on the retry attempt', async () => {
-    const createProfile = jest
-      .fn()
-      .mockRejectedValueOnce(new CreateProfileError('username_taken'))
-      .mockRejectedValueOnce(new CreateProfileError('under_min_age'));
+  it('surfaces invalid_username distinctly (server validator rejected the name)', async () => {
+    const createProfile = jest.fn().mockRejectedValue(new CreateProfileError('invalid_username'));
     const deps = makeDeps(createProfile);
 
     const result = await submitOnboarding(input, deps);
 
-    expect(result).toEqual({ kind: 'under_min_age' });
+    expect(result).toEqual({ kind: 'invalid_username' });
+    expect(createProfile).toHaveBeenCalledTimes(1);
   });
 
   it('reports a generic error for an unexpected failure', async () => {
@@ -132,8 +112,8 @@ describe('submitOnboarding', () => {
     expect(result).toEqual({ kind: 'error', error: boom });
   });
 
-  it('reports a generic error for a non-retryable typed code (invalid_username)', async () => {
-    const createProfile = jest.fn().mockRejectedValue(new CreateProfileError('invalid_username'));
+  it('reports a generic error for not_authenticated', async () => {
+    const createProfile = jest.fn().mockRejectedValue(new CreateProfileError('not_authenticated'));
     const deps = makeDeps(createProfile);
 
     const result = await submitOnboarding(input, deps);

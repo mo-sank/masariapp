@@ -18,10 +18,19 @@ jest.mock('../src/lib/auth0', () => ({
   useSession: () => ({ isSignedIn: mockSignedIn, isLoading: false }),
 }));
 
-// Unlocks: control whether portfolio is unlocked.
-let mockUnlocks: { feature_key: string }[] = [{ feature_key: 'portfolio' }];
+// Unlocks: control whether portfolio is unlocked. The shared useUnlock hook
+// (behind Gate) only reports unlocked when the backing query has succeeded, so
+// `undefined` data models the still-loading state and anything else a resolved
+// query.
+let mockUnlocks: { feature_key: string }[] | undefined = [{ feature_key: 'portfolio' }];
 jest.mock('../src/features/lessons/hooks/use-unlocks', () => ({
-  useUnlocks: () => ({ data: mockUnlocks, isLoading: false, isError: false }),
+  useUnlocks: () => ({
+    data: mockUnlocks,
+    isSuccess: mockUnlocks !== undefined,
+    isLoading: mockUnlocks === undefined,
+    isError: false,
+    refetch: jest.fn(),
+  }),
 }));
 
 // Portfolio hook: feed controlled data / states.

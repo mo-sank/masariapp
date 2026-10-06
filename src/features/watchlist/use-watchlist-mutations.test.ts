@@ -12,6 +12,7 @@ import {
   WATCHLIST_MAX,
   invalidateWatchlist,
   mapWatchlistError,
+  watchlistFullMessage,
 } from './use-watchlist-mutations';
 // eslint-disable-next-line import/first
 import { WATCHLIST_QUERY_KEY } from './use-watchlist';
@@ -21,6 +22,20 @@ describe('mapWatchlistError (6.2)', () => {
     const message = mapWatchlistError(new Error('watchlist_full'));
     expect(message).toContain('full');
     expect(message).toContain(String(WATCHLIST_MAX));
+  });
+
+  it('uses the configured max in the watchlist_full message (8.1)', () => {
+    // The caller passes the live app_config.watchlist_max; the message should
+    // name that number, not the hardcoded fallback.
+    const message = mapWatchlistError(new Error('watchlist_full'), 8);
+    expect(message).toContain('full');
+    expect(message).toContain('8');
+    expect(message).not.toContain(String(WATCHLIST_MAX));
+  });
+
+  it('watchlistFullMessage names whatever max it is given', () => {
+    expect(watchlistFullMessage(3)).toContain('3');
+    expect(watchlistFullMessage(10)).toContain('10');
   });
 
   it('maps feature_locked to lesson-oriented copy', () => {

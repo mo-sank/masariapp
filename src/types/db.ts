@@ -91,6 +91,41 @@ export type Database = {
           },
         ];
       };
+      feedback: {
+        Row: {
+          category: string;
+          created_at: string;
+          id: string;
+          message: string;
+          screen: string | null;
+          user_id: string;
+        };
+        Insert: {
+          category: string;
+          created_at?: string;
+          id?: string;
+          message: string;
+          screen?: string | null;
+          user_id: string;
+        };
+        Update: {
+          category?: string;
+          created_at?: string;
+          id?: string;
+          message?: string;
+          screen?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'feedback_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['user_id'];
+          },
+        ];
+      };
       lesson_progress: {
         Row: {
           attempts: number;
@@ -680,6 +715,18 @@ export type Database = {
         };
         Returns: Database['public']['Tables']['profiles']['Row'];
       };
+      is_username_available: {
+        Args: {
+          p_username: string;
+        };
+        Returns: boolean;
+      };
+      username_allowed: {
+        Args: {
+          p_username: string;
+        };
+        Returns: boolean;
+      };
       log_events: {
         Args: {
           p_events: Json;
@@ -766,6 +813,18 @@ export type Database = {
           p_symbol: string;
         };
         Returns: undefined;
+      };
+      get_daily_briefing: {
+        Args: Record<PropertyKey, never>;
+        Returns: Json;
+      };
+      submit_feedback: {
+        Args: {
+          p_category: string;
+          p_message: string;
+          p_screen?: string | null;
+        };
+        Returns: Database['public']['Tables']['feedback']['Row'];
       };
     };
     Enums: {

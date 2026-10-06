@@ -13,16 +13,24 @@
 -- JWT claims via _helpers.sql and act as `authenticated`.
 
 begin;
-select plan(20);
+select plan(23);
 
 create extension if not exists pgtap;
 \set helpers_included on
 \ir _helpers.sql
 
--- Catalog + profile the items/assessments reference.
+-- Catalog + profile the items/assessments reference. The CLI test runner seeds
+-- supabase/seed/catalog.generated.sql before each test file, so these catalog
+-- rows may already exist; `on conflict ... do update` makes the seeding of the
+-- exact values this test relies on idempotent instead of colliding on the
+-- lessons_catalog primary key.
 insert into public.lessons_catalog(lesson_id, unit, sort_order, kind, xp_base, pass_score, prerequisite_lesson_id)
 values ('L0', 0, 0, 'placement', 10, 60, null),
-       ('L1.1', 1, 1, 'lesson', 10, 60, 'L0');
+       ('L1.1', 1, 1, 'lesson', 10, 60, 'L0')
+on conflict (lesson_id) do update set
+  unit = excluded.unit, sort_order = excluded.sort_order, kind = excluded.kind,
+  xp_base = excluded.xp_base, pass_score = excluded.pass_score,
+  prerequisite_lesson_id = excluded.prerequisite_lesson_id;
 
 insert into public.profiles(user_id, username, birth_year, age_band, timezone)
   values ('auth0|userA', 'red-fox-11', 2010, '13-15', 'America/New_York');
@@ -141,6 +149,37 @@ select throws_ok(
   $$ select public.submit_assessment('L0', 'C', '[]'::jsonb) $$,
   'invalid_form',
   'submit_assessment rejects a form other than A or B');
+
+-- ---------------------------------------------------------------------------
+-- Form B readiness (requirement 6.2): the same assessment mechanism records a
+-- Form B result alongside Form A, carrying the identical concept tags, so the
+-- learning-gain view can compare pre/post by concept. We submit a Form B for L0
+-- using the same concepts the Form A submission above used (money, stocks, risk)
+-- and confirm a distinct 'B' row is stored with those concepts intact.
+-- ---------------------------------------------------------------------------
+select is(
+  (select (public.submit_assessment('L0', 'B',
+     '[{"item_id":"q1","concept":"money","correct":true},
+       {"item_id":"q2","concept":"stocks","correct":false},
+       {"item_id":"q3","concept":"risk","correct":true},
+       {"item_id":"q4","concept":"money","correct":true}]'::jsonb)).form),
+  'B',
+  'submit_assessment accepts and stores a Form B result');
+
+reset role;
+select is(
+  (select count(distinct form)::int from public.assessment_results
+     where user_id='auth0|userA' and lesson_id='L0'),
+  2,
+  'Form A and Form B are both recorded for the same lesson');
+-- The Form B row keeps the identical concept tags Form A carried.
+select set_eq(
+  $$ select distinct e ->> 'concept'
+       from public.assessment_results ar,
+            lateral jsonb_array_elements(ar.item_results) e
+       where ar.user_id='auth0|userA' and ar.lesson_id='L0' and ar.form='B' $$,
+  $$ values ('money'), ('stocks'), ('risk') $$,
+  'Form B records the same concept tags as Form A');
 
 select * from finish();
 rollback;

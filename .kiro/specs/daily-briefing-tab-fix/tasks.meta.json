@@ -1,0 +1,132 @@
+{
+  "pbtResults": {
+    "1. Write bug condition exploration tests": {
+      "status": "passed",
+      "failingExample": "pathnameToBranch('/briefing') -> undefined (expected \"tabs\"); same for '/briefing/' and '/briefing?ref=card'. shouldRedirect('tabs', '/briefing') -> true (expected false); same for '/briefing/' and '/briefing?ref=card'. Route-coverage test: unclassified root routes under app/ = [\"/briefing\"] (expected []).",
+      "lastRunTimestamp": 1791242267904
+    },
+    "2. Write preservation property tests (BEFORE implementing fix)": {
+      "status": "passed",
+      "lastRunTimestamp": 1791242427424
+    },
+    "3.2 Verify bug condition exploration tests now pass": {
+      "status": "passed",
+      "lastRunTimestamp": 1791242603738
+    },
+    "3.3 Verify preservation tests still pass": {
+      "status": "passed",
+      "lastRunTimestamp": 1791242640275
+    }
+  },
+  "executionHistory": {
+    "1. Write bug condition exploration tests": [
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242145131
+      },
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242153224
+      },
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242290132
+      }
+    ],
+    "2. Write preservation property tests (BEFORE implementing fix)": [
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242145157
+      },
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242295417
+      },
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242498933
+      }
+    ],
+    "3.1 Implement the fix in `pathnameToBranch`": [
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242145174
+      },
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242504250
+      },
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242553110
+      }
+    ],
+    "3.2 Verify bug condition exploration tests now pass": [
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242145196
+      },
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242564146
+      },
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242612994
+      }
+    ],
+    "3.3 Verify preservation tests still pass": [
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242145214
+      },
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242615862
+      },
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242650562
+      }
+    ],
+    "4. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242145232
+      },
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242662723
+      },
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242720951
+      }
+    ],
+    "3. Fix the briefing route being redirected back to the Learn tab": [
+      {
+        "executionId": "7cf6f775-4aea-45a5-be62-8ba2bad2757b",
+        "chatSessionId": "sess_f9a2d7a9-dc07-4b76-8f58-679752e64c9b",
+        "timestamp": 1791242650599
+      }
+    ]
+  }
+}

@@ -16,17 +16,17 @@ export interface OnboardingState {
   /** Four-digit birth year, or null before the age gate is completed. */
   birthYear: number | null;
   /**
-   * The generated username currently shown on the onboarding screen, or null
-   * before one has been generated. Held here (not just in the screen's local
-   * state) so a transient remount of the onboarding screen — e.g. a brief
-   * session/profile flicker that makes the gate re-route through onboarding
-   * mid-submit — reuses the same username instead of silently generating a new
-   * one under the user. In memory only, like the birth date.
+   * The username the user has typed on the onboarding screen, or null before
+   * they have entered one. Held here (not just in the screen's local state) so a
+   * transient remount of the onboarding screen — e.g. a brief session/profile
+   * flicker that makes the gate re-route through onboarding mid-submit —
+   * preserves what the user typed instead of clearing the field. In memory only,
+   * like the birth date.
    */
   username: string | null;
   /** Record the birth month/year collected at the age gate (in memory only). */
   setBirthDate: (month: number, year: number) => void;
-  /** Record the username currently shown on the onboarding screen. */
+  /** Record the username the user has typed on the onboarding screen. */
   setUsername: (username: string) => void;
   /** Drop the in-memory onboarding state (e.g. on logout or after onboarding). */
   reset: () => void;

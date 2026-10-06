@@ -1,8 +1,8 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Card, Disclaimer, LockedState, Screen, StateView, Text } from '../../src/components/ui';
+import { Card, Disclaimer, Screen, StateView, Text } from '../../src/components/ui';
 import {
   DelayedBadge,
   MarketBanner,
@@ -11,7 +11,8 @@ import {
 import { useInstruments } from '../../src/features/explore/use-instruments';
 import { useQuote } from '../../src/features/explore/use-quotes';
 import { getLesson } from '../../src/features/lessons/content';
-import { useUnlocks } from '../../src/features/lessons/hooks/use-unlocks';
+import { Gate } from '../../src/features/progress/components/Gate';
+import { useUnlock } from '../../src/features/progress/hooks/use-unlock';
 import { LineChart, RangeToggle, TradeButton } from '../../src/features/trading/components';
 import { trackStockViewed } from '../../src/features/trading/analytics';
 import { useBars, type ChartRange } from '../../src/features/trading/use-bars';
@@ -30,14 +31,16 @@ import { useTheme } from '../../src/theme/theme-provider';
  * page progressively light up as the learner advances:
  *
  *  - `stock_detail` (lesson L1.3, "Anatomy of a Stock Card") gates the whole
- *    page. Until it is unlocked the route shows a {@link LockedState} naming
- *    that lesson (requirement 5.1). As elsewhere we fail closed: while unlocks
- *    load or error we treat the page as locked so content never flashes.
+ *    page through the shared {@link Gate} (progression spec, requirements 1.3,
+ *    1.5). Until it is unlocked the route shows a {@link LockedState} naming
+ *    that lesson with a button that opens it (requirement 5.1). The gate fails
+ *    closed: while unlocks load it shows a loading placeholder, and if the
+ *    unlocks query errors it shows a retry, so content never flashes.
  *  - `chart_time_ranges` (lesson L2.1, "Charts Tell Stories") gates the 1M/3M/
  *    1Y/5Y range toggle; locked, the chart is fixed to 1M with a lock hint
- *    (requirement 5.2).
+ *    (requirement 5.2). Checked with the single `useUnlock` hook (fails closed).
  *  - `trade_markers` (also L2.1) gates drawing the learner's own buys and sells
- *    on the chart (requirement 5.3).
+ *    on the chart (requirement 5.3). Also checked with `useUnlock`.
  *
  * The page always shows the paper-money / not-advice {@link Disclaimer}
  * (requirement 5.4) and the market banner + delayed-price label that every
@@ -52,62 +55,45 @@ import { useTheme } from '../../src/theme/theme-provider';
  * `src/features/trading/components`.
  */
 
-/** Feature key gating the whole page, and the lesson that grants it. */
-const DETAIL_FEATURE_KEY = 'stock_detail';
-const DETAIL_UNLOCK_LESSON_ID = 'L1.3';
-/** Feature key gating the range toggle (L2.1). */
-const RANGES_FEATURE_KEY = 'chart_time_ranges';
+/** The lesson that grants the chart range toggle (L2.1). */
 const RANGES_UNLOCK_LESSON_ID = 'L2.1';
-/** Feature key gating trade markers on the chart (L2.1). */
-const MARKERS_FEATURE_KEY = 'trade_markers';
 
 export default function StockScreen() {
   const { symbol: rawSymbol } = useLocalSearchParams<{ symbol: string }>();
   const symbol = (rawSymbol ?? '').toUpperCase();
   const { isSignedIn } = useSession();
-  const unlocks = useUnlocks(isSignedIn);
 
-  const unlockedKeys = useMemo(
-    () => new Set((unlocks.data ?? []).map((u) => u.feature_key)),
-    [unlocks.data],
-  );
-  const detailUnlocked = unlockedKeys.has(DETAIL_FEATURE_KEY);
-
-  // Gate: fail closed while unlocks load or error (treat as locked).
-  if (!detailUnlocked) {
-    const lessonTitle = getLesson(DETAIL_UNLOCK_LESSON_ID)?.title ?? 'Anatomy of a Stock Card';
-    return (
-      <Screen center>
-        <LockedState
-          featureName="Stock details"
-          unlockedByLesson={lessonTitle}
-          actionLabel="Go to Learn"
-          onAction={() => router.push('/(tabs)/learn')}
-        />
-      </Screen>
-    );
-  }
-
+  // Whole-page gate on `stock_detail` (requirement 5.1) via the shared Gate:
+  // fails closed while loading, shows a retry on error, else a LockedState that
+  // links to the unlocking lesson.
   return (
-    <StockDetail
-      symbol={symbol}
-      isSignedIn={isSignedIn}
-      rangesUnlocked={unlockedKeys.has(RANGES_FEATURE_KEY)}
-      markersUnlocked={unlockedKeys.has(MARKERS_FEATURE_KEY)}
-    />
+    <Gate feature="stock_detail" isSignedIn={isSignedIn} loadingFallback={<StockLoading />}>
+      <StockDetail symbol={symbol} isSignedIn={isSignedIn} />
+    </Gate>
+  );
+}
+
+/** Full-screen loading placeholder shown while the page's unlock resolves. */
+function StockLoading() {
+  return (
+    <Screen>
+      <StateView kind="loading" />
+    </Screen>
   );
 }
 
 interface StockDetailProps {
   symbol: string;
   isSignedIn: boolean;
-  rangesUnlocked: boolean;
-  markersUnlocked: boolean;
 }
 
 /** The unlocked detail UI, split out so data hooks run only past the gate. */
-function StockDetail({ symbol, isSignedIn, rangesUnlocked, markersUnlocked }: StockDetailProps) {
+function StockDetail({ symbol, isSignedIn }: StockDetailProps) {
   const theme = useTheme();
+  // Sub-gates checked through the single useUnlock hook (fails closed). Ranges
+  // (5.2) and markers (5.3) are both granted by L2.1.
+  const { unlocked: rangesUnlocked } = useUnlock('chart_time_ranges', isSignedIn);
+  const { unlocked: markersUnlocked } = useUnlock('trade_markers', isSignedIn);
   // Ranges locked → fixed 1M (requirement 5.2); unlocked → user picks.
   const [range, setRange] = useState<ChartRange>('1M');
   const effectiveRange: ChartRange = rangesUnlocked ? range : '1M';

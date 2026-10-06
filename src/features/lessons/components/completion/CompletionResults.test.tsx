@@ -47,11 +47,11 @@ describe('<CompletionResults /> (5.4, 5.6)', () => {
     expect(screen.getByLabelText('You earned 15 experience points')).toBeTruthy();
     expect(screen.getByLabelText('Current streak: 3 days')).toBeTruthy();
     expect(screen.getByLabelText('1 Streak Freeze')).toBeTruthy();
-    expect(screen.getByText('🎉 Explore')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Go to Explore' })).toBeTruthy();
+    expect(screen.getByText('🎉 Explore unlocked')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Try Explore now' })).toBeTruthy();
   });
 
-  it('routes to the unlocked feature when its button is pressed (5.4)', async () => {
+  it('routes to the unlocked feature when its "Try it now" button is pressed (5.4)', async () => {
     const onGoToFeature = jest.fn();
     await renderScreen(
       <CompletionResults
@@ -62,7 +62,7 @@ describe('<CompletionResults /> (5.4, 5.6)', () => {
       />,
     );
 
-    fireEvent.press(screen.getByRole('button', { name: 'Go to Explore' }));
+    fireEvent.press(screen.getByRole('button', { name: 'Try Explore now' }));
     expect(onGoToFeature).toHaveBeenCalledWith('/(tabs)/explore');
   });
 

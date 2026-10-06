@@ -17,8 +17,9 @@ import { useTheme } from '../../src/theme/theme-provider';
  * - Legal links open the configured URLs in the in-app system browser
  *   (src/features/settings/legal-links). URLs come from config (placeholders in
  *   development).
- * - Send feedback is a placeholder that shows a toast; a real destination is
- *   wired up in a later milestone.
+ * - Send feedback pushes the feedback form (app/settings/feedback), passing the
+ *   originating screen name so the submitted feedback records where it came from
+ *   (requirement 5.1).
  * - Log out runs the composed logout (Auth0 + query cache + stores). The
  *   AuthGate then routes back to the age screen.
  * - Delete account navigates to the confirmation screen, which explains the
@@ -68,9 +69,11 @@ export default function SettingsScreen() {
         ))}
         <SettingsRow
           label="Send feedback"
-          onPress={() => toast.show('Feedback is coming soon.')}
+          onPress={() =>
+            router.push({ pathname: '/settings/feedback', params: { from: 'settings' } })
+          }
           showDivider
-          accessibilityHint="Feedback is coming soon"
+          accessibilityHint="Opens a form to send us feedback"
         />
       </View>
 

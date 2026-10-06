@@ -15,7 +15,7 @@
 -- (America/New_York) so they stay deterministic regardless of the wall clock.
 
 begin;
-select plan(24);
+select plan(28);
 
 create extension if not exists pgtap;
 \set helpers_included on
@@ -25,14 +25,25 @@ create extension if not exists pgtap;
 -- Catalog: a placement root (L0, no prereq), a lesson that unlocks a feature
 -- (L1.1, prereq L0), and a boss lesson (B1, prereq L1.1) that grants a freeze.
 -- ---------------------------------------------------------------------------
+-- The CLI test runner seeds supabase/seed/catalog.generated.sql before each
+-- test file, so L0/L1.1/B1 may already exist in lessons_catalog. `on conflict
+-- ... do update` makes seeding the exact values this test relies on (e.g. B1's
+-- pass_score 60, L1.1's xp_base 10) idempotent instead of colliding on the
+-- lessons_catalog primary key.
 insert into public.lessons_catalog(lesson_id, unit, sort_order, kind, xp_base, pass_score, prerequisite_lesson_id)
 values
   ('L0',   0, 0, 'placement', 10, 60, null),
   ('L1.1', 1, 1, 'lesson',    10, 60, 'L0'),
-  ('B1',   1, 9, 'boss',      20, 60, 'L1.1');
+  ('B1',   1, 9, 'boss',      20, 60, 'L1.1')
+on conflict (lesson_id) do update set
+  unit = excluded.unit, sort_order = excluded.sort_order, kind = excluded.kind,
+  xp_base = excluded.xp_base, pass_score = excluded.pass_score,
+  prerequisite_lesson_id = excluded.prerequisite_lesson_id;
 
 insert into public.feature_unlock_rules(feature_key, lesson_id, description)
-values ('explore', 'L1.1', 'Explore tab');
+values ('explore', 'L1.1', 'Explore tab')
+on conflict (feature_key) do update set
+  lesson_id = excluded.lesson_id, description = excluded.description;
 
 -- Compute "today" in the app timezone once so stats seeding lines up with the
 -- date the RPC derives from profiles.timezone.
@@ -193,6 +204,49 @@ select is(
 reset role;
 select is((select streak_freezes from public.user_stats where user_id='auth0|userE'),
   1, 'the boss freeze is persisted to user_stats');
+
+-- ===========================================================================
+-- User F: beating a unit boss for the first time schedules a delayed (~7 day)
+-- review of the unit's key concepts as due rewind_items (requirement 6.1).
+-- F plays the unit's lessons with concept-tagged answers (the per-item concepts
+-- the Rewind scheduler reads from lesson_attempts.answers), then beats B1. One
+-- due-in-7-days rewind item should appear per distinct concept F practised in
+-- unit 1, at box 3 (the 7-day review box), keyed to the boss lesson.
+-- ===========================================================================
+insert into public.profiles(user_id, username, birth_year, age_band, timezone)
+  values ('auth0|userF', 'gold-fox-66', 2008, '16-17', 'America/New_York');
+insert into public.user_stats(user_id) values ('auth0|userF');
+
+reset role;
+select tests.set_authenticated_claims('auth0|userF');
+set role authenticated;
+-- L1.1 answers tag two concepts; B1's own answer tags a third. All are unit 1.
+select public.complete_lesson('L0', 100, 1000, '[]'::jsonb);
+select public.complete_lesson('L1.1', 100, 1000,
+  '[{"item_id":"a1","concept":"shares","correct":true},
+    {"item_id":"a2","concept":"supply-demand","correct":false}]'::jsonb);
+select public.complete_lesson('B1', 100, 1000,
+  '[{"item_id":"b1","concept":"market-order","correct":true}]'::jsonb);
+
+reset role;
+-- One review item per distinct unit-1 concept (shares, supply-demand, market-order).
+select is(
+  (select count(*)::int from public.rewind_items
+     where user_id='auth0|userF' and item_id like 'review:U1:%'),
+  3,
+  'beating the boss schedules one review item per key concept of the unit (6.1)');
+select ok(
+  (select bool_and(due_at > now() + interval '6 days' and due_at < now() + interval '8 days')
+     from public.rewind_items where user_id='auth0|userF' and item_id like 'review:U1:%'),
+  'the scheduled reviews are due about 7 days out (6.1)');
+select ok(
+  (select bool_and(box = 3)
+     from public.rewind_items where user_id='auth0|userF' and item_id like 'review:U1:%'),
+  'the scheduled reviews sit in the 7-day review box');
+select ok(
+  (select bool_and(lesson_id = 'B1')
+     from public.rewind_items where user_id='auth0|userF' and item_id like 'review:U1:%'),
+  'the scheduled reviews are grouped under the unit boss lesson');
 
 select * from finish();
 rollback;

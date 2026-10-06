@@ -1,0 +1,96 @@
+{
+  "id": "L0B",
+  "unit": 0,
+  "order": 100,
+  "kind": "placement",
+  "title": "Placement Quest (Form B)",
+  "bigIdea": "A parallel check-in used after a unit to measure what stuck. Same ideas as the first check-in, different questions. There is no pass or fail.",
+  "estimatedMinutes": 4,
+  "xp": 0,
+  "passScore": 0,
+  "prerequisite": null,
+  "concepts": ["money-basics", "stock-basics", "risk"],
+  "unlocks": [],
+  "steps": [
+    {
+      "id": "intro",
+      "type": "cards",
+      "cards": [
+        {
+          "title": "A second check-in",
+          "body": "This is a placeholder Form B of the placement quest. It mirrors Form A's concepts so the team can compare before and after. Final questions land in a later content pass.",
+          "emoji": "🧭"
+        }
+      ]
+    },
+    {
+      "id": "q1",
+      "type": "mcq",
+      "prompt": "Placeholder: which best describes a savings account that earns interest?",
+      "options": [
+        { "id": "a", "text": "The bank pays you a little for keeping your money there" },
+        { "id": "b", "text": "You pay the bank a monthly fee to hold your money" },
+        { "id": "c", "text": "Your balance is guaranteed to double each year" }
+      ],
+      "correctId": "a",
+      "explanation": "Placeholder item. Interest is money the bank pays you on your deposit.",
+      "scored": true,
+      "concept": "money-basics"
+    },
+    {
+      "id": "q2",
+      "type": "truefalse",
+      "prompt": "Placeholder: over many years, inflation tends to make the same money buy a little less.",
+      "answer": true,
+      "explanation": "Placeholder item. Inflation is the slow rise in prices over time.",
+      "scored": true,
+      "concept": "money-basics"
+    },
+    {
+      "id": "q3",
+      "type": "mcq",
+      "prompt": "Placeholder: owning a share of a company means you own what?",
+      "options": [
+        { "id": "a", "text": "A small slice of that company" },
+        { "id": "b", "text": "A loan the company must repay you" },
+        { "id": "c", "text": "A lifetime discount on its products" }
+      ],
+      "correctId": "a",
+      "explanation": "Placeholder item. A share is a small piece of ownership.",
+      "scored": true,
+      "concept": "stock-basics"
+    },
+    {
+      "id": "q4",
+      "type": "truefalse",
+      "prompt": "Placeholder: a stock exchange is a marketplace where people buy and sell shares.",
+      "answer": true,
+      "explanation": "Placeholder item. An exchange matches buyers and sellers of shares.",
+      "scored": true,
+      "concept": "stock-basics"
+    },
+    {
+      "id": "q5",
+      "type": "mcq",
+      "prompt": "Placeholder: in investing, what does \"risk\" usually mean?",
+      "options": [
+        { "id": "a", "text": "The chance an investment loses value" },
+        { "id": "b", "text": "A promise that you will earn money" },
+        { "id": "c", "text": "The fee to open an account" }
+      ],
+      "correctId": "a",
+      "explanation": "Placeholder item. Risk is the chance an investment loses value.",
+      "scored": true,
+      "concept": "risk"
+    },
+    {
+      "id": "q6",
+      "type": "truefalse",
+      "prompt": "Placeholder: an investment that could earn a lot usually carries a higher chance of loss too.",
+      "answer": true,
+      "explanation": "Placeholder item. Higher possible reward tends to come with higher risk.",
+      "scored": true,
+      "concept": "risk"
+    }
+  ]
+}

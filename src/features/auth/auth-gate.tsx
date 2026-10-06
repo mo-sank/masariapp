@@ -10,7 +10,7 @@
  *
  * Routing table (from design.md "Startup and routing flow"):
  *   - under-13 flag set            -> /(auth)/age-block
- *   - no session                   -> /(auth)/age-gate (which then routes to welcome)
+ *   - no session                   -> /(auth)/intro (which then routes to the age gate and welcome)
  *   - session, no profile          -> /(auth)/onboarding
  *   - session, has profile         -> /(tabs)/learn
  *
@@ -37,7 +37,9 @@ type Branch = 'age-block' | 'auth' | 'onboarding' | 'tabs';
 /** Where each branch's redirect target lives. */
 const BRANCH_ROUTE: Record<Branch, string> = {
   'age-block': '/(auth)/age-block',
-  auth: '/(auth)/age-gate',
+  // The pre-login flow now starts at the intro screen, which leads into the age
+  // gate and then welcome. All three are the `auth` branch (see pathnameToBranch).
+  auth: '/(auth)/intro',
   onboarding: '/(auth)/onboarding',
   tabs: '/(tabs)/learn',
 };
@@ -80,21 +82,33 @@ export function decideBranch(input: {
 }
 
 /**
- * Map the current pathname to the branch it belongs to. The age gate, welcome,
- * and onboarding all live under the `(auth)` group but represent different
- * branches, so we match the leaf route rather than just the group.
+ * Map the current pathname to the branch it belongs to. The intro, age gate,
+ * welcome, and onboarding all live under the `(auth)` group but represent
+ * different branches, so we match the leaf route rather than just the group.
  */
 export function pathnameToBranch(pathname: string): Branch | undefined {
   if (pathname.includes("age-block")) return "age-block";
   if (pathname.includes("onboarding")) return "onboarding";
-  if (pathname.includes("age-gate") || pathname.includes("welcome")) return "auth";
+  // intro -> age-gate -> welcome are all the pre-login `auth` branch, so the
+  // gate does not interrupt navigation as the user moves through them.
+  if (
+    pathname.includes("intro") ||
+    pathname.includes("age-gate") ||
+    pathname.includes("welcome")
+  )
+    return "auth";
   // The signed-in app is more than the four tab screens: the tab routes AND the
   // authenticated screens reachable from them (lesson/*, rewind, settings/*,
-  // and the trading screens stock/*, trade/*, history) all belong to the tabs
-  // branch. Mapping them here means navigating to, e.g., a stock detail page is
-  // NOT treated as a wrong-branch move that bounces the user back to
-  // /(tabs)/learn. The bare index ("/") stays undefined so the gate still
-  // performs the initial redirect from the placeholder route into a branch.
+  // briefing, and the trading screens stock/*, trade/*, history) all belong to
+  // the tabs branch. Mapping them here means navigating to, e.g., a stock
+  // detail page is NOT treated as a wrong-branch move that bounces the user
+  // back to /(tabs)/learn. The bare index ("/") stays undefined so the gate
+  // still performs the initial redirect from the placeholder route into a
+  // branch.
+  //
+  // Every new root-level signed-in route under app/ MUST be added here, or the
+  // gate will redirect away from it. The route-coverage test in
+  // auth-gate.test.ts enforces this by checking every root route in app/.
   if (
     pathname.includes("(tabs)") ||
     pathname.startsWith("/learn") ||
@@ -104,6 +118,7 @@ export function pathnameToBranch(pathname: string): Branch | undefined {
     pathname.startsWith("/lesson") ||
     pathname.startsWith("/rewind") ||
     pathname.startsWith("/settings") ||
+    pathname.startsWith("/briefing") ||
     pathname.startsWith("/stock") ||
     pathname.startsWith("/trade") ||
     pathname.startsWith("/history")

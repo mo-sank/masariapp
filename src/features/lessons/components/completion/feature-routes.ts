@@ -18,14 +18,26 @@
 /**
  * Known feature keys mapped to the route the "go to feature" button opens.
  *
- * Only features reachable by a single, parameter-free route are listed. `trade`
- * is intentionally omitted: it is a per-symbol route (`app/trade/[symbol].tsx`)
- * with no sensible landing target from a lesson result, so it falls back to "no
- * button" rather than routing to an incomplete path.
+ * Only features reachable by a single, parameter-free route are listed. Keys for
+ * per-symbol features are intentionally omitted because they have no sensible
+ * landing target from a lesson result (routing there would need a symbol the
+ * result does not carry), so they fall back to "no button" rather than routing
+ * to an incomplete path:
+ *   - `stock_detail`, `market_buy`, `market_sell` -> `app/stock/[symbol].tsx` /
+ *     `app/trade/[symbol].tsx` (per-symbol; no landing target).
+ *   - `chart_time_ranges`, `trade_markers` -> live inside the per-symbol stock
+ *     detail chart, not a standalone screen.
+ *
+ * `watchlist` and `price_tickers` route to Explore, where the watchlist toggle
+ * and price tickers live (there is no standalone watchlist screen).
  */
 const FEATURE_ROUTES: Record<string, string> = {
   explore: '/(tabs)/explore',
+  watchlist: '/(tabs)/explore',
+  price_tickers: '/(tabs)/explore',
   portfolio: '/(tabs)/portfolio',
+  trade_history: '/history',
+  daily_briefing: '/(tabs)/learn',
   learn: '/(tabs)/learn',
 };
 

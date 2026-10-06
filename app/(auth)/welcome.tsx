@@ -7,9 +7,10 @@ import { useTheme } from '../../src/theme/theme-provider';
 /**
  * Welcome screen (requirement 3.1).
  *
- * Shown after the age gate clears a 13-or-older user. "Get started" and "Log in"
+ * Shown after the age gate clears a 13-or-older user. "Sign up" and "Log in"
  * both open Auth0 Universal Login via the session's `login()`; Auth0's own UI
- * handles the sign-up vs. sign-in distinction and email verification. On
+ * handles the sign-up vs. sign-in distinction and email verification, so the two
+ * buttons are intentionally behaviorally identical and differ only in label. On
  * success the AuthGate observes the new session and routes the user on to
  * onboarding (no profile) or the tabs (has profile), so this screen does not
  * navigate itself. On failure or cancel it surfaces a message and stays put —
@@ -62,11 +63,11 @@ export default function WelcomeScreen() {
       ) : null}
 
       <Button
-        title="Get started"
+        title="Sign up"
         variant="primary"
         loading={busy}
         onPress={onLogin}
-        accessibilityLabel="Get started"
+        accessibilityLabel="Sign up"
       />
       <Button
         title="Log in"

@@ -24,6 +24,7 @@ import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, Text, useToast } from '../../../components/ui';
+import { useAppConfig } from '../../config/use-app-config';
 import { getLesson } from '../../lessons/content';
 import { useUnlocks } from '../../lessons/hooks/use-unlocks';
 import { useTheme } from '../../../theme/theme-provider';
@@ -51,8 +52,14 @@ export function WatchlistButton({ symbol, isSignedIn }: WatchlistButtonProps) {
   const toast = useToast();
   const unlocks = useUnlocks(isSignedIn);
   const watchlist = useWatchlist(isSignedIn);
+  const config = useAppConfig(isSignedIn);
   const add = useWatchlistAdd();
   const remove = useWatchlistRemove();
+
+  // The configured watchlist cap (app_config.watchlist_max) so the limit
+  // message matches what the server enforces (requirement 8.1); falls back to
+  // the server's default until the config loads.
+  const watchlistMax = config.getNumber('watchlist_max');
 
   const unlockedKeys = useMemo(
     () => new Set((unlocks.data ?? []).map((u) => u.feature_key)),
@@ -72,16 +79,17 @@ export function WatchlistButton({ symbol, isSignedIn }: WatchlistButtonProps) {
     if (isFollowing) {
       remove.mutate(symbol, {
         onSuccess: () => toast.show(`Removed ${symbol} from your watchlist`),
-        onError: (error) => toast.show(mapWatchlistError(error), { tone: 'error' }),
+        onError: (error) => toast.show(mapWatchlistError(error, watchlistMax), { tone: 'error' }),
       });
       return;
     }
     add.mutate(symbol, {
       // Requirement 6.1: feedback on a successful add.
       onSuccess: () => toast.show(`Added ${symbol} to your watchlist`),
-      // Requirement 6.2: watchlist_full → friendly limit message (and any other
-      // server error maps to friendly copy too).
-      onError: (error) => toast.show(mapWatchlistError(error), { tone: 'error' }),
+      // Requirement 6.2: watchlist_full → friendly limit message naming the
+      // configured max (requirement 8.1); any other server error maps to
+      // friendly copy too.
+      onError: (error) => toast.show(mapWatchlistError(error, watchlistMax), { tone: 'error' }),
     });
   };
 

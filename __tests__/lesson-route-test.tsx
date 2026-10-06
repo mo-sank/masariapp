@@ -19,10 +19,26 @@ jest.mock('expo-router', () => ({
   },
 }));
 
-// Content loader: return a crafted lesson or undefined per test.
+// Content loader: return a crafted lesson or undefined per test. getLesson is
+// also used to resolve a locked lesson's prerequisite title, so look it up in a
+// small per-test catalog.
 let mockLesson: Lesson | undefined;
+let mockCatalog: Record<string, Lesson> = {};
 jest.mock('../src/features/lessons/content', () => ({
-  getLesson: (_id: string) => mockLesson,
+  getLesson: (id: string) => (id === mockParams.id ? mockLesson : mockCatalog[id]),
+}));
+
+// Session + progress: the route guards a lesson on its prerequisite, so it reads
+// the signed-in state and the learner's completed lessons. Control both here.
+jest.mock('../src/lib/auth0', () => ({
+  useSession: () => ({ isSignedIn: true }),
+}));
+let mockProgress: {
+  data: { lesson_id: string; status: string }[];
+  isLoading: boolean;
+} = { data: [], isLoading: false };
+jest.mock('../src/features/lessons/hooks/use-lesson-progress', () => ({
+  useLessonProgress: () => mockProgress,
 }));
 
 // Analytics: assert lesson_started is logged exactly on a fresh start (10.1).
@@ -137,6 +153,8 @@ beforeEach(() => {
   jest.clearAllMocks();
   mockParams = { id: 'L1.1' };
   mockLesson = makeLesson('L1.1');
+  mockCatalog = {};
+  mockProgress = { data: [], isLoading: false };
   useSessionStore.getState().exit();
 });
 
@@ -173,6 +191,52 @@ describe('<LessonScreen /> route', () => {
 
     // Resuming the same lesson keeps the session and does NOT log a new start.
     expect(useSessionStore.getState().lessonId).toBe('L1.1');
+    expect(mockTrackLessonStarted).not.toHaveBeenCalled();
+  });
+
+  it('blocks a locked lesson whose prerequisite is not completed and starts no session', async () => {
+    // L1.1 requires L0; the learner has completed nothing, so it is locked.
+    const locked = makeLesson('L1.1');
+    (locked as { prerequisite: string | null }).prerequisite = 'L0';
+    mockLesson = locked;
+    mockCatalog = { L0: makeLesson('L0') };
+    // Name the prerequisite so the locked copy can reference it.
+    (mockCatalog.L0 as { title: string }).title = 'Placement Quest';
+    mockProgress = { data: [], isLoading: false };
+
+    const view = await renderScreen();
+
+    expect(view.getByText('Lesson locked')).toBeTruthy();
+    expect(view.getByText(/Placement Quest/)).toBeTruthy();
+    // The player never renders and no session is started for a locked lesson.
+    expect(view.queryByText('Hello from the lesson.')).toBeNull();
+    expect(useSessionStore.getState().status).toBe('idle');
+    expect(mockTrackLessonStarted).not.toHaveBeenCalled();
+  });
+
+  it('allows a lesson once its prerequisite is completed', async () => {
+    const gated = makeLesson('L1.1');
+    (gated as { prerequisite: string | null }).prerequisite = 'L0';
+    mockLesson = gated;
+    mockCatalog = { L0: makeLesson('L0') };
+    // The learner has completed the prerequisite, so the lesson is available.
+    mockProgress = { data: [{ lesson_id: 'L0', status: 'completed' }], isLoading: false };
+
+    const view = await renderScreen();
+
+    expect(view.getByText('Hello from the lesson.')).toBeTruthy();
+    expect(useSessionStore.getState().status).toBe('playing');
+    expect(mockTrackLessonStarted).toHaveBeenCalledWith('L1.1');
+  });
+
+  it('shows a loading state (not the player) while progress is still loading', async () => {
+    mockProgress = { data: [], isLoading: true };
+
+    const view = await renderScreen();
+
+    // Fail closed: no player, no session, no start event until progress resolves.
+    expect(view.queryByText('Hello from the lesson.')).toBeNull();
+    expect(useSessionStore.getState().status).toBe('idle');
     expect(mockTrackLessonStarted).not.toHaveBeenCalled();
   });
 });

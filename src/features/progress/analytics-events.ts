@@ -55,6 +55,11 @@ export const ANALYTICS_EVENT_NAMES = [
   'reflection_submitted',
   'watchlist_changed',
   'stock_viewed',
+  // onboarding-revamp: intro funnel + first-run tutorial. All carry no props.
+  'intro_viewed',
+  'tutorial_started',
+  'tutorial_completed',
+  'tutorial_skipped',
 ] as const;
 
 /** The union of every allowed event name. */

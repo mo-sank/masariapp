@@ -22,6 +22,17 @@ jest.mock('../use-watchlist', () => ({
   useWatchlist: () => ({ data: mockWatchlist }),
 }));
 
+// app_config: control the configured watchlist_max the button reads (8.1).
+let mockWatchlistMax = 5;
+jest.mock('../../config/use-app-config', () => ({
+  useAppConfig: () => ({
+    config: { watchlist_max: mockWatchlistMax },
+    isLoading: false,
+    isError: false,
+    getNumber: (_key: string) => mockWatchlistMax,
+  }),
+}));
+
 // Add/remove mutations: capture the mutate calls and drive success/error.
 const mockAddMutate = jest.fn();
 const mockRemoveMutate = jest.fn();
@@ -66,6 +77,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   mockUnlocks = [{ feature_key: 'watchlist' }];
   mockWatchlist = [];
+  mockWatchlistMax = 5;
 });
 
 describe('<WatchlistButton /> gating (6.3)', () => {
@@ -120,6 +132,21 @@ describe('<WatchlistButton /> add (6.1, 6.2)', () => {
     expect(message).toMatch(/full/i);
     expect(message).toContain('5');
     expect(options).toEqual({ tone: 'error' });
+  });
+
+  it('names the configured watchlist_max in the limit message (8.1)', async () => {
+    // Changing app_config.watchlist_max changes the number the UI shows.
+    mockWatchlistMax = 9;
+    const view = await renderButton(<WatchlistButton symbol="AAPL" isSignedIn />);
+    fireEvent.press(view.getByText('Add to watchlist'));
+
+    const [, handlers] = mockAddMutate.mock.calls[0];
+    handlers.onError(new Error('watchlist_full'));
+
+    const [message] = mockToastShow.mock.calls[0];
+    expect(message).toMatch(/full/i);
+    expect(message).toContain('9');
+    expect(message).not.toContain('5');
   });
 });
 
