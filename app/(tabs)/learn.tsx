@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { View } from 'react-native';
 
 import { Screen, StateView, Text } from '../../src/components/ui';
 import { BriefingCard } from '../../src/features/briefing/components';
@@ -83,16 +84,17 @@ export default function LearnScreen() {
 
   return (
     <Screen scroll style={{ gap: theme.spacing.md }}>
-      <Text variant="title" accessibilityRole="header">
-        Learn
-      </Text>
-
-      <StatsHeader
-        xp={stats.data?.xp_total ?? 0}
-        streakCurrent={stats.data?.streak_current ?? 0}
-        streakLongest={stats.data?.streak_longest ?? 0}
-        streakFreezes={stats.data?.streak_freezes ?? 0}
-      />
+      <View style={{ gap: theme.spacing.xs, marginBottom: theme.spacing.xs }}>
+        <Text variant="title" accessibilityRole="header">
+          Learn
+        </Text>
+        <StatsHeader
+          xp={stats.data?.xp_total ?? 0}
+          streakCurrent={stats.data?.streak_current ?? 0}
+          streakLongest={stats.data?.streak_longest ?? 0}
+          streakFreezes={stats.data?.streak_freezes ?? 0}
+        />
+      </View>
 
       <RewindCard dueCount={dueCount} onStart={() => router.push('/rewind')} />
 

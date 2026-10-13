@@ -86,16 +86,14 @@ export function OpeningBell({ params, seed, onComplete }: SimComponentProps) {
   // Accumulated choices across events; graded all at once at the end.
   const choicesRef = useRef<OpeningBellChoice[]>([]);
 
-  // A display-only countdown. Starts at the full day length and ticks down one
-  // second at a time; it is flavour and never gates completion. Skipped entirely
-  // under reduce-motion (no interval), so assistive-tech users and tests are not
-  // waiting on a clock.
-  const [secondsLeft, setSecondsLeft] = useState(parsed.durationSeconds);
+  // Count-up timer: tracks elapsed time to encourage a self-paced,
+  // low-anxiety simulation experience.
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   useEffect(() => {
     if (reduceMotion) return;
     const timer = setInterval(() => {
-      setSecondsLeft((s) => (s <= 1 ? 0 : s - 1));
+      setElapsedSeconds((s) => s + 1);
     }, 1000);
     return () => clearInterval(timer);
   }, [reduceMotion]);
@@ -103,6 +101,12 @@ export function OpeningBell({ params, seed, onComplete }: SimComponentProps) {
   const total = events.length;
   const event = events[eventIndex];
   const isLastEvent = eventIndex >= total - 1;
+
+  const formatElapsed = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
 
   // Learner picks an interpretation -> reveal the explanation, move to the
   // practice action. Records the chosen id in the ref for the action handler.
@@ -152,9 +156,9 @@ export function OpeningBell({ params, seed, onComplete }: SimComponentProps) {
           <Text
             variant="caption"
             color="textMuted"
-            accessibilityLabel={`About ${secondsLeft} seconds left in the trading day`}
+            accessibilityLabel={`Elapsed time ${formatElapsed(elapsedSeconds)}`}
           >
-            {secondsLeft}s
+            ⏱️ {formatElapsed(elapsedSeconds)}
           </Text>
         ) : (
           <Text variant="caption" color="textMuted">

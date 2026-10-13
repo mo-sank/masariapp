@@ -1,8 +1,8 @@
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Card, Disclaimer, Screen, StateView, Text } from '../../src/components/ui';
+import { Button, Card, Disclaimer, Screen, StateView, Text } from '../../src/components/ui';
 import {
   DelayedBadge,
   MarketBanner,
@@ -161,6 +161,19 @@ function StockDetail({ symbol, isSignedIn }: StockDetailProps) {
 
   return (
     <Screen scroll style={{ gap: theme.spacing.lg }}>
+      <View style={styles.topRow}>
+        <Button
+          title="← Back"
+          variant="secondary"
+          onPress={() =>
+            typeof router.back === 'function' && router.canGoBack?.()
+              ? router.back()
+              : router.push('/(tabs)/explore')
+          }
+          accessibilityLabel="Back to Explore"
+        />
+      </View>
+
       {/* Header: name + symbol, price, and day change. */}
       <View style={{ gap: theme.spacing.xs }}>
         <Text variant="title" accessibilityRole="header">
@@ -286,6 +299,11 @@ function formatVolume(volume: number | null): string {
 }
 
 const styles = StyleSheet.create({
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+  },
   statRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

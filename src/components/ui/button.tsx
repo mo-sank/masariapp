@@ -30,16 +30,31 @@ export interface ButtonProps extends Omit<PressableProps, 'children' | 'style' |
   loading?: boolean;
 }
 
-/** Resolve the fill, border, and text colors for a variant. */
+/** Resolve the fill, border, borderBottom, and text colors for a variant. */
 function variantColors(variant: ButtonVariant, colors: ColorTokens) {
   switch (variant) {
     case 'secondary':
-      return { background: 'transparent', border: colors.primary, text: colors.primary };
+      return {
+        background: 'transparent',
+        border: colors.border,
+        borderBottom: colors.border,
+        text: colors.primary,
+      };
     case 'danger':
-      return { background: colors.danger, border: colors.danger, text: colors.onDanger };
+      return {
+        background: colors.danger,
+        border: colors.danger,
+        borderBottom: colors.dangerDark,
+        text: colors.onDanger,
+      };
     case 'primary':
     default:
-      return { background: colors.primary, border: colors.primary, text: colors.onPrimary };
+      return {
+        background: colors.primary,
+        border: colors.primary,
+        borderBottom: colors.primaryDark,
+        text: colors.onPrimary,
+      };
   }
 }
 
@@ -68,8 +83,9 @@ export function Button({
         {
           backgroundColor: c.background,
           borderColor: c.border,
+          borderBottomColor: c.borderBottom,
           borderRadius: theme.radii.md,
-          paddingVertical: theme.spacing.md - 2,
+          paddingVertical: theme.spacing.md - 4,
           paddingHorizontal: theme.spacing.lg,
         },
         pressed && !isDisabled && styles.pressed,
@@ -92,7 +108,8 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
-    borderWidth: 1,
+    borderWidth: 2,
+    borderBottomWidth: 4,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 48, // comfortable tap target (>= 44pt)
@@ -103,10 +120,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: {
-    fontWeight: '600',
+    fontWeight: '700',
+    letterSpacing: 0.2,
   },
   pressed: {
-    opacity: 0.8,
+    transform: [{ translateY: 2 }],
+    borderBottomWidth: 2,
+    opacity: 0.95,
   },
   disabled: {
     opacity: 0.5,

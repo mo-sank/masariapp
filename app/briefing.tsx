@@ -1,4 +1,7 @@
-import { Disclaimer, Screen, StateView, Text } from '../src/components/ui';
+import { StyleSheet, View } from 'react-native';
+import { router } from 'expo-router';
+
+import { Button, Disclaimer, Screen, StateView, Text } from '../src/components/ui';
 import { BriefingCards } from '../src/features/briefing/components';
 import { useBriefing } from '../src/features/briefing/use-briefing';
 import { Gate } from '../src/features/progress/components/Gate';
@@ -52,6 +55,14 @@ function BriefingView({ isSignedIn }: { isSignedIn: boolean }) {
   const theme = useTheme();
   const briefing = useBriefing(isSignedIn);
 
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/learn');
+    }
+  };
+
   if (briefing.isLoading) {
     return (
       <Screen>
@@ -74,6 +85,14 @@ function BriefingView({ isSignedIn }: { isSignedIn: boolean }) {
 
   return (
     <Screen scroll style={{ gap: theme.spacing.lg }}>
+      <View style={styles.topRow}>
+        <Button
+          title="← Back"
+          variant="secondary"
+          onPress={handleBack}
+          accessibilityLabel="Back to Learn"
+        />
+      </View>
       <Text variant="title" accessibilityRole="header">
         Daily Market Briefing
       </Text>
@@ -82,3 +101,11 @@ function BriefingView({ isSignedIn }: { isSignedIn: boolean }) {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+  },
+});

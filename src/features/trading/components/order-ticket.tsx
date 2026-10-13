@@ -186,7 +186,7 @@ export function OrderTicket({ symbol, isSignedIn, onClose }: OrderTicketProps) {
 
   return (
     <Screen scroll style={{ gap: theme.spacing.lg }}>
-      <TicketHeader symbol={symbol} />
+      <TicketHeader symbol={symbol} onClose={onClose} />
 
       {/* Buy/Sell toggle, each side gated by its own unlock. */}
       <View style={[styles.sideRow, { gap: theme.spacing.md }]}>
@@ -282,15 +282,31 @@ export function OrderTicket({ symbol, isSignedIn, onClose }: OrderTicketProps) {
 }
 
 /** The ticket's title header. */
-function TicketHeader({ symbol }: { symbol: string }) {
+function TicketHeader({ symbol, onClose }: { symbol: string; onClose?: () => void }) {
   return (
-    <Text variant="title" color="text" accessibilityRole="header">
-      {`Trade ${symbol}`}
-    </Text>
+    <View style={styles.headerRow}>
+      <Text variant="title" color="text" accessibilityRole="header">
+        {`Trade ${symbol}`}
+      </Text>
+      {onClose ? (
+        <Button
+          title="Cancel"
+          variant="secondary"
+          onPress={onClose}
+          accessibilityLabel="Cancel trade"
+        />
+      ) : null}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
   sideRow: {
     flexDirection: 'row',
   },

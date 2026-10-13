@@ -30,9 +30,10 @@ export type TypographyVariant = keyof typeof typography;
 
 /** Corner radii in points, shared by Card, Button, and other surfaces. */
 export const radii = {
-  sm: 6,
-  md: 10,
-  lg: 16,
+  sm: 8,
+  md: 14,
+  lg: 20,
+  pill: 9999,
 } as const;
 
 /** The set of semantic colors every screen reads, resolved per color scheme. */
@@ -49,42 +50,56 @@ export interface ColorTokens {
   primary: string;
   /** Text drawn on top of `primary`. */
   onPrimary: string;
+  /** Darker primary shade for 3D button press bevels. */
+  primaryDark: string;
   /** Error / destructive color. */
   danger: string;
   /** Text drawn on top of `danger`. */
   onDanger: string;
+  /** Darker danger shade for 3D button press bevels. */
+  dangerDark: string;
   /** Hairline borders and dividers. */
   border: string;
+  /** Gamification: Streak fire color. */
+  streak: string;
+  /** Gamification: XP bolt color. */
+  xp: string;
+  /** Gamification: Freeze ice color. */
+  freeze: string;
 }
 
 const lightColors: ColorTokens = {
   background: '#ffffff',
-  surface: '#f4f4f4',
-  text: '#111111',
-  textMuted: '#444444',
-  primary: '#1b5e20',
+  surface: '#f8fafc',
+  text: '#0f172a',
+  textMuted: '#475569',
+  primary: '#15803d',
   onPrimary: '#ffffff',
-  danger: '#b00020',
+  primaryDark: '#166534',
+  danger: '#dc2626',
   onDanger: '#ffffff',
-  // Darkened from #999999 so a control's visible boundary (e.g. the secondary
-  // Button outline) clears WCAG AA 3:1 against both background and surface
-  // (requirement 10.4). Verified in contrast.test.ts.
-  border: '#767676',
+  dangerDark: '#991b1b',
+  border: '#828fa0',
+  streak: '#ea580c',
+  xp: '#2563eb',
+  freeze: '#0284c7',
 };
 
 const darkColors: ColorTokens = {
-  background: '#121212',
-  surface: '#1e1e1e',
-  text: '#f5f5f5',
-  textMuted: '#bbbbbb',
-  primary: '#66bb6a',
-  onPrimary: '#0a1f0b',
-  danger: '#cf6679',
-  onDanger: '#1a0005',
-  // Lightened from #555555 so a control's visible boundary clears WCAG AA 3:1
-  // against both background and surface (requirement 10.4). Verified in
-  // contrast.test.ts.
-  border: '#8a8a8a',
+  background: '#0f172a',
+  surface: '#1e293b',
+  text: '#f8fafc',
+  textMuted: '#94a3b8',
+  primary: '#4ade80',
+  onPrimary: '#052e16',
+  primaryDark: '#22c55e',
+  danger: '#f87171',
+  onDanger: '#450a0a',
+  dangerDark: '#ef4444',
+  border: '#64748b',
+  streak: '#fb923c',
+  xp: '#60a5fa',
+  freeze: '#38bdf8',
 };
 
 /** A fully resolved theme for one color scheme. */

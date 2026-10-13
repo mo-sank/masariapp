@@ -24,8 +24,23 @@ export function UnitHeader({ unit }: UnitHeaderProps) {
   const theme = useTheme();
   const label = `Unit ${unit}`;
   return (
-    <View style={[styles.container, { marginTop: theme.spacing.lg, marginBottom: theme.spacing.sm }]}>
-      <Text variant="caption" color="textMuted" accessibilityRole="header">
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.colors.surface,
+          borderColor: theme.colors.border,
+          borderWidth: 1.5,
+          borderBottomWidth: 3,
+          borderRadius: theme.radii.lg,
+          paddingVertical: theme.spacing.sm,
+          paddingHorizontal: theme.spacing.md,
+          marginTop: theme.spacing.md,
+          marginBottom: theme.spacing.xs,
+        },
+      ]}
+    >
+      <Text variant="caption" color="textMuted" accessibilityRole="header" style={styles.title}>
         {label.toUpperCase()}
       </Text>
     </View>
@@ -35,5 +50,9 @@ export function UnitHeader({ unit }: UnitHeaderProps) {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
+  },
+  title: {
+    fontWeight: '700',
+    letterSpacing: 0.8,
   },
 });

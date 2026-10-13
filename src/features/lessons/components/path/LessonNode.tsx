@@ -95,12 +95,27 @@ export function LessonNode({ node, onOpen }: LessonNodeProps) {
     lesson.unlocks.length > 0 ? lesson.unlocks.map(featureLabel).join(', ') : null;
 
   const borderColor = status === 'completed' ? theme.colors.primary : theme.colors.border;
+  const borderBottomColor =
+    status === 'completed' ? theme.colors.primaryDark : theme.colors.border;
 
   // The card surface and its contents are the same in every state; only the
   // outer wrapper differs — a Pressable for tappable nodes, an inert View for
   // locked ones (requirement 2.2: locked nodes are non-tappable).
   const content = (
-    <Card style={[styles.card, { gap: theme.spacing.xs, borderColor }, isLocked && styles.locked]}>
+    <Card
+      style={[
+        styles.card,
+        {
+          gap: theme.spacing.xs,
+          borderColor,
+          borderBottomColor,
+          borderWidth: 2,
+          borderBottomWidth: 4,
+          borderRadius: theme.radii.lg,
+        },
+        isLocked && styles.locked,
+      ]}
+    >
       <View style={[styles.row, { gap: theme.spacing.sm }]}>
         <Text
           variant="title"
@@ -171,7 +186,8 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   pressed: {
-    opacity: 0.8,
+    transform: [{ translateY: 2 }],
+    opacity: 0.95,
   },
   row: {
     flexDirection: 'row',
@@ -187,6 +203,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontWeight: '600',
+    fontWeight: '700',
   },
 });

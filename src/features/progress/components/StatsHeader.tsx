@@ -15,9 +15,9 @@
  * so a screen reader never announces a bare number. Values default to zero so a
  * brand-new learner (no stats row yet) renders a clean "0" rather than blanks.
  */
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { Card, Text } from '../../../components/ui';
+import { Text } from '../../../components/ui';
 import { useTheme } from '../../../theme/theme-provider';
 
 export interface StatsHeaderProps {
@@ -40,34 +40,32 @@ export function StatsHeader({
   const theme = useTheme();
 
   return (
-    <Card>
-      <View
-        style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.md }}
-        accessibilityRole="summary"
-      >
-        <Stat label="XP" value={xp.toLocaleString()} a11y={`${xp} XP`} />
-        <Stat
-          label="Streak"
-          value={`🔥 ${streakCurrent}`}
-          a11y={`${streakCurrent} day streak`}
-        />
-        <Stat
-          label="Longest"
-          value={`${streakLongest}`}
-          a11y={`Longest streak ${streakLongest} days`}
-        />
-        <Stat
-          label="Freezes"
-          value={`❄️ ${streakFreezes}`}
-          a11y={`${streakFreezes} streak freezes`}
-        />
-      </View>
-    </Card>
+    <View
+      style={[styles.container, { gap: theme.spacing.sm }]}
+      accessibilityRole="summary"
+    >
+      <Stat label="XP" value={xp.toLocaleString()} a11y={`${xp} XP`} />
+      <Stat
+        label="Streak"
+        value={`🔥 ${streakCurrent}`}
+        a11y={`${streakCurrent} day streak`}
+      />
+      <Stat
+        label="Longest"
+        value={`${streakLongest}`}
+        a11y={`Longest streak ${streakLongest} days`}
+      />
+      <Stat
+        label="Freezes"
+        value={`❄️ ${streakFreezes}`}
+        a11y={`${streakFreezes} streak freezes`}
+      />
+    </View>
   );
 }
 
 interface StatProps {
-  /** Short caption under the value. */
+  /** Short caption under/beside the value. */
   label: string;
   /** The glanceable value (may include an emoji). */
   value: string;
@@ -75,15 +73,56 @@ interface StatProps {
   a11y: string;
 }
 
-/** One labelled stat cell: value above, caption below, read as one phrase. */
+/** One labelled stat cell: compact pill with tactile border. */
 function Stat({ label, value, a11y }: StatProps) {
   const theme = useTheme();
   return (
-    <View accessible accessibilityLabel={a11y} style={{ gap: theme.spacing.xs }}>
-      <Text variant="title">{value}</Text>
-      <Text variant="caption" color="textMuted">
+    <View
+      accessible
+      accessibilityLabel={a11y}
+      style={[
+        styles.pill,
+        {
+          backgroundColor: theme.colors.surface,
+          borderColor: theme.colors.border,
+          borderRadius: theme.radii.pill,
+          paddingVertical: theme.spacing.xs + 2,
+          paddingHorizontal: theme.spacing.sm + 4,
+          gap: theme.spacing.xs,
+        },
+      ]}
+    >
+      <Text variant="body" style={styles.value}>
+        {value}
+      </Text>
+      <Text variant="caption" color="textMuted" style={styles.label}>
         {label}
       </Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    width: '100%',
+  },
+  pill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderBottomWidth: 3,
+  },
+  value: {
+    fontWeight: '700',
+    fontSize: 14,
+    lineHeight: 18,
+  },
+  label: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '600',
+  },
+});

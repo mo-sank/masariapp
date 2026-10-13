@@ -181,9 +181,17 @@ export function RewindSession({ items, onReview, onComplete, onDone }: RewindSes
   return (
     <Screen scroll style={{ gap: theme.spacing.lg }}>
       <View style={[styles.header, { gap: theme.spacing.sm }]}>
-        <Text variant="caption" color="textMuted" accessibilityRole="header">
-          {`Item ${index + 1} of ${total}`}
-        </Text>
+        <View style={styles.topBar}>
+          <Button
+            title="Exit"
+            variant="secondary"
+            onPress={onDone}
+            accessibilityLabel="Exit Rewind session"
+          />
+          <Text variant="caption" color="textMuted" accessibilityRole="header">
+            {`Item ${index + 1} of ${total}`}
+          </Text>
+        </View>
         <ProgressBar stepIndex={index} totalSteps={total} reduceMotion={reduceMotion} />
       </View>
 
@@ -210,6 +218,12 @@ export function RewindSession({ items, onReview, onComplete, onDone }: RewindSes
 
 const styles = StyleSheet.create({
   header: {
+    width: '100%',
+  },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     width: '100%',
   },
 });
