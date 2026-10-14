@@ -58,14 +58,25 @@ export function PathView({ path, onOpenLesson }: PathViewProps) {
         </Text>
       )}
 
-      {path.units.map((unit) => (
-        <View key={unit.unit} style={[styles.unit, { gap: theme.spacing.sm }]}>
-          <UnitHeader unit={unit.unit} />
-          {unit.lessons.map((node) => (
-            <LessonNode key={node.lesson.id} node={node} onOpen={onOpenLesson} />
-          ))}
-        </View>
-      ))}
+      {path.units.map((unit) => {
+        const hasLocked = unit.lessons.some((node) => node.status === 'locked');
+        const testOutTarget =
+          unit.lessons.find((node) => node.lesson.kind === 'boss')?.lesson ??
+          (unit.lessons.length > 1 ? unit.lessons[unit.lessons.length - 1]?.lesson : undefined);
+
+        return (
+          <View key={unit.unit} style={[styles.unit, { gap: theme.spacing.sm }]}>
+            <UnitHeader
+              unit={unit.unit}
+              canTestOut={hasLocked && Boolean(testOutTarget)}
+              onTestOut={testOutTarget ? () => onOpenLesson(testOutTarget) : undefined}
+            />
+            {unit.lessons.map((node) => (
+              <LessonNode key={node.lesson.id} node={node} onOpen={onOpenLesson} />
+            ))}
+          </View>
+        );
+      })}
     </View>
   );
 }

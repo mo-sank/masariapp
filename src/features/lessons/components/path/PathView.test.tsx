@@ -156,4 +156,16 @@ describe('<PathView />', () => {
     expect(view.queryByTestId('path-view')).toBeNull();
     expect(view.getByText('Lessons are on the way')).toBeTruthy();
   });
+
+  it('renders a Jump Ahead test-out button for units with locked lessons and triggers onOpenLesson', async () => {
+    const path = buildLearningPath(sampleLessons(), new Set(['L0']));
+    const { view, onOpenLesson } = await renderPath(path);
+
+    const testOutBtn = view.getByRole('button', { name: 'Test out of Unit 1' });
+    expect(testOutBtn).toBeTruthy();
+    expect(view.getByText('⚡ Jump Ahead')).toBeTruthy();
+
+    fireEvent.press(testOutBtn);
+    expect(onOpenLesson).toHaveBeenCalledWith(expect.objectContaining({ id: 'L1.2' }));
+  });
 });

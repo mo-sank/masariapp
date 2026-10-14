@@ -17,6 +17,7 @@ import { Text } from '../../../components/ui';
 import { formatCents } from '../../../lib/money';
 import { useTheme } from '../../../theme/theme-provider';
 import type { ExploreListItem } from '../use-explore-list';
+import { getYouthSubtitle } from '../youth-tags';
 
 export interface InstrumentRowProps {
   item: ExploreListItem;
@@ -28,11 +29,13 @@ export function InstrumentRow({ item, onPress }: InstrumentRowProps) {
   const theme = useTheme();
   const { instrument, quote } = item;
   const priceText = quote ? formatCents(quote.price_cents) : '—';
+  const youthSubtitle = getYouthSubtitle(instrument.symbol);
 
   // A concise spoken summary so a screen reader does not read each cell in turn.
   const a11yLabel = [
     instrument.symbol,
     instrument.name,
+    youthSubtitle,
     instrument.is_starter ? 'starter' : null,
     quote ? priceText : 'price unavailable',
   ]
@@ -50,7 +53,7 @@ export function InstrumentRow({ item, onPress }: InstrumentRowProps) {
           backgroundColor: theme.colors.surface,
           borderColor: theme.colors.border,
           borderRadius: theme.radii.md,
-          paddingVertical: theme.spacing.md,
+          paddingVertical: theme.spacing.md - 2,
           paddingHorizontal: theme.spacing.md,
           gap: theme.spacing.md,
         },
@@ -74,7 +77,7 @@ export function InstrumentRow({ item, onPress }: InstrumentRowProps) {
                 },
               ]}
             >
-              <Text variant="caption" color="onPrimary">
+              <Text variant="caption" color="onPrimary" style={{ fontWeight: '700', fontSize: 11 }}>
                 Starter
               </Text>
             </View>
@@ -83,10 +86,15 @@ export function InstrumentRow({ item, onPress }: InstrumentRowProps) {
         <Text variant="caption" color="textMuted" numberOfLines={1}>
           {instrument.name}
         </Text>
+        {youthSubtitle ? (
+          <Text variant="caption" color="primary" numberOfLines={1} style={styles.youthSubtitle}>
+            {youthSubtitle}
+          </Text>
+        ) : null}
       </View>
 
       <View style={styles.right}>
-        <Text variant="body" color="text">
+        <Text variant="body" color="text" style={styles.price}>
           {priceText}
         </Text>
         {quote ? (
@@ -103,28 +111,40 @@ export function InstrumentRow({ item, onPress }: InstrumentRowProps) {
 
 const styles = StyleSheet.create({
   row: {
-    borderWidth: 1,
+    borderWidth: 1.5,
+    borderBottomWidth: 3,
     flexDirection: 'row',
     alignItems: 'center',
   },
   left: {
     flex: 1,
     minWidth: 0,
+    gap: 2,
   },
   symbolRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   symbol: {
+    fontWeight: '700',
+  },
+  youthSubtitle: {
+    fontSize: 12,
     fontWeight: '600',
   },
-  tag: {
-    alignSelf: 'flex-start',
+  price: {
+    fontWeight: '700',
+    textAlign: 'right',
   },
   right: {
     alignItems: 'flex-end',
+    gap: 2,
+  },
+  tag: {
+    alignSelf: 'center',
   },
   pressed: {
-    opacity: 0.7,
+    transform: [{ translateY: 1 }],
+    opacity: 0.9,
   },
 });

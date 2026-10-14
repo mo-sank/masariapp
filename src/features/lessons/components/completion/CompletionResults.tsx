@@ -29,12 +29,15 @@ import { UnlockCelebration } from '../../../progress/components/UnlockCelebratio
 import { useReduceMotion } from '../../../../theme/use-reduce-motion';
 import { useTheme } from '../../../../theme/theme-provider';
 import type { CompletionPassed } from '../../api/complete-lesson';
+import { getTakeaway, listTakeaways } from '../../takeaways';
 
 export interface CompletionResultsProps {
   /** The parsed passing result from `complete_lesson`. */
   result: CompletionPassed;
   /** The completed lesson's title, shown in the header. */
   lessonTitle: string;
+  /** Optional lesson id (to show its takeaway card). */
+  lessonId?: string;
   /** Navigate to a feature's route (the "go to feature" button). */
   onGoToFeature: (route: string) => void;
   /** Return to the learning path (the "Back to path" button). */
@@ -44,6 +47,7 @@ export interface CompletionResultsProps {
 export function CompletionResults({
   result,
   lessonTitle,
+  lessonId,
   onGoToFeature,
   onBackToPath,
 }: CompletionResultsProps) {
@@ -52,6 +56,9 @@ export function CompletionResults({
 
   // Requirement 5.6: a replay awards no XP. Show encouragement, not "0 XP".
   const earnedXp = result.firstCompletion && result.xpAwarded > 0;
+  const takeaway =
+    (lessonId ? getTakeaway(lessonId) : undefined) ??
+    listTakeaways().find((t) => t.title === lessonTitle);
 
   return (
     <Screen scroll style={{ gap: theme.spacing.lg }}>
@@ -99,6 +106,40 @@ export function CompletionResults({
           }`}
         />
       </Card>
+
+      {takeaway ? (
+        <Card style={{ gap: theme.spacing.sm }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.xs }}>
+            <Text variant="caption" style={{ fontWeight: '700', color: theme.colors.primary }}>
+              {takeaway.emoji} KEY TAKEAWAY · COLLECTED
+            </Text>
+          </View>
+          <Text variant="body" style={{ fontWeight: '700' }}>
+            {takeaway.tagline}
+          </Text>
+          <View style={{ gap: theme.spacing.xs, marginTop: 2 }}>
+            {takeaway.bullets.map((b, idx) => (
+              <Text key={idx} variant="caption" color="text">
+                • {b}
+              </Text>
+            ))}
+          </View>
+          <View
+            style={{
+              backgroundColor: theme.colors.background,
+              borderColor: theme.colors.border,
+              borderWidth: 1,
+              borderRadius: theme.radii.sm,
+              padding: theme.spacing.sm,
+              marginTop: 4,
+            }}
+          >
+            <Text variant="caption" color="textMuted" style={{ fontStyle: 'italic' }}>
+              💡 {takeaway.teenAnalogy}
+            </Text>
+          </View>
+        </Card>
+      ) : null}
 
       <UnlockCelebration
         unlocked={result.unlocked}

@@ -111,4 +111,18 @@ describe('<CompletionResults /> (5.4, 5.6)', () => {
     expect(screen.getByLabelText('Current streak: 1 day')).toBeTruthy();
     expect(screen.getByLabelText('1 Streak Freeze')).toBeTruthy();
   });
+
+  it('renders persistent takeaway card with teen analogy for completed lesson', async () => {
+    await renderScreen(
+      <CompletionResults
+        result={passing()}
+        lessonTitle="Slice the Pizza"
+        onGoToFeature={jest.fn()}
+        onBackToPath={jest.fn()}
+      />,
+    );
+    expect(screen.getByText('🍕 KEY TAKEAWAY · COLLECTED')).toBeTruthy();
+    expect(screen.getByText('Owning a share means owning a slice of a real business.')).toBeTruthy();
+    expect(screen.getByText(/Think of 1 share like owning 1 slice of an 8-slice pizza/)).toBeTruthy();
+  });
 });

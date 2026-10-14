@@ -3,6 +3,7 @@ import { View } from 'react-native';
 
 import { Button, Card, Screen, StateView, Text } from '../../src/components/ui';
 import { useProfile } from '../../src/features/auth/use-profile';
+import { KnowledgeBinder } from '../../src/features/lessons/components/KnowledgeBinder';
 import { RankBadge } from '../../src/features/progress/components/RankBadge';
 import { StatsHeader } from '../../src/features/progress/components/StatsHeader';
 import { useRank } from '../../src/features/progress/hooks/use-rank';
@@ -80,6 +81,8 @@ export default function ProfileScreen() {
         streakLongest={stats.data?.streak_longest ?? 0}
         streakFreezes={stats.data?.streak_freezes ?? 0}
       />
+
+      <KnowledgeBinder onOpenGlossary={() => router.push('/glossary')} />
 
       <Button
         title="Settings"

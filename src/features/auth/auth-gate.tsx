@@ -121,7 +121,8 @@ export function pathnameToBranch(pathname: string): Branch | undefined {
     pathname.startsWith("/briefing") ||
     pathname.startsWith("/stock") ||
     pathname.startsWith("/trade") ||
-    pathname.startsWith("/history")
+    pathname.startsWith("/history") ||
+    pathname.startsWith("/glossary")
   ) {
     return "tabs";
   }

@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { router } from 'expo-router';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { Screen, StateView, Text } from '../../src/components/ui';
 import { BriefingCard } from '../../src/features/briefing/components';
@@ -10,6 +11,7 @@ import type { Lesson } from '../../src/features/lessons/schema';
 import { Gate } from '../../src/features/progress/components/Gate';
 import { StatsHeader } from '../../src/features/progress/components/StatsHeader';
 import { useStats } from '../../src/features/progress/hooks/use-stats';
+import { FoundationalPrimer } from '../../src/features/tutorial/foundational-primer';
 import { useSession } from '../../src/lib/auth0';
 import { useTheme } from '../../src/theme/theme-provider';
 
@@ -51,6 +53,7 @@ export default function LearnScreen() {
   const { isLoading, isError, refetch, path } = useLearningPath(isSignedIn);
   const stats = useStats(isSignedIn);
   const rewind = useRewind(isSignedIn);
+  const [showPrimer, setShowPrimer] = useState(false);
   const openBriefing = () => router.push('/briefing');
 
   if (isLoading) {
@@ -85,9 +88,60 @@ export default function LearnScreen() {
   return (
     <Screen scroll style={{ gap: theme.spacing.md }}>
       <View style={{ gap: theme.spacing.xs, marginBottom: theme.spacing.xs }}>
-        <Text variant="title" accessibilityRole="header">
-          Learn
-        </Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text variant="title" accessibilityRole="header">
+            Learn
+          </Text>
+          <View style={{ flexDirection: 'row', gap: theme.spacing.xs, alignItems: 'center' }}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Open Market 101 Primer"
+              onPress={() => setShowPrimer(true)}
+              style={({ pressed }) => [
+                {
+                  backgroundColor: theme.colors.surface,
+                  borderColor: theme.colors.border,
+                  borderWidth: 1.5,
+                  borderBottomWidth: 3,
+                  borderBottomColor: theme.colors.border,
+                  borderRadius: theme.radii.pill,
+                  paddingHorizontal: theme.spacing.sm + 2,
+                  paddingVertical: theme.spacing.xs,
+                  opacity: pressed ? 0.85 : 1,
+                  transform: [{ translateY: pressed ? 1.5 : 0 }],
+                },
+              ]}
+            >
+              <Text variant="caption" style={{ fontWeight: '700', color: theme.colors.primary }}>
+                💡 Market 101
+              </Text>
+            </Pressable>
+
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Open Financial Glossary"
+              onPress={() => router.push('/glossary')}
+              style={({ pressed }) => [
+                {
+                  backgroundColor: theme.colors.surface,
+                  borderColor: theme.colors.border,
+                  borderWidth: 1.5,
+                  borderBottomWidth: 3,
+                  borderBottomColor: theme.colors.border,
+                  borderRadius: theme.radii.pill,
+                  paddingHorizontal: theme.spacing.sm + 2,
+                  paddingVertical: theme.spacing.xs,
+                  opacity: pressed ? 0.85 : 1,
+                  transform: [{ translateY: pressed ? 1.5 : 0 }],
+                },
+              ]}
+            >
+              <Text variant="caption" style={{ fontWeight: '700', color: theme.colors.primary }}>
+                📖 Glossary
+              </Text>
+            </Pressable>
+          </View>
+        </View>
         <StatsHeader
           xp={stats.data?.xp_total ?? 0}
           streakCurrent={stats.data?.streak_current ?? 0}
@@ -95,6 +149,11 @@ export default function LearnScreen() {
           streakFreezes={stats.data?.streak_freezes ?? 0}
         />
       </View>
+
+      <FoundationalPrimer
+        visible={showPrimer}
+        onClose={() => setShowPrimer(false)}
+      />
 
       <RewindCard dueCount={dueCount} onStart={() => router.push('/rewind')} />
 

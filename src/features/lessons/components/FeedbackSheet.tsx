@@ -95,9 +95,43 @@ export function FeedbackSheet({
         </Text>
 
         {bodyText ? (
-          <Text variant="body" color="text">
-            {bodyText}
-          </Text>
+          <View
+            style={
+              !correct && reveal
+                ? [
+                    styles.remediationBox,
+                    {
+                      backgroundColor: theme.colors.background,
+                      borderColor: theme.colors.border,
+                      borderRadius: theme.radii.md,
+                      padding: theme.spacing.md,
+                      borderWidth: 1,
+                      gap: theme.spacing.xs,
+                    },
+                  ]
+                : undefined
+            }
+          >
+            {!correct && reveal ? (
+              <Text
+                variant="caption"
+                style={{ fontWeight: '700', color: theme.colors.textMuted }}
+              >
+                💡 WHY THIS HAPPENED
+              </Text>
+            ) : null}
+            <Text variant="body" color="text">
+              {bodyText}
+            </Text>
+            {!correct && reveal ? (
+              <Text
+                variant="caption"
+                style={{ color: theme.colors.primary, fontWeight: '600', marginTop: 2 }}
+              >
+                🔁 Saved to your Rewind deck for quick practice later!
+              </Text>
+            ) : null}
+          </View>
         ) : null}
 
         <Button
@@ -124,5 +158,8 @@ const styles = StyleSheet.create({
   sheet: {
     width: '100%',
     borderTopWidth: StyleSheet.hairlineWidth,
+  },
+  remediationBox: {
+    width: '100%',
   },
 });
