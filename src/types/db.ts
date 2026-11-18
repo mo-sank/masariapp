@@ -698,6 +698,256 @@ export type Database = {
           },
         ];
       };
+      stress_scenarios: {
+        Row: {
+          assumptions: NonNullable<Json>;
+          cause: string;
+          conditions: string;
+          description: string;
+          expected_impacts: string;
+          id: string;
+          is_active: boolean;
+          learning_objective: string;
+          name: string;
+          severity: string;
+          sort_order: number;
+        };
+        Insert: {
+          assumptions: NonNullable<Json>;
+          cause: string;
+          conditions: string;
+          description: string;
+          expected_impacts: string;
+          id: string;
+          is_active?: boolean;
+          learning_objective: string;
+          name: string;
+          severity: string;
+          sort_order: number;
+        };
+        Update: {
+          assumptions?: NonNullable<Json>;
+          cause?: string;
+          conditions?: string;
+          description?: string;
+          expected_impacts?: string;
+          id?: string;
+          is_active?: boolean;
+          learning_objective?: string;
+          name?: string;
+          severity?: string;
+          sort_order?: number;
+        };
+        Relationships: [];
+      };
+      stress_simulations: {
+        Row: {
+          asset_results: NonNullable<Json>;
+          assumptions_snapshot: NonNullable<Json>;
+          cash_cents: number;
+          change_basis_points: number | null;
+          change_cents: number;
+          created_at: string;
+          holdings_snapshot: NonNullable<Json>;
+          id: string;
+          phase: string;
+          scenario_id: string;
+          simulated_value_cents: number;
+          starting_value_cents: number;
+          user_id: string;
+        };
+        Insert: {
+          asset_results: NonNullable<Json>;
+          assumptions_snapshot: NonNullable<Json>;
+          cash_cents: number;
+          change_basis_points?: number | null;
+          change_cents: number;
+          created_at?: string;
+          holdings_snapshot: NonNullable<Json>;
+          id?: string;
+          phase?: string;
+          scenario_id: string;
+          simulated_value_cents: number;
+          starting_value_cents: number;
+          user_id: string;
+        };
+        Update: {
+          asset_results?: NonNullable<Json>;
+          assumptions_snapshot?: NonNullable<Json>;
+          cash_cents?: number;
+          change_basis_points?: number | null;
+          change_cents?: number;
+          created_at?: string;
+          holdings_snapshot?: NonNullable<Json>;
+          id?: string;
+          phase?: string;
+          scenario_id?: string;
+          simulated_value_cents?: number;
+          starting_value_cents?: number;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'stress_simulations_scenario_id_fkey';
+            columns: ['scenario_id'];
+            isOneToOne: false;
+            referencedRelation: 'stress_scenarios';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'stress_simulations_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['user_id'];
+          },
+        ];
+      };
+      stress_predictions: {
+        Row: {
+          accuracy: Json | null;
+          created_at: string;
+          direction: string;
+          estimated_change_bp: number | null;
+          id: string;
+          picked_best: string | null;
+          picked_worst: string | null;
+          simulation_id: string;
+          user_id: string;
+        };
+        Insert: {
+          accuracy?: Json | null;
+          created_at?: string;
+          direction: string;
+          estimated_change_bp?: number | null;
+          id?: string;
+          picked_best?: string | null;
+          picked_worst?: string | null;
+          simulation_id: string;
+          user_id: string;
+        };
+        Update: {
+          accuracy?: Json | null;
+          created_at?: string;
+          direction?: string;
+          estimated_change_bp?: number | null;
+          id?: string;
+          picked_best?: string | null;
+          picked_worst?: string | null;
+          simulation_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'stress_predictions_simulation_id_fkey';
+            columns: ['simulation_id'];
+            isOneToOne: true;
+            referencedRelation: 'stress_simulations';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'stress_predictions_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['user_id'];
+          },
+        ];
+      };
+      stress_reflections: {
+        Row: {
+          created_at: string;
+          id: string;
+          responses: NonNullable<Json>;
+          simulation_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          responses: NonNullable<Json>;
+          simulation_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          responses?: NonNullable<Json>;
+          simulation_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'stress_reflections_simulation_id_fkey';
+            columns: ['simulation_id'];
+            isOneToOne: false;
+            referencedRelation: 'stress_simulations';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'stress_reflections_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['user_id'];
+          },
+        ];
+      };
+      stress_challenge_progress: {
+        Row: {
+          attempts: number;
+          best_simulation_id: string | null;
+          challenge_id: string;
+          met_at: string | null;
+          scenario_id: string;
+          status: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          attempts?: number;
+          best_simulation_id?: string | null;
+          challenge_id: string;
+          met_at?: string | null;
+          scenario_id: string;
+          status: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          attempts?: number;
+          best_simulation_id?: string | null;
+          challenge_id?: string;
+          met_at?: string | null;
+          scenario_id?: string;
+          status?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'stress_challenge_progress_best_simulation_id_fkey';
+            columns: ['best_simulation_id'];
+            isOneToOne: false;
+            referencedRelation: 'stress_simulations';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'stress_challenge_progress_scenario_id_fkey';
+            columns: ['scenario_id'];
+            isOneToOne: false;
+            referencedRelation: 'stress_scenarios';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'stress_challenge_progress_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['user_id'];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -825,6 +1075,39 @@ export type Database = {
           p_screen?: string | null;
         };
         Returns: Database['public']['Tables']['feedback']['Row'];
+      };
+      record_simulation: {
+        Args: {
+          p_scenario_id: string;
+          p_phase?: string;
+        };
+        Returns: Database['public']['Tables']['stress_simulations']['Row'];
+      };
+      save_prediction: {
+        Args: {
+          p_simulation_id: string;
+          p_direction: string;
+          p_estimated_change_bp?: number | null;
+          p_best?: string | null;
+          p_worst?: string | null;
+        };
+        Returns: Database['public']['Tables']['stress_predictions']['Row'];
+      };
+      save_reflection: {
+        Args: {
+          p_simulation_id: string;
+          p_responses: Json;
+        };
+        Returns: Database['public']['Tables']['stress_reflections']['Row'];
+      };
+      upsert_challenge_progress: {
+        Args: {
+          p_scenario_id: string;
+          p_challenge_id: string;
+          p_status: string;
+          p_simulation_id?: string | null;
+        };
+        Returns: Database['public']['Tables']['stress_challenge_progress']['Row'];
       };
     };
     Enums: {
