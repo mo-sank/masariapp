@@ -89,6 +89,11 @@ function PortfolioView({ theme }: { theme: ReturnType<typeof useTheme> }) {
         variant="secondary"
         onPress={() => router.push('/history')}
       />
+      <Button
+        title="Stress Lab"
+        variant="secondary"
+        onPress={() => router.push('/stress-lab')}
+      />
       {data.positions.length > 0 ? (
         <Text variant="caption" color="textMuted" accessibilityRole="header">
           Holdings
