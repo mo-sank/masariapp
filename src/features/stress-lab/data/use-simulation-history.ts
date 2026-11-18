@@ -36,3 +36,37 @@ export function useSimulationHistory(enabled = true) {
     enabled,
   });
 }
+
+/** React Query key for the caller's runs of one scenario, newest-first. */
+export function scenarioHistoryQueryKey(scenarioId: string) {
+  return ['stress-lab', 'history', 'scenario', scenarioId] as const;
+}
+
+/**
+ * Fetch the caller's runs of one scenario, newest-first. Backed by the
+ * `(user_id, scenario_id, created_at desc)` index. Used by the comparison
+ * dashboard to read the latest two runs of the same scenario; each row is
+ * validated at the boundary.
+ */
+export async function fetchSimulationsForScenario(
+  scenarioId: string,
+): Promise<StressSimulation[]> {
+  const { data, error } = await supabase
+    .from('stress_simulations')
+    .select('*')
+    .eq('scenario_id', scenarioId)
+    .order('created_at', { ascending: false });
+  if (error) {
+    throw error;
+  }
+  return (data ?? []).map(parseStressSimulation);
+}
+
+/** Query the caller's runs of one scenario for the comparison dashboard. */
+export function useSimulationsForScenario(scenarioId: string | undefined, enabled = true) {
+  return useQuery({
+    queryKey: scenarioHistoryQueryKey(scenarioId ?? ''),
+    queryFn: () => fetchSimulationsForScenario(scenarioId as string),
+    enabled: enabled && typeof scenarioId === 'string' && scenarioId.length > 0,
+  });
+}

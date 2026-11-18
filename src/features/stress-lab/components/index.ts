@@ -8,10 +8,26 @@
  */
 export { AllocationDonut, type AllocationDonutProps, type AllocationSlice } from './AllocationDonut';
 export { AssetBreakdownTable, type AssetBreakdownTableProps } from './AssetBreakdownTable';
+export { ChallengeTracker, type ChallengeTrackerProps } from './ChallengeTracker';
+export { ComparisonDashboard, type ComparisonDashboardProps } from './ComparisonDashboard';
 export { ConcentrationBar, type ConcentrationBarProps } from './ConcentrationBar';
 export { HoldingsBreakdown, type HoldingsBreakdownProps } from './HoldingsBreakdown';
 export { InfoTip, type InfoTipProps } from './InfoTip';
 export { PortfolioOverview, type PortfolioOverviewProps } from './PortfolioOverview';
+export {
+  PredictionForm,
+  type PredictionFormProps,
+  type PredictionDraft,
+} from './PredictionForm';
+export { PredictionResult, type PredictionResultProps } from './PredictionResult';
+export { Recommendations, type RecommendationsProps } from './Recommendations';
+export {
+  ReflectionForm,
+  type ReflectionFormProps,
+  type ReflectionQuestion,
+  DEFAULT_REFLECTION_QUESTIONS,
+  REFLECTION_ANSWER_MAX,
+} from './ReflectionForm';
 export { ResultsSummary, type ResultsSummaryProps } from './ResultsSummary';
 export { RiskObservations, type RiskObservationsProps } from './RiskObservations';
 export { ScenarioCard, type ScenarioCardProps } from './ScenarioCard';

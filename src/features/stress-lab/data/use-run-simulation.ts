@@ -25,7 +25,10 @@ import { useMutation, useQueryClient, type QueryClient } from '@tanstack/react-q
 import { supabase } from '../../../lib/supabase';
 import { parseStressSimulation, type StressSimulation } from './rpc-schemas';
 import { simulationQueryKey } from './use-simulation';
-import { SIMULATION_HISTORY_QUERY_KEY } from './use-simulation-history';
+import {
+  SIMULATION_HISTORY_QUERY_KEY,
+  scenarioHistoryQueryKey,
+} from './use-simulation-history';
 
 /** Which phase of a scenario to run; 'recovery' is meaningful only for COVID-19. */
 export type RunPhase = 'shock' | 'recovery';
@@ -110,13 +113,21 @@ export async function runSimulation(input: RunSimulationInput): Promise<StressSi
 }
 
 /**
- * Invalidate the readers a new simulation affects: the history list and the
- * new row's single-simulation query so the dashboard re-reads if it is already
- * mounted.
+ * Invalidate the readers a new simulation affects: the full history list, the
+ * new row's single-simulation query (so the dashboard re-reads if it is already
+ * mounted), and — when the scenario is known — the per-scenario history the
+ * comparison dashboard reads so a fresh run becomes the new "updated" side.
  */
-export function invalidateAfterRun(client: QueryClient, simulationId: string): void {
+export function invalidateAfterRun(
+  client: QueryClient,
+  simulationId: string,
+  scenarioId?: string,
+): void {
   void client.invalidateQueries({ queryKey: SIMULATION_HISTORY_QUERY_KEY });
   void client.invalidateQueries({ queryKey: simulationQueryKey(simulationId) });
+  if (scenarioId) {
+    void client.invalidateQueries({ queryKey: scenarioHistoryQueryKey(scenarioId) });
+  }
 }
 
 /**
@@ -131,7 +142,7 @@ export function useRunSimulation() {
   return useMutation<StressSimulation, Error, RunSimulationInput>({
     mutationFn: (input) => runSimulation(input),
     onSuccess: (row) => {
-      invalidateAfterRun(client, row.id);
+      invalidateAfterRun(client, row.id, row.scenario_id);
     },
   });
 }

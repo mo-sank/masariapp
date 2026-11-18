@@ -10,9 +10,20 @@ export {
   stressSimulationSchema,
   assetResultSchema,
   holdingSnapshotSchema,
+  parseStressPrediction,
+  parseStressReflection,
+  parseStressChallengeProgress,
+  stressPredictionSchema,
+  stressReflectionSchema,
+  stressChallengeProgressSchema,
+  predictionAccuracySchema,
   type StressSimulation,
   type AssetResult,
   type HoldingSnapshot,
+  type StressPrediction,
+  type StressReflection,
+  type StressChallengeProgress,
+  type PredictionAccuracyPayload,
 } from './rpc-schemas';
 export { simulationResultFromRow } from './map-simulation';
 export {
@@ -26,6 +37,9 @@ export {
   useSimulationHistory,
   fetchSimulationHistory,
   SIMULATION_HISTORY_QUERY_KEY,
+  useSimulationsForScenario,
+  fetchSimulationsForScenario,
+  scenarioHistoryQueryKey,
 } from './use-simulation-history';
 export {
   useRunSimulation,
@@ -36,3 +50,40 @@ export {
   type RunPhase,
   type StressErrorCode,
 } from './use-run-simulation';
+export {
+  useSavePrediction,
+  usePrediction,
+  savePrediction,
+  fetchPrediction,
+  mapPredictionError,
+  invalidateAfterPrediction,
+  predictionQueryKey,
+  parsePredictionEstimateBp,
+  type SavePredictionInput,
+  type PredictionDirectionInput,
+  type PredictionErrorCode,
+} from './use-save-prediction';
+export {
+  useSaveReflection,
+  useReflection,
+  saveReflection,
+  fetchReflection,
+  mapReflectionError,
+  invalidateAfterReflection,
+  reflectionQueryKey,
+  type SaveReflectionInput,
+  type ReflectionResponse,
+  type ReflectionErrorCode,
+} from './use-save-reflection';
+export {
+  useChallengeProgress,
+  useChallengeProgressUpsert,
+  upsertChallengeProgress,
+  fetchChallengeProgress,
+  mapChallengeError,
+  invalidateAfterChallenge,
+  CHALLENGE_PROGRESS_QUERY_KEY,
+  type ChallengeProgressInput,
+  type ChallengeStatus,
+  type ChallengeErrorCode,
+} from './use-challenge-progress';

@@ -86,3 +86,84 @@ export type StressSimulation = z.infer<typeof stressSimulationSchema>;
 export function parseStressSimulation(input: unknown): StressSimulation {
   return stressSimulationSchema.parse(input);
 }
+
+/* -------------------------------------------------------------------------- */
+/* Phase 2: prediction / reflection / challenge-progress RPC returns (FEAT-004) */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The server-computed `accuracy` jsonb attached to a saved prediction. Shapes
+ * mirror `save_prediction` (FEAT-001): direction correctness, the actual
+ * outcome, the estimate error (null when either side is missing), and whether
+ * the best/worst symbol picks matched.
+ */
+export const predictionAccuracySchema = z.object({
+  direction_correct: z.boolean(),
+  actual_direction: z.string(),
+  actual_change_bp: z.number().int().nullable(),
+  estimate_error_bp: z.number().int().nullable(),
+  best_correct: z.boolean(),
+  worst_correct: z.boolean(),
+  actual_best: z.string().nullable(),
+  actual_worst: z.string().nullable(),
+});
+
+/** The validated `stress_predictions` row returned by `save_prediction`. */
+export const stressPredictionSchema = z.object({
+  id: z.string(),
+  simulation_id: z.string(),
+  user_id: z.string(),
+  direction: z.string(),
+  estimated_change_bp: z.number().int().nullable(),
+  picked_best: z.string().nullable(),
+  picked_worst: z.string().nullable(),
+  /** Server-computed; absent only in degenerate rows, so allow null. */
+  accuracy: predictionAccuracySchema.nullable(),
+  created_at: z.string(),
+});
+
+/** The validated `stress_reflections` row returned by `save_reflection`. */
+export const stressReflectionSchema = z.object({
+  id: z.string(),
+  simulation_id: z.string(),
+  user_id: z.string(),
+  /** Free-form responses array (clamped server-side); kept as unknown JSON. */
+  responses: z.array(z.unknown()),
+  created_at: z.string(),
+});
+
+/** The validated `stress_challenge_progress` row returned by the upsert RPC. */
+export const stressChallengeProgressSchema = z.object({
+  user_id: z.string(),
+  scenario_id: z.string(),
+  challenge_id: z.string(),
+  status: z.string(),
+  best_simulation_id: z.string().nullable(),
+  attempts: z.number().int(),
+  met_at: z.string().nullable(),
+  updated_at: z.string(),
+});
+
+/** Server-computed prediction accuracy after validation. */
+export type PredictionAccuracyPayload = z.infer<typeof predictionAccuracySchema>;
+/** A fully validated prediction row. */
+export type StressPrediction = z.infer<typeof stressPredictionSchema>;
+/** A fully validated reflection row. */
+export type StressReflection = z.infer<typeof stressReflectionSchema>;
+/** A fully validated challenge-progress row. */
+export type StressChallengeProgress = z.infer<typeof stressChallengeProgressSchema>;
+
+/** Parse an untrusted `save_prediction` payload. Throws a `ZodError` on a bad shape. */
+export function parseStressPrediction(input: unknown): StressPrediction {
+  return stressPredictionSchema.parse(input);
+}
+
+/** Parse an untrusted `save_reflection` payload. Throws a `ZodError` on a bad shape. */
+export function parseStressReflection(input: unknown): StressReflection {
+  return stressReflectionSchema.parse(input);
+}
+
+/** Parse an untrusted `upsert_challenge_progress` payload. Throws on a bad shape. */
+export function parseStressChallengeProgress(input: unknown): StressChallengeProgress {
+  return stressChallengeProgressSchema.parse(input);
+}

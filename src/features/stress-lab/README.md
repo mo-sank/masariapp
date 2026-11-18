@@ -31,6 +31,34 @@ touch React Query and Supabase:
   `SectorExposure`, `RiskObservations`), the reused `SimulatedBadge`, and the
   `InfoTip` tooltip for plain-language jargon.
 
+The **Phase 2 constructionist layer** (FEAT-004) adds the predict → run →
+reflect → improve → re-run loop on top of Phase 1:
+
+- `analysis/recommendations.ts` — improvement prompts derived from real holdings
+  and results (sector/holding concentration, missing defensive exposure,
+  scenario-specific loss). They frame a question; they never prescribe a trade
+  or modify the portfolio.
+- `analysis/challenges.ts` — per-scenario design challenges (e.g. "lose < 20% in
+  a recession", "no sector > 30%") plus a deterministic pass/fail evaluator over
+  a `SimulationResult`.
+- `analysis/prediction.ts` — client-side prediction-accuracy scoring, matching
+  the server's `save_prediction` accuracy payload.
+- `data/use-save-prediction.ts`, `use-save-reflection.ts`,
+  `use-challenge-progress.ts` — React Query read + mutation hooks over the
+  `save_prediction` / `save_reflection` / `upsert_challenge_progress` RPCs (no
+  user id; RLS scopes rows), each validating the return with zod, mapping stable
+  error codes to friendly copy, and invalidating its query key on success.
+- `components/` — `PredictionForm` (captured before a run), `PredictionResult`,
+  `Recommendations`, `ChallengeTracker`, `ReflectionForm` (saves + reloads), and
+  `ComparisonDashboard` (original vs updated run of the same scenario, with $/%
+  differences and sector/concentration changes).
+
+"Improve My Portfolio" routes into the EXISTING brokerage
+(`router.push('/(tabs)/explore')`); there is no second brokerage and no holding
+is ever modified automatically. Prior simulation records are immutable snapshots
+(FEAT-001), so trading and re-running never overwrite earlier runs — the
+comparison reads two persisted records.
+
 The route files live under `app/stress-lab/` and stay thin (navigation and
 loading/empty/error states only). Every simulated figure is labelled SIMULATED
 and kept visually distinct from the real portfolio overview.

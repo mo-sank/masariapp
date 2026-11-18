@@ -12,6 +12,7 @@ export default function StressLabLayout() {
     <Stack>
       <Stack.Screen name="index" options={{ title: 'Portfolio Stress Lab' }} />
       <Stack.Screen name="results/[simulationId]" options={{ title: 'Stress test results' }} />
+      <Stack.Screen name="compare/[scenarioId]" options={{ title: 'Compare runs' }} />
     </Stack>
   );
 }
