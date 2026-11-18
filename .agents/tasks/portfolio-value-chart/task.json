@@ -1,0 +1,7 @@
+{
+  "task_id": "task-portfolio-value-chart",
+  "task_description": "Add a Portfolio Value Chart to the Portfolio tab: a react-native-svg line chart of daily paper-trading equity_cents from public.portfolio_snapshots with a 1M/3M/1Y/5Y/ALL range selector, backed by a new SECURITY DEFINER RPC public.backfill_portfolio_snapshots() that reconstructs the historical daily series from the orders + quote_bars ledger and upserts it into the same table. The client fires the backfill once per mount when history is sparse. No new runtime dependency; react-native-svg is reused. Implemented exactly per the APPROVED design.md.",
+  "status": "completed",
+  "feature_order": ["FEAT-001", "FEAT-002"],
+  "blocked_reason": null
+}

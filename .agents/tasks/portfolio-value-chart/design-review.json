@@ -1,0 +1,20 @@
+{
+  "verdict": "APPROVED",
+  "findings": [
+    {
+      "id": "N1",
+      "severity": "NIT",
+      "location": "design.md §9 (components barrel aside)",
+      "problem": "The design states the portfolio components barrel 'exports components, not types', but src/features/portfolio/components/index.ts already exports PortfolioSummaryProps and PositionRowProps. The conclusion (import ChartRange from the hook module, not the barrel) is still correct; only the justifying sentence is inaccurate.",
+      "fix": "Reword to: 'the barrel exports each component with its own props type; ChartRange lives in use-portfolio-history.ts and every consumer imports it from there, so it is not re-exported through the components barrel.'"
+    },
+    {
+      "id": "N2",
+      "severity": "NIT",
+      "location": "design.md §5 (BACKFILL_ERROR_MESSAGES.no_account)",
+      "problem": "The no_account copy matches use-place-order.ts ('We couldn't find your paper account. Please try again.') but diverges from use-run-simulation.ts, which maps the same code to a more actionable 'Make a trade first, then try again.' — the exact gated-but-account-less learner case §9 says can occur on the chart card. Copy choice, not a defect.",
+      "fix": "Optionally adopt the more actionable Stress Lab phrasing for no_account, since the backfill surfaces this code to a learner with no trades yet."
+    }
+  ],
+  "reviewDoc": "/Users/mohamednazirsankari/Apps/masariapp/.worktrees/portfolio-value-chart/.agents/tasks/portfolio-value-chart/design-review.md"
+}
