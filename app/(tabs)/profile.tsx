@@ -82,7 +82,7 @@ export default function ProfileScreen() {
         streakFreezes={stats.data?.streak_freezes ?? 0}
       />
 
-      <KnowledgeBinder onOpenGlossary={() => router.push('/glossary')} />
+      <KnowledgeBinder />
 
       <Button
         title="Settings"
