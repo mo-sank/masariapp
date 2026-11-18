@@ -7,3 +7,5 @@
  */
 export { PortfolioSummary, type PortfolioSummaryProps } from './portfolio-summary';
 export { PositionRow, type PositionRowProps } from './position-row';
+export { PortfolioValueChart, type PortfolioValueChartProps } from './portfolio-value-chart';
+export { RangeToggle, PORTFOLIO_CHART_RANGES } from './range-toggle';

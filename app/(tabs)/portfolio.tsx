@@ -1,8 +1,19 @@
 import { router } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
 import { FlatList, View } from 'react-native';
 
-import { Button, Disclaimer, Screen, StateView, Text } from '../../src/components/ui';
-import { PortfolioSummary, PositionRow } from '../../src/features/portfolio/components';
+import { Button, Card, Disclaimer, Screen, StateView, Text } from '../../src/components/ui';
+import {
+  PortfolioSummary,
+  PortfolioValueChart,
+  PositionRow,
+  RangeToggle,
+} from '../../src/features/portfolio/components';
+import { useBackfillPortfolioHistory, mapBackfillError } from '../../src/features/portfolio/use-backfill-portfolio-history';
+import {
+  usePortfolioHistory,
+  type ChartRange,
+} from '../../src/features/portfolio/use-portfolio-history';
 import { usePortfolio, type PortfolioPosition } from '../../src/features/portfolio/use-portfolio';
 import { Gate } from '../../src/features/progress/components/Gate';
 import { useSession } from '../../src/lib/auth0';
@@ -58,6 +69,30 @@ function PortfolioLoading() {
 function PortfolioView({ theme }: { theme: ReturnType<typeof useTheme> }) {
   const { data, isLoading, isError, refetch } = usePortfolio();
 
+  // Portfolio value chart (design §9): a range selector feeding a history query,
+  // with a once-per-mount backfill that reconstructs the historical series when
+  // the chart has too little data to draw.
+  const [range, setRange] = useState<ChartRange>('3M');
+  const history = usePortfolioHistory(range);
+  const backfill = useBackfillPortfolioHistory();
+
+  // Treat <= 1 point as sparse: too little to draw a curve.
+  const sparse = (history.data?.length ?? 0) <= 1;
+  const firedRef = useRef(false);
+  useEffect(() => {
+    // Fire the backfill at most once per mount (the firedRef latch is set before
+    // mutate(), so a rejected mutation does not auto-retry and a range change
+    // does not re-trigger it).
+    if (!history.isLoading && sparse && !firedRef.current && !backfill.isPending) {
+      firedRef.current = true;
+      backfill.mutate();
+    }
+    // The firedRef latch makes this a once-per-mount trigger; `backfill` is a
+    // stable mutation object and is intentionally not a dependency so a range
+    // change or re-render never re-fires it (design §9).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history.isLoading, sparse, backfill.isPending]);
+
   if (isLoading) {
     return (
       <Screen>
@@ -78,11 +113,45 @@ function PortfolioView({ theme }: { theme: ReturnType<typeof useTheme> }) {
     );
   }
 
+  // Equity points for the chart, mapped from the history query (oldest-first).
+  const chartPoints = (history.data ?? []).map((p) => ({
+    snapDate: p.snapDate,
+    valueCents: p.equityCents,
+  }));
+
+  const chartCard = sparse ? (
+    <Card style={{ gap: theme.spacing.sm }}>
+      <Text variant="body" color="text">
+        Your portfolio history will build over time
+      </Text>
+      {backfill.isPending ? (
+        <Text variant="caption" color="textMuted">
+          Building your history…
+        </Text>
+      ) : backfill.isError ? (
+        <Text variant="caption" color="textMuted">
+          {mapBackfillError(backfill.error)}
+        </Text>
+      ) : null}
+      <RangeToggle value={range} onChange={setRange} />
+    </Card>
+  ) : (
+    <View style={{ gap: theme.spacing.sm }}>
+      <PortfolioValueChart
+        points={chartPoints}
+        range={range}
+        loading={history.isLoading}
+      />
+      <RangeToggle value={range} onChange={setRange} />
+    </View>
+  );
+
   const header = (
     <View style={{ gap: theme.spacing.md }}>
       <Text variant="title" accessibilityRole="header">
         Portfolio
       </Text>
+      {chartCard}
       <PortfolioSummary portfolio={data} />
       <Button
         title="View trade history"
