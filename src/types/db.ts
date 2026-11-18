@@ -1068,6 +1068,10 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: Json;
       };
+      backfill_portfolio_snapshots: {
+        Args: Record<PropertyKey, never>;
+        Returns: number;
+      };
       submit_feedback: {
         Args: {
           p_category: string;
