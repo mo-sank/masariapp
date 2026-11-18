@@ -1,0 +1,7 @@
+{
+  "task_id": "task-portfolio-stress-lab",
+  "task_description": "Build the Portfolio Stress Lab feature (Phase 1 + Phase 2) in the Masari Expo/React Native app: new Supabase migrations + seed for scenario data, snapshot-based simulation records, and learning records; a feature module under src/features/stress-lab/ with a pure deterministic simulation engine and portfolio-analysis math (unit-tested), React Query persistence hooks, educational reflections/challenges, and SVG-based UI; new app/ route files and Portfolio-tab entry wiring. Phase 3 deferred.",
+  "status": "completed",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004"],
+  "blocked_reason": null
+}

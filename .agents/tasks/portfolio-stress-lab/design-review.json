@@ -1,0 +1,30 @@
+{
+  "verdict": "APPROVED",
+  "findings": [
+    {
+      "id": 1,
+      "severity": "NIT",
+      "title": "config.toml seed insertion point described loosely",
+      "where": "Data model -> seed bullet",
+      "problem": "Live sql_paths ends with instruments.sql then holidays.sql; 'appended after instruments.sql' would insert between them. Harmless, but not literally 'appended'.",
+      "fix": "Say 'append stress_scenarios.sql to the end of sql_paths; it has no FK dependency on holidays.sql so trailing placement is fine.'"
+    },
+    {
+      "id": 2,
+      "severity": "NIT",
+      "title": "expo-crypto client UUID vs gen_random_uuid() unreconciled",
+      "where": "Tech-stack line + stress_simulations.id default gen_random_uuid()",
+      "problem": "expo-crypto is listed in the stack but record_simulation returns a server-generated id; no client UUID/idempotency key is needed. Risk of coder generating client ids needlessly.",
+      "fix": "Drop expo-crypto from the Stress Lab stack line or note that simulation ids are server-generated and no idempotency key is used; confirm double-submit is handled by disabling the run button while pending."
+    },
+    {
+      "id": 3,
+      "severity": "NIT",
+      "title": "COVID recovery-phase composition semantics implicit",
+      "where": "stress_simulations.phase + record_simulation(p_phase); engine recovery description",
+      "problem": "Design says recovery is 'over the base' (reads as composed) but the RPC applies the recovery table to current holdings (independent). Two readings possible.",
+      "fix": "State explicitly: recovery is an independent shock from current holdings using the recovery table, not composed on the crash result; both phases are separate rows shown side by side; engine and RPC agree and a recovery example is tested."
+    }
+  ],
+  "reviewDoc": "/Users/mohamednazirsankari/Apps/masariapp/.agents/tasks/portfolio-stress-lab/design-review.md"
+}

@@ -1,0 +1,12 @@
+{
+  "verdict": "APPROVED",
+  "findings": [
+    {
+      "severity": "NIT",
+      "title": "Reflection response key is `question`, design specifies `question_id`",
+      "where": "app/stress-lab/results/[simulationId].tsx (submitReflection / reflectionAnswers) vs design.md stress_reflections ([{ question_id, answer }])",
+      "problem": "The route writes reflection responses as [{ question, answer }] and reads them back with the same `question` key. The design and the table comment describe the shape as [{ question_id, answer }]. save_reflection only clamps the `answer` field and does not enforce the key name, so the client is internally consistent (write key == read key) and there is no functional bug, but the persisted shape deviates from the documented contract.",
+      "fix": "Rename the response key to `question_id` in both the write (submitReflection) and read (reflectionAnswers) paths to match design.md and the table comment, or update the design/table comment to `question`. Cosmetic/contract-consistency only; not blocking."
+    }
+  ]
+}
